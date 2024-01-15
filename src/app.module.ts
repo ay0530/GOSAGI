@@ -1,5 +1,5 @@
 import Joi from 'joi'; // 유효성 검증 라이브러리
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies'; // DB 필드명 snake_case로 설정
@@ -7,9 +7,13 @@ import { ServeStaticModule } from '@nestjs/serve-static'; // 정적 파일 제�
 import { join } from 'path'; // 파일 경로 설정
 import { WinstonModule } from 'nest-winston'; // 로깅
 import winstonOptions from './config/winston.config'; // 로깅
-import { JwtModule } from '@nestjs/jwt';
+import cookieParser from 'cookie-parser';
 
 // Moudle
+import { AuthModule } from './auth/auth.module';
+import { JwtModule } from '@nestjs/jwt';
+import { RedisModule } from './redis/redis.module';
+
 import { UserModule } from './user/user.module';
 import { LocationModule } from './location/location.module';
 import { StoreModule } from './store/store.module';
@@ -99,6 +103,9 @@ const typeOrmModuleOptions = {
     }),
     // Winston
     WinstonModule.forRoot(winstonOptions),
+    // Auth
+    AuthModule,
+    RedisModule,
     // Module
     UserModule,
     LocationModule,
@@ -116,4 +123,9 @@ const typeOrmModuleOptions = {
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(cookieParser()).forRoutes('*'); // 모든 라우터에 쿠키파서 적용
+  }
+}
