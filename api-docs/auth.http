@@ -1,0 +1,16 @@
+@domain = http://localhost:3000
+
+### 
+# 로그인
+POST {{domain}}/user/login
+Content-Type: application/JSON
+
+{
+  "email": "test1@test.com",
+  "password": "1234"
+}
+
+###
+# 로그아웃
+POST {{domain}}/logout
+Content-Type: application/JSON
