@@ -12,5 +12,5 @@ Content-Type: application/JSON
 
 ###
 # 로그아웃
-POST {{domain}}/logout
+POST {{domain}}/user/logout
 Content-Type: application/JSON

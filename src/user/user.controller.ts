@@ -75,8 +75,13 @@ export class UserController {
   // 회원 탈퇴
   @UseGuards(JwtAuthGuard)
   @Delete()
-  async remove(@Req() req) {
+  async remove(@Req() req, @Res({ passthrough: true }) response) {
     await this.userService.remove(req.user.id);
+    // 액세스 토큰 삭제(빈 값을 덮어씌움)
+    response.cookie('authorization', '', {
+      httpOnly: true,
+      expires: new Date(0), // 쿠키 유효기간 만료
+    });
     await this.redisService.removeRefreshToken(req.user.id); // 리프레시 토큰 삭제
     return { message: '회원 탈퇴가 완료되었습니다' };
   }
@@ -84,7 +89,12 @@ export class UserController {
   // 로그아웃
   @UseGuards(JwtAuthGuard)
   @Post('logout')
-  async logout(@Req() req) {
+  async logout(@Req() req, @Res({ passthrough: true }) response) {
+    // 액세스 토큰 삭제(빈 값을 덮어씌움)
+    response.cookie('authorization', '', {
+      httpOnly: true,
+      expires: new Date(0), // 쿠키 유효기간 만료
+    });
     await this.redisService.removeRefreshToken(req.user.id); // 리프레시 토큰 삭제
     return { message: '로그아웃이 되었습니다' };
   }

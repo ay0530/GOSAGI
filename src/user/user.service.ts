@@ -119,6 +119,7 @@ export class UserService {
   async remove(id: number) {
     // 회원 정보 삭제
     await this.userRepository.delete({ id });
+    // 쿠키 삭제
   }
 
   // ---- 회원 목록
