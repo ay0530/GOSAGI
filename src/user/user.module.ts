@@ -3,11 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { User } from './entities/user.entity';
-import { UserController } from './user.controller';
-import { RedisModule } from 'src/redis/redis.module';
-import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
+
+import { RedisModule } from 'src/redis/redis.module';
+import { UserController } from './user.controller';
+import { UserService } from './user.service';
+import { User } from './entities/user.entity';
 
 @Module({
   imports: [

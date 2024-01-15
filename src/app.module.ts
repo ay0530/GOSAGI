@@ -8,10 +8,10 @@ import { join } from 'path'; // 파일 경로 설정
 import { WinstonModule } from 'nest-winston'; // 로깅
 import winstonOptions from './config/winston.config'; // 로깅
 import cookieParser from 'cookie-parser';
+import { JwtModule } from '@nestjs/jwt';
 
 // Moudle
 import { AuthModule } from './auth/auth.module';
-import { JwtModule } from '@nestjs/jwt';
 import { RedisModule } from './redis/redis.module';
 
 import { UserModule } from './user/user.module';
@@ -123,7 +123,6 @@ const typeOrmModuleOptions = {
   controllers: [],
   providers: [],
 })
-
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(cookieParser()).forRoutes('*'); // 모든 라우터에 쿠키파서 적용

@@ -3,17 +3,17 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
+import _ from 'lodash';
+import { compare, hash } from 'bcrypt';
+
+import { RedisService } from 'src/redis/redis.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { JwtService } from '@nestjs/jwt';
-import { compare, hash } from 'bcrypt';
-import _ from 'lodash';
-import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class UserService {

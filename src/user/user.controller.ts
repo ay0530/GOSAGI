@@ -10,12 +10,14 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
+
+import { JwtAuthGuard } from 'src/auth/jwt.guard';
+
 import { UserService } from './user.service';
 import { RedisService } from 'src/redis/redis.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginDto } from './dto/login.dto';
-import { JwtAuthGuard } from 'src/auth/jwt.guard';
 
 @Controller('user')
 export class UserController {
