@@ -1,0 +1,43 @@
+@domain = http://localhost:3000
+
+### ----- 회원 1명
+###
+# 회원 가입
+# role : 0(admin), 1(user), 2(seller)
+POST {{domain}}/user/signup
+Content-Type: application/JSON
+
+{
+  "email": "test2@test.com",
+  "password": "1234",
+  "passwordConfirm": "1234",
+  "nickname": "test2",
+  "role": 0
+}
+
+###
+# 내 정보 조회
+GET {{domain}}/user
+
+###
+# 내 정보 수정
+PATCH {{domain}}/user
+Content-Type: application/JSON
+
+{
+  "nickname": "test11"
+}
+
+###
+# 회원 탈퇴
+DELETE {{domain}}/user
+
+### ----- 회원 목록
+###
+# 회원 목록 조회
+GET {{domain}}/user/list
+
+###
+# 회원 목록 검색
+# 검색 조건 : role, nickname, email
+GET {{domain}}/user/list/nickname/0
