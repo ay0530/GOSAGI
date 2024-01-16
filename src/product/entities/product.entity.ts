@@ -12,7 +12,7 @@ import { Store } from 'src/store/entities/store.entity';
 import { Wish } from 'src/wish/entities/wish.entity';
 import { Cart } from 'src/cart/entities/cart.entity';
 import { ProductThumbnail } from 'src/product/entities/product-thumbnail.entity';
-import { ProductContent } from 'src/product-content/entities/product-content.entity';
+import { ProductContent } from 'src/product/entities/product-content.entity';
 
 @Entity({
   name: 'products',
@@ -78,6 +78,8 @@ export class Product {
   productThumbnail: ProductThumbnail[];
 
   // 일대다 관계 설정(product_content)
-  @OneToMany(() => ProductContent, (productContent) => productContent.product)
+  @OneToMany(() => ProductContent, (productContent) => productContent.product,
+    {cascade: true}  
+  )
   productContent: ProductContent[];
 }

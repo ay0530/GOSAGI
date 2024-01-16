@@ -22,6 +22,7 @@ export class ProductService {
           point, 
           price,
           productThumbnails,
+          productContents,
         } = createProductDto;
 
         console.log(productThumbnails)
@@ -37,6 +38,7 @@ export class ProductService {
       price,     
       storeId,
       productThumbnail: productThumbnails.map((productThumbnail) => productThumbnail),
+      productContent: productContents.map((productContent) => productContent),
       });
   }
 
