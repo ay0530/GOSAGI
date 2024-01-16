@@ -1,9 +1,22 @@
 @domain = http://localhost:3000
 
-### 찜 상품 등록
+### 
+# 찜 상품 등록
 POST {{domain}}/wish
 Content-Type: application/JSON
 
 {
-  "product_code" : 10000
+  "product_id" : 4
 }
+
+###
+# 내가 찜한 상품 조회
+GET {{domain}}/wish
+
+###
+# 상품 별 찜 조회 (productId)
+GET {{domain}}/wish/5
+
+###
+# 찜 삭제 
+DELETE {{domain}}/wish/6
