@@ -54,7 +54,7 @@ export class FaqService {
       throw new NotFoundException('FAQ가 존재하지 않습니다.');
     }
     await this.faqRepository.update({ id: faqId }, updateFaqDto);
-    return existFaq;
+    return updateFaqDto;
   }
 
   // FAQ 삭제

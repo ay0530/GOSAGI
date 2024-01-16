@@ -69,7 +69,7 @@ export class FaqController {
     await this.faqService.deleteFaq(+faqId);
     return {
       statusCode: HttpStatus.OK,
-      message: 'FAQ 수정 완료.',
+      message: 'FAQ 삭제 완료.',
     };
   }
 }
