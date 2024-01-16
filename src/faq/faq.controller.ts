@@ -39,9 +39,9 @@ export class FaqController {
   }
 
   // 특정 FAQ 조회
-  @Get(':id')
-  async getOneFaq(@Param('id') id: string) {
-    const oneFaq = await this.faqService.getOneFaq(+id);
+  @Get(':faqId')
+  async getOneFaq(@Param('faqId') faqId: string) {
+    const oneFaq = await this.faqService.getOneFaq(+faqId);
     return {
       statusCode: HttpStatus.OK,
       message: '특정 FAQ 조회 완료.',
@@ -50,9 +50,12 @@ export class FaqController {
   }
 
   // FAQ 수정
-  @Patch(':id')
-  async updateFaq(@Param('id') id: string, @Body() updateFaqDto: UpdateFaqDto) {
-    const updateFaq = await this.faqService.updateFaq(+id, updateFaqDto);
+  @Patch(':faqId')
+  async updateFaq(
+    @Param('faqId') faqId: string,
+    @Body() updateFaqDto: UpdateFaqDto,
+  ) {
+    const updateFaq = await this.faqService.updateFaq(+faqId, updateFaqDto);
     return {
       statusCode: HttpStatus.OK,
       message: 'FAQ 수정 완료.',
@@ -61,9 +64,9 @@ export class FaqController {
   }
 
   // FAQ 삭제
-  @Delete(':id')
-  async deleteFaq(@Param('id') id: string) {
-    await this.faqService.deleteFaq(+id);
+  @Delete(':faqId')
+  async deleteFaq(@Param('faqId') faqId: string) {
+    await this.faqService.deleteFaq(+faqId);
     return {
       statusCode: HttpStatus.OK,
       message: 'FAQ 수정 완료.',
