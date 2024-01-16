@@ -1,8 +1,4 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-/*
-OnModuleInit : 모듈 초기화 시 Redis DB와 연결
-OnModuleDestroy : 모듈 파괴 시 연결 종료
-*/
 import { ConfigService } from '@nestjs/config';
 import { createClient, RedisClientType } from 'redis';
 
@@ -26,7 +22,6 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     this.client.on('error', (error) => console.error(`Redis Error: ${error}`));
 
     await this.client.connect();
-    console.log('Connected to Redis');
   }
 
   // redis 연결 종료

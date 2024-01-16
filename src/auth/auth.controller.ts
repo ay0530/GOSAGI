@@ -1,7 +1,7 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { JwtAuthGuard } from 'src/auth/jwt.guard';
+import { JwtAuthGuard } from 'src/guards/jwt.guard';
 
 import { AuthService } from './auth.service';
 
@@ -9,6 +9,7 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  // 액세스 토큰 발급
   @Get()
   @UseGuards(AuthGuard('jwt'), JwtAuthGuard)
   async generateAccessToken(@Req() req) {
