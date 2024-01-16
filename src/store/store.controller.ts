@@ -6,7 +6,11 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/guards/jwt.guard';
+
 import { StoreService } from './store.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
@@ -15,28 +19,63 @@ import { UpdateStoreDto } from './dto/update-store.dto';
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
+  // 매장 정보 저장
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createStoreDto: CreateStoreDto) {
-    return this.storeService.create(createStoreDto);
+  async create(@Body() createStoreDto: CreateStoreDto, @Req() req: any) {
+    const store = await this.storeService.create(createStoreDto, req.user.id);
+    return { message: '매장 등록이 완료되었습니다.', store };
   }
 
-  @Get()
-  findAll() {
-    return this.storeService.findAll();
+  // 매장 정보 상세 조회
+  @Get('detail/:id')
+  async findOne(@Param('id') id: string) {
+    const store = await this.storeService.findOne(+id);
+    return { message: '매장 정보 조회가 완료되었습니다.', store };
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.storeService.findOne(+id);
-  }
-
+  // 매장 정보 수정
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStoreDto: UpdateStoreDto) {
-    return this.storeService.update(+id, updateStoreDto);
+  async update(
+    @Param('id') id: number,
+    @Body() updateStoreDto: UpdateStoreDto,
+    @Req() req: any,
+  ) {
+    const store = await this.storeService.update(
+      id,
+      updateStoreDto,
+      req.user.id,
+    );
+    return { message: '매장 정보 수정이 완료되었습니다.', store };
   }
 
+  // 매장 정보 삭제
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.storeService.remove(+id);
+  async remove(@Param('id') id: string, @Req() req: any) {
+    await this.storeService.remove(+id, req.user.id);
+    return { message: '매장 정보 삭제가 완료되었습니다.' };
+  }
+
+  // 매장 목록 조회
+  @Get('list')
+  async findAll() {
+    const stores = await this.storeService.findAll();
+    return { message: '매장 목록 조회가 완료되었습니다.', stores };
+  }
+
+  // 회원 목록 검색 조회
+  @UseGuards(JwtAuthGuard)
+  @Get('list/:category/:keyword')
+  async searchAll(
+    @Param('category') category: string,
+    @Param('keyword') keyword: string,
+  ) {
+    const stores = await this.storeService.searchAll(category, keyword);
+    return {
+      message: '검색이 완료되었습니다.',
+      stores,
+    };
   }
 }
