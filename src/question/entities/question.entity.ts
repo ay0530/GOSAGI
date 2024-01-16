@@ -39,4 +39,6 @@ export class Question {
   @ManyToOne(() => User, (user) => user.question)
   @JoinColumn({ name: 'user_id' }) // 외래키
   user: User; // 관계 테이블
+  @Column({ type: 'int', nullable: false })
+  user_id: number;
 }

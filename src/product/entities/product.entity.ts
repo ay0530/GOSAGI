@@ -58,6 +58,8 @@ export class Product {
   @ManyToOne(() => Store, (store) => store.product)
   @JoinColumn({ name: 'store_id' }) // 외래키
   store: Store; // 관계 테이블
+  @Column({ type: 'int', nullable: false })
+  store_id: number;
 
   // 일대다 관계 설정(carts)
   @OneToMany(() => Cart, (cart) => cart.product)

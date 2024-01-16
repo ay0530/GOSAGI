@@ -23,4 +23,6 @@ export class ProductContent {
   @ManyToOne(() => Product, (product) => product.productContent)
   @JoinColumn({ name: 'store_id' }) // 외래키
   product: Product; // 관계 테이블
+  @Column({ type: 'int', nullable: false })
+  store_id: number;
 }
