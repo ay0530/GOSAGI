@@ -4,23 +4,23 @@ import { UpdateFaqDto } from './dto/update-faq.dto';
 
 @Injectable()
 export class FaqService {
-  create(createFaqDto: CreateFaqDto) {
+  createFaq(createFaqDto: CreateFaqDto) {
     return 'This action adds a new faq';
   }
 
-  findAll() {
+  getFaq() {
     return `This action returns all faq`;
   }
 
-  findOne(id: number) {
+  getOneFaq(id: number) {
     return `This action returns a #${id} faq`;
   }
 
-  update(id: number, updateFaqDto: UpdateFaqDto) {
+  updateFaq(id: number, updateFaqDto: UpdateFaqDto) {
     return `This action updates a #${id} faq`;
   }
 
-  remove(id: number) {
+  deleteFaq(id: number) {
     return `This action removes a #${id} faq`;
   }
 }
