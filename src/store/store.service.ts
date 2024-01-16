@@ -54,7 +54,6 @@ export class StoreService {
       {
         name: updateStoreDto.name,
         phone_number: updateStoreDto.phoneNumber,
-        business_number: updateStoreDto.bussinessNumber,
         address: updateStoreDto.address,
       },
     );
@@ -62,7 +61,6 @@ export class StoreService {
     return {
       name: updateStoreDto.name,
       phone_number: updateStoreDto.phoneNumber,
-      bussiness_number: updateStoreDto.bussinessNumber,
       address: updateStoreDto.address,
     };
   }
@@ -87,14 +85,6 @@ export class StoreService {
     });
     if (existingName) {
       throw new ConflictException('이미 등록된 매장입니다.');
-    }
-
-    // 사업자 번호 중복 여부 체크
-    const existingBussinessNumber = await this.storeRepository.findOne({
-      where: { business_number: storeDto.bussinessNumber },
-    });
-    if (existingBussinessNumber) {
-      throw new ConflictException('이미 등록된 사업자 번호입니다.');
     }
   }
 
