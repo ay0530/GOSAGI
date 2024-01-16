@@ -11,7 +11,7 @@ import {
   Res,
 } from '@nestjs/common';
 
-import { JwtAuthGuard } from 'src/auth/jwt.guard';
+import { JwtAuthGuard } from 'src/guards/jwt.guard';
 
 import { UserService } from './user.service';
 import { RedisService } from 'src/redis/redis.service';
@@ -37,13 +37,13 @@ export class UserController {
   @Post('login')
   async login(
     @Body() loginDto: LoginDto,
-    @Res({ passthrough: true }) response,
+    @Res({ passthrough: true }) res: any,
   ) {
     const accessToken = await this.userService.login(
       loginDto.email,
       loginDto.password,
     );
-    response.cookie('authorization', `Bearer ${accessToken}`, {
+    res.cookie('authorization', `Bearer ${accessToken}`, {
       httpOnly: true,
     }); // 쿠키에 토큰 저장
 
@@ -55,7 +55,7 @@ export class UserController {
   // 회원 정보 조회
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getProfile(@Req() req) {
+  async getProfile(@Req() req: any) {
     const user = await this.userService.findOne(req.user.id);
     return {
       message: '회원 정보 조회가 완료되었습니다.',
@@ -66,7 +66,7 @@ export class UserController {
   // 회원 정보 수정
   @UseGuards(JwtAuthGuard)
   @Patch()
-  async update(@Req() req, @Body() updateUserDto: UpdateUserDto) {
+  async update(@Req() req: any, @Body() updateUserDto: UpdateUserDto) {
     const user = await this.userService.update(req.user.id, updateUserDto);
     return {
       message: '회원 정보 수정이 완료되었습니다.',
@@ -77,10 +77,10 @@ export class UserController {
   // 회원 탈퇴
   @UseGuards(JwtAuthGuard)
   @Delete()
-  async remove(@Req() req, @Res({ passthrough: true }) response) {
+  async remove(@Req() req: any, @Res({ passthrough: true }) res: any) {
     await this.userService.remove(req.user.id);
     // 액세스 토큰 삭제(빈 값을 덮어씌움)
-    response.cookie('authorization', '', {
+    res.cookie('authorization', '', {
       httpOnly: true,
       expires: new Date(0), // 쿠키 유효기간 만료
     });
@@ -91,9 +91,9 @@ export class UserController {
   // 로그아웃
   @UseGuards(JwtAuthGuard)
   @Post('logout')
-  async logout(@Req() req, @Res({ passthrough: true }) response) {
+  async logout(@Req() req: any, @Res({ passthrough: true }) res: any) {
     // 액세스 토큰 삭제(빈 값을 덮어씌움)
-    response.cookie('authorization', '', {
+    res.cookie('authorization', '', {
       httpOnly: true,
       expires: new Date(0), // 쿠키 유효기간 만료
     });
