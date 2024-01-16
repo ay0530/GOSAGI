@@ -1,0 +1,43 @@
+@domain = http://localhost:3000
+
+###
+# 매장 정보 등록
+POST {{domain}}/store
+Content-Type: application/JSON
+
+{
+  "name": "매장3",
+  "phoneNumber": "010-3333-3333",
+  "bussinessNumber": "사업자 번호3",
+  "address": "주소3"
+}
+
+###
+# 매장 정보 조회
+GET {{domain}}/store/detail/1
+
+###
+# 매장 정보 수정
+PATCH {{domain}}/store/1
+Content-Type: application/JSON
+
+{
+  "name": "매장111",
+  "phoneNumber": "010-1111-11111",
+  "bussinessNumber": "사업자 번호111",
+  "address": "주소111"
+}
+
+###
+# 매장 정보 삭제
+DELETE {{domain}}/store
+
+### ----- 매장 목록
+###
+# 매장 목록 조회
+GET {{domain}}/store/list
+
+###
+# 매장 목록 검색
+# 검색 조건 : name, phone_number, address
+GET {{domain}}/store/list/name/3
