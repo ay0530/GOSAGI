@@ -11,37 +11,40 @@ import {
 } from '@nestjs/common';
 import { WishService } from './wish.service';
 import { CreateWishDto } from './dto/create-wish.dto';
-import { UpdateWishDto } from './dto/update-wish.dto';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 
-@UseGuards(JwtAuthGuard)
+
 @Controller('wish')
 export class WishController {
   constructor(private readonly wishService: WishService) {}
 
+  //찜하기
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createWishDto: CreateWishDto, @Req() req) {
-    const user = req.user ? req.user : null;
+    const user = req.user;
     return this.wishService.create(createWishDto, user);
   }
 
+  //내가 찜한 상품 전체 보기 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.wishService.findAll();
+  findAll(@Req() req) {
+    const user = req.user;
+    return this.wishService.findAll(user);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.wishService.findOne(+id);
+  //상품별 찜 보기
+  @Get(':productId')
+  findByProduct(@Param('productId') id: string) {
+    return this.wishService.findByProduct(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
-    return this.wishService.update(+id, updateWishDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wishService.remove(+id);
+  //찜 취소
+  @UseGuards(JwtAuthGuard)
+  @Delete(':wishid')
+  remove(@Param('wishid') id: string, @Req() req) {
+    const user = req.user;
+    return this.wishService.remove(+id, user);
   }
 }
