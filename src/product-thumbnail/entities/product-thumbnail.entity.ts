@@ -23,4 +23,6 @@ export class ProductThumbnail {
   @ManyToOne(() => Product, (product) => product.productThumbnail)
   @JoinColumn({ name: 'product_id' }) // 외래키
   product: Product; // 관계 테이블
+  @Column({ type: 'int', nullable: false })
+  product_id: number;
 }
