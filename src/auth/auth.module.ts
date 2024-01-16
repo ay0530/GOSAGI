@@ -7,7 +7,7 @@ import { UserModule } from 'src/user/user.module';
 import { RedisModule } from 'src/redis/redis.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './jwt.guard';
+import { JwtAuthGuard } from 'src/guards/jwt.guard';
 
 @Module({
   imports: [
