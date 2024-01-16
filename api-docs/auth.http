@@ -6,7 +6,7 @@ POST {{domain}}/user/login
 Content-Type: application/JSON
 
 {
-  "email": "test1@test.com",
+  "email": "test2@test.com",
   "password": "1234"
 }
 

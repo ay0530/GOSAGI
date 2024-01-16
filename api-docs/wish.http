@@ -1,0 +1,9 @@
+@domain = http://localhost:3000
+
+### 찜 상품 등록
+POST {{domain}}/wish
+Content-Type: application/JSON
+
+{
+  "product_code" : 10000
+}
