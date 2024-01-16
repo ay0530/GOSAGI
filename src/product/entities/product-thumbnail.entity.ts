@@ -23,6 +23,6 @@ export class ProductThumbnail {
   @ManyToOne((type) => Product, (product) => product.productThumbnail, {onDelete: 'CASCADE'})
   @JoinColumn({ name: 'product_id' }) // 외래키
   product: Product; // 관계 테이블
-  @Column()
+  @Column({select: false})
   productId: number;
 }

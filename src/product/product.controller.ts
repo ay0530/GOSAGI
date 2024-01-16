@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -30,20 +31,49 @@ export class ProductController {
     }
   }
 
+  //상품 전체 가져오기
   @Get()
   async findAll() {
     const data =  await this.productService.findAll();
     
     return {
-      statusCode: HttpStatus.CREATED,
-      message: '상품 등록완료',
+      statusCode: HttpStatus.OK,
+      message: '상품 조회',
       data,
     }
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productService.findOne(+id);
+  @Get("/location")
+  async findByRegion(@Query('location') location:string){
+    const data = await this.productService.findByRegion(location)
+    return {
+      statusCode: HttpStatus.OK,
+      message: '상품 조회',
+      data,
+    }
+  }
+
+  @Get("/category/:categotyId")
+  async findByCategoty(@Param("categotyId") categoryId: string){
+    const data = await this.productService.findByCategory(categoryId)
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: '상품 조회',
+      data,
+    }
+
+  }
+
+  @Get('/content/:productId')
+  async getProductCotents(@Param('productId') productId: number) {
+    const data = this.productService.getProductCotents(productId);
+    
+    return {
+      statusCode: HttpStatus.OK,
+      message: '상품 조회',
+      data,
+    }
   }
 
   @Patch(':id')

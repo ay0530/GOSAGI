@@ -3,7 +3,8 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Like, Repository } from 'typeorm';
+import { take } from 'lodash';
 
 @Injectable()
 export class ProductService {
@@ -43,17 +44,51 @@ export class ProductService {
   }
 
   async findAll() {
-    
+
     return await this.productRepository.find({
       select: {
-        
-      }
+        name:true,
+        description: true,
+        location: true,
+        point: true,
+        price: true,
+      },
+      relations: {
+        productThumbnail: true,        
+      },
+      })
+  }
 
+
+  async findByRegion(location: string) {
+
+    return await this.productRepository.find({
+      where: { 
+        location: Like(`%${location}%`)
+      }
     })
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findByCategory(categoryId: string){
+
+    return await this.productRepository.find({
+      where: {
+        category: categoryId,
+      }
+    })
+  }
+
+
+  async getProductCotents(productId: number) {
+    return await this.productRepository.find({
+      where: {
+        id: productId,
+      },
+      relations: {
+        productContent: true
+      }
+    })
+
   }
 
   update(id: number, updateProductDto: UpdateProductDto) {
