@@ -6,18 +6,28 @@ import {
   Patch,
   Param,
   Delete,
+  HttpStatus,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
-@Controller('product')
+@Controller('goods')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Post()
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productService.create(createProductDto);
+  @Post("/:storeId")
+  async create(
+    @Body() createProductDto: CreateProductDto,
+    @Param("/:storeId") storeId: number,
+    ) {
+    const data = await this.productService.create(createProductDto, storeId);
+    
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: '상품 등록완료',
+      data,
+    }
   }
 
   @Get()

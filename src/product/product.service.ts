@@ -1,11 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Product } from './entities/product.entity';
+import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class ProductService {
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+  constructor(
+    private readonly dataSource: DataSource,
+    @InjectRepository(Product) private productRepository:Repository<Product>,
+  ){}
+
+  //스토어가 있는지에 대한 유효성 검사 추가 예정
+  async create(createProductDto: CreateProductDto, storeId: number) {
+    const {code, 
+          name, 
+          description, 
+          location, 
+          category, 
+          point, 
+          price, 
+          views,
+        } = createProductDto;
+    
+    
+    return await this.productRepository.save({code, 
+      name, 
+      description, 
+      location, 
+      category, 
+      point, 
+      price, 
+      views,    
+      storeId});
   }
 
   findAll() {
