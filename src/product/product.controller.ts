@@ -86,13 +86,24 @@ export class ProductController {
     }
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productService.update(+id, updateProductDto);
+  @Patch(':productId')
+  update(@Param('productId') productId: number, @Body() updateProductDto: UpdateProductDto) {
+    const data =  this.productService.update(productId, updateProductDto);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: '상품 수정 완료',
+    }
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productService.remove(+id);
+  @Delete(':productId')
+  async remove(@Param('productId') productId: number) {
+    await this.productService.remove(productId);
+    
+    
+    return {
+      statusCode: HttpStatus.OK,
+      message: '상품 삭제 완료',
+    } 
   }
 }
