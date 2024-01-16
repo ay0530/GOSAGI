@@ -88,7 +88,7 @@ export class UserService {
     }
 
     // access token 생성
-    const payload = { id: user.id, email };
+    const payload = { id: user.id };
     const accessToken = this.jwtService.sign(payload, { expiresIn: '10m' });
 
     // refresh token 생성
