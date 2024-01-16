@@ -11,7 +11,7 @@ import {
 import { Store } from 'src/store/entities/store.entity';
 import { Wish } from 'src/wish/entities/wish.entity';
 import { Cart } from 'src/cart/entities/cart.entity';
-import { ProductThumbnail } from 'src/product-thumbnail/entities/product-thumbnail.entity';
+import { ProductThumbnail } from 'src/product/entities/product-thumbnail.entity';
 import { ProductContent } from 'src/product-content/entities/product-content.entity';
 
 @Entity({
@@ -51,13 +51,15 @@ export class Product {
   price: string;
 
   // 조회수
-  @Column({ type: 'int' })
-  views: string;
+  @Column({ type: 'int' , nullable: true})
+  views?: string;
 
   // 다대일 관계 설정(stores)
   @ManyToOne(() => Store, (store) => store.product)
   @JoinColumn({ name: 'store_id' }) // 외래키
   store: Store; // 관계 테이블
+  @Column()
+  storeId: number;
 
   // 일대다 관계 설정(carts)
   @OneToMany(() => Cart, (cart) => cart.product)
@@ -71,6 +73,7 @@ export class Product {
   @OneToMany(
     () => ProductThumbnail,
     (productThumbnail) => productThumbnail.product,
+    {cascade: true}
   )
   productThumbnail: ProductThumbnail[];
 

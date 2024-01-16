@@ -28,7 +28,7 @@ import { User } from './user/entities/user.entity';
 import { Location } from './location/entities/locaion.entity';
 import { Store } from './store/entities/store.entity';
 import { Product } from './product/entities/product.entity';
-import { ProductThumbnail } from './product-thumbnail/entities/product-thumbnail.entity';
+import { ProductThumbnail } from './product/entities/product-thumbnail.entity';
 import { ProductContent } from './product-content/entities/product-content.entity';
 import { Wish } from './wish/entities/wish.entity';
 import { Cart } from './cart/entities/cart.entity';

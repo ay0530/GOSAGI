@@ -16,10 +16,10 @@ import { UpdateProductDto } from './dto/update-product.dto';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Post("/:storeId")
+  @Post(":storeId")
   async create(
     @Body() createProductDto: CreateProductDto,
-    @Param("/:storeId") storeId: number,
+    @Param("storeId") storeId: number,
     ) {
     const data = await this.productService.create(createProductDto, storeId);
     
@@ -31,8 +31,14 @@ export class ProductController {
   }
 
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  async findAll() {
+    const data =  await this.productService.findAll();
+    
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: '상품 등록완료',
+      data,
+    }
   }
 
   @Get(':id')

@@ -20,24 +20,34 @@ export class ProductService {
           location, 
           category, 
           point, 
-          price, 
-          views,
+          price,
+          productThumbnails,
         } = createProductDto;
+
+        console.log(productThumbnails)
     
     
-    return await this.productRepository.save({code, 
+    return await this.productRepository.save({
+      code, 
       name, 
       description, 
       location, 
       category, 
       point, 
-      price, 
-      views,    
-      storeId});
+      price,     
+      storeId,
+      productThumbnail: productThumbnails.map((productThumbnail) => productThumbnail),
+      });
   }
 
-  findAll() {
-    return `This action returns all product`;
+  async findAll() {
+    
+    return await this.productRepository.find({
+      select: {
+        
+      }
+
+    })
   }
 
   findOne(id: number) {
