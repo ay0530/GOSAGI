@@ -54,6 +54,9 @@ export class Product {
   @Column({ type: 'int' , nullable: true})
   views?: string;
 
+  @Column({type : 'varchar'})
+  thumbnail_image: string;
+
   // 다대일 관계 설정(stores)
   @ManyToOne(() => Store, (store) => store.product)
   @JoinColumn({ name: 'store_id' }) // 외래키

@@ -43,6 +43,17 @@ export class ProductController {
     }
   }
 
+  @Get("/code/:productId")
+  async findProductCode(@Param("productId") productId:number){
+    const data = await this.productService.findProductCode(productId)
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: '상품 조회',
+      data,
+    }
+  }
+
   @Get("/location")
   async findByRegion(@Query('location') location:string){
     const data = await this.productService.findByRegion(location)
@@ -62,12 +73,11 @@ export class ProductController {
       message: '상품 조회',
       data,
     }
-
   }
 
   @Get('/content/:productId')
   async getProductCotents(@Param('productId') productId: number) {
-    const data = this.productService.getProductCotents(productId);
+    const data = await this.productService.getProductCotents(productId);
     
     return {
       statusCode: HttpStatus.OK,

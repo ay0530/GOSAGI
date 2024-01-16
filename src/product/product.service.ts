@@ -22,6 +22,7 @@ export class ProductService {
           category, 
           point, 
           price,
+          thumbnail_image,
           productThumbnails,
           productContents,
         } = createProductDto;
@@ -38,6 +39,7 @@ export class ProductService {
       point, 
       price,     
       storeId,
+      thumbnail_image,
       productThumbnail: productThumbnails.map((productThumbnail) => productThumbnail),
       productContent: productContents.map((productContent) => productContent),
       });
@@ -52,11 +54,21 @@ export class ProductService {
         location: true,
         point: true,
         price: true,
-      },
-      relations: {
-        productThumbnail: true,        
+        thumbnail_image: true,
       },
       })
+  }
+
+  async findProductCode(productId:number){
+    return await this.productRepository.find({
+      select: {
+        code: true
+      },
+      where: {
+        id:productId
+      }
+
+    })
   }
 
 

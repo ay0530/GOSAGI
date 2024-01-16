@@ -13,6 +13,7 @@ export class CreateProductDto extends PickType(Product, ['code',
 'category',
 'point',
 'price',
+'thumbnail_image'
 ]) {
   @ValidateNested()
   @Type(()=> CreateProductThumbnailDto)
