@@ -1,0 +1,14 @@
+@domain = http://localhost:3000
+
+###
+# 문의 글 답변 등록
+POST {{domain}}/answer/1
+Content-Type: application/JSON
+
+{
+  "content": "content1"
+}
+
+###
+# 문의 글 답변 삭제
+DELETE {{domain}}/answer/1

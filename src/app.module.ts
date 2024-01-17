@@ -14,6 +14,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { RedisModule } from './redis/redis.module';
 
+import { JwtCommonModule } from './common/jwt.common.module';
 import { UserModule } from './user/user.module';
 import { LocationModule } from './location/location.module';
 import { StoreModule } from './store/store.module';
@@ -90,12 +91,7 @@ const typeOrmModuleOptions = {
     // TypeORM
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
     // JWT
-    JwtModule.registerAsync({
-      useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET_KEY'),
-      }),
-      inject: [ConfigService],
-    }),
+    JwtCommonModule,
     // ServeStaticModule
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'views'), // 정적 파일을 제공하는 폴더(views)
