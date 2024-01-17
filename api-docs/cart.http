@@ -1,0 +1,32 @@
+@domain = http://localhost:3000
+
+### 
+# 장바구니 상품 등록
+POST {{domain}}/cart
+Content-Type: application/JSON
+
+{
+  "product_id" : 5,
+  "quantity" : 3
+}
+
+###
+# 내가 장바구니에 넣은 상품 조회
+GET {{domain}}/cart
+
+###
+# 상품 별 상세 장바구니 조회
+GET {{domain}}/cart/2
+
+###
+# 장바구니에 있는 상품 수량 업데이트
+PATCH  {{domain}}/cart/2
+Content-Type: application/JSON
+
+{
+  "quantity" : 2
+}
+
+###
+# 장바구니 삭제 
+DELETE {{domain}}/cart/2

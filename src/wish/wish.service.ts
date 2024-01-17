@@ -38,7 +38,7 @@ export class WishService {
     return {
       success: true,
       message: "찜이 완료되었습니다.",
-      createWish
+      data: createWish
     };
   }
 
@@ -50,8 +50,10 @@ export class WishService {
     return {
       success: true,
       message: "찜을 정상적으로 불러왔습니다.",
-      wishes_count: wishes.length,
-      wishes
+      data: {
+        wishes_count: wishes.length,
+        wishes
+      }
     };
   }
 
@@ -63,12 +65,15 @@ export class WishService {
     return {
       success: true,
       message: "찜을 정상적으로 불러왔습니다.",
-      wishes_count: wishes.length
+      data : {
+        wishes_count: wishes.length
+      }
     };
   }
 
   async remove(id: number, user: User) {
     //id를 통해 wish를 찾는다. 
+    //해당 user가 id에 해당하는 찜을 했는지 확인하기 위해 user_id도 같이 확인
     const wish = await this.wishRepository.findOne({
       where: { id, user_id:user.id },
     });
@@ -83,7 +88,7 @@ export class WishService {
      return {
       success: true,
       message: "찜을 정상적으로 삭제했습니다.",
-      wish
+      data : wish
     };
   }
 }
