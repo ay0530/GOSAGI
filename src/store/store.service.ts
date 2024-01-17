@@ -2,6 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { ProductService } from 'src/product/product.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
 import { Store } from './entities/store.entity';
@@ -11,6 +12,7 @@ export class StoreService {
   constructor(
     @InjectRepository(Store)
     private storeRepository: Repository<Store>,
+    private productService: ProductService,
   ) {}
 
   // 매장 정보 저장
@@ -73,21 +75,40 @@ export class StoreService {
   // 매장 목록 조회
   async findAll() {
     const stores = await this.storeRepository.find();
-    
+
     return stores;
   }
 
-  // 회원 목록 검색 조회
+  // 매장 목록 검색 조회
   async searchAll(category: string, keyword: string) {
     // 매장명, 매장 연락처, 매장 주소로 검색 가능
-    const users = this.storeRepository
+    const stores = this.storeRepository
       .createQueryBuilder('store')
       .where(`store.${category} LIKE :keyword`, {
         keyword: `%${keyword}%`,
       })
       .getMany();
 
-    return users;
+    return stores;
+  }
+
+  // 매장 상품 목록 조회
+  async findProductAll(storeId: number) {
+    const products = await this.productService.findProductAll(storeId);
+
+    return products;
+  }
+
+  // 매장 상품 목록 검색 조회
+  async searchProductAll(storeId: number, category: string, keyword: string) {
+    // 매장명으로 검색 가능
+    const products = this.productService.searchProductAll(
+      storeId,
+      category,
+      keyword,
+    );
+
+    return products;
   }
 
   // ----- 기타 함수

@@ -96,7 +96,7 @@ export class StoreController {
     return response;
   }
 
-  // 회원 목록 검색 조회
+  // 매장 목록 검색 조회
   @UseGuards(JwtAuthGuard)
   @Get('list/:category/:keyword')
   async searchAll(
@@ -104,6 +104,34 @@ export class StoreController {
     @Param('keyword') keyword: string,
   ) {
     const data = await this.storeService.searchAll(category, keyword);
+
+    const response = new ResponseDto(true, '검색이 완료되었습니다', data);
+    return response;
+  }
+
+  // 매장 상품 조회
+  @UseGuards(JwtAuthGuard)
+  @Get('productList/:storeId')
+  async findProductAll(@Param('storeId') storeId: number) {
+    const data = await this.storeService.findProductAll(storeId);
+
+    const response = new ResponseDto(true, '검색이 완료되었습니다', data);
+    return response;
+  }
+
+  // 매장 상품 검색 조회
+  @UseGuards(JwtAuthGuard)
+  @Get('productList/:storeId/:category/:keyword')
+  async searchProductAll(
+    @Param('storeId') storeId: number,
+    @Param('category') category: string,
+    @Param('keyword') keyword: string,
+  ) {
+    const data = await this.storeService.searchProductAll(
+      storeId,
+      category,
+      keyword,
+    );
 
     const response = new ResponseDto(true, '검색이 완료되었습니다', data);
     return response;
