@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  HttpStatus,
 } from '@nestjs/common';
 import { FaqService } from './faq.service';
 import { CreateFaqDto } from './dto/create-faq.dto';
@@ -19,33 +18,33 @@ export class FaqController {
   // FAQ 생성
   @Post()
   async createFaq(@Body() createFaqDto: CreateFaqDto) {
-    const faq = await this.faqService.createFaq(createFaqDto);
+    const data = await this.faqService.createFaq(createFaqDto);
     return {
-      statusCode: HttpStatus.CREATED,
-      message: 'FAQ 생성 완료.',
-      faq,
+      success: true,
+      message: 'FAQ 생성이 완료되었습니다.',
+      data,
     };
   }
 
   // FAQ 조회
   @Get()
   async getFaq() {
-    const allFaq = await this.faqService.getFaq();
+    const data = await this.faqService.getFaq();
     return {
-      statusCode: HttpStatus.OK,
-      message: 'FAQ 조회 완료.',
-      allFaq,
+      success: true,
+      message: 'FAQ 조회가 완료되었습니다.',
+      data,
     };
   }
 
   // 특정 FAQ 조회
   @Get(':faqId')
   async getOneFaq(@Param('faqId') faqId: string) {
-    const oneFaq = await this.faqService.getOneFaq(+faqId);
+    const data = await this.faqService.getOneFaq(+faqId);
     return {
-      statusCode: HttpStatus.OK,
-      message: '특정 FAQ 조회 완료.',
-      oneFaq,
+      success: true,
+      message: '특정 FAQ 조회가 완료되었습니다.',
+      data,
     };
   }
 
@@ -55,11 +54,11 @@ export class FaqController {
     @Param('faqId') faqId: string,
     @Body() updateFaqDto: UpdateFaqDto,
   ) {
-    const updateFaq = await this.faqService.updateFaq(+faqId, updateFaqDto);
+    const data = await this.faqService.updateFaq(+faqId, updateFaqDto);
     return {
-      statusCode: HttpStatus.OK,
-      message: 'FAQ 수정 완료.',
-      updateFaq,
+      success: true,
+      message: 'FAQ 수정이 완료되었습니다.',
+      data,
     };
   }
 
@@ -68,8 +67,8 @@ export class FaqController {
   async deleteFaq(@Param('faqId') faqId: string) {
     await this.faqService.deleteFaq(+faqId);
     return {
-      statusCode: HttpStatus.OK,
-      message: 'FAQ 삭제 완료.',
+      success: true,
+      message: 'FAQ 삭제가 완료되었습니다.',
     };
   }
 }
