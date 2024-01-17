@@ -3,7 +3,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
-import { DataSource, Like, Repository } from 'typeorm';
+import { DataSource, Like, Not, Repository } from 'typeorm';
 
 @Injectable()
 export class ProductService {
@@ -26,8 +26,6 @@ export class ProductService {
       productThumbnails,
       productContents,
     } = createProductDto;
-
-    console.log(productThumbnails);
 
     return await this.productRepository.save({
       code,
@@ -56,6 +54,7 @@ export class ProductService {
         price: true,
         thumbnail_image: true,
       },
+      where: { id: Not(0) },
     });
   }
 
@@ -126,7 +125,7 @@ export class ProductService {
 
     await this.productRepository.remove(product);
 
-    return '정삭적으로 삭제되었습니다';
+    return '정상적으로 삭제되었습니다';
   }
 
   // ---- 기타 함수
