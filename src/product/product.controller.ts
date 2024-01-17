@@ -25,7 +25,7 @@ export class ProductController {
     ) {
     const data = await this.productService.create(createProductDto, storeId);
     
-    const response = new ResponseDto(true, '상품 등록완료', data)
+    const response = new ResponseDto(true, '상품이 등록완료되었습니다', data)
 
     return response
   }
@@ -35,7 +35,7 @@ export class ProductController {
   async findAll() {
     const data =  await this.productService.findAll();
     
-    const response = new ResponseDto(true, '상품조회 완료', data)
+    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data)
 
     return response
   }
@@ -44,7 +44,7 @@ export class ProductController {
   async findProductCode(@Param("productId") productId:number){
     const data = await this.productService.findProductCode(productId)
 
-    const response = new ResponseDto(true, '상품조회 완료', data)
+    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data)
 
     return response
 
@@ -53,7 +53,7 @@ export class ProductController {
   @Get("/location")
   async findByRegion(@Query('location') location:string){
     const data = await this.productService.findByRegion(location)
-    const response = new ResponseDto(true, '상품조회 완료', data)
+    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data)
 
     return response
   }
@@ -62,7 +62,7 @@ export class ProductController {
   async findByCategoty(@Param("categotyId") categoryId: string){
     const data = await this.productService.findByCategory(categoryId)
 
-    const response = new ResponseDto(true, '상품조회 완료', data)
+    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data)
 
     return response
   }
@@ -71,7 +71,7 @@ export class ProductController {
   async getProductDetail(@Param('productId') productId: number) {
     const data = await this.productService.getProductDetail(productId);
     
-    const response = new ResponseDto(true, '상품조회 완료', data)
+    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data)
 
     return response
   }
@@ -80,7 +80,7 @@ export class ProductController {
   async update(@Param('productId') productId: number, @Body() updateProductDto: UpdateProductDto) {
     const data = await this.productService.update(productId, updateProductDto);
 
-    const response = new ResponseDto(true, '상품조회 완료', data)
+    const response = new ResponseDto(true, '상품수정이 완료되었습니다', data)
 
     return response
   }
@@ -90,7 +90,7 @@ export class ProductController {
     await this.productService.remove(productId);
     
     
-    const response = new ResponseDto(true, '상품조회 완료', null)
+    const response = new ResponseDto(true, '상품삭제가 완료되었습니다.', null)
 
     return response
   }
