@@ -48,7 +48,7 @@ export class StoreService {
     // 매장 정보 예외 처리
     await this.existingStore(updateStoreDto);
 
-    // 매장 정보 저장
+    // 매장 정보 수정
     await this.storeRepository.update(
       { id, user_id: userId },
       {
@@ -73,19 +73,8 @@ export class StoreService {
   // 매장 목록 조회
   async findAll() {
     const stores = await this.storeRepository.find();
+    
     return stores;
-  }
-
-  // ----- 기타 함수
-  // 매장 정보 저장/수정 예외 처리
-  async existingStore(storeDto: any) {
-    // 매장명 중복 여부 체크
-    const existingName = await this.storeRepository.findOne({
-      where: { name: storeDto.name },
-    });
-    if (existingName) {
-      throw new ConflictException('이미 등록된 매장입니다.');
-    }
   }
 
   // 회원 목록 검색 조회
@@ -99,5 +88,17 @@ export class StoreService {
       .getMany();
 
     return users;
+  }
+
+  // ----- 기타 함수
+  // 매장 정보 저장/수정 예외 처리
+  async existingStore(storeDto: any) {
+    // 매장명 중복 여부 체크
+    const existingName = await this.storeRepository.findOne({
+      where: { name: storeDto.name },
+    });
+    if (existingName) {
+      throw new ConflictException('이미 등록된 매장입니다.');
+    }
   }
 }
