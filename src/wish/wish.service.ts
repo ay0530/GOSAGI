@@ -63,8 +63,7 @@ export class WishService {
     return {
       success: true,
       message: "찜을 정상적으로 불러왔습니다.",
-      wishes_count: wishes.length,
-      wishes
+      wishes_count: wishes.length
     };
   }
 
@@ -74,12 +73,6 @@ export class WishService {
       where: { id, user_id:user.id },
     });
 
-    //2. product id를 통해 wish를 찾는다.
-    // const wish = await this.wishRepository.findOne({
-    //   where: { product_id:id, user_id:user.id },
-    // });
-
-    //wish 없다면 에러 메세지
     if (_.isNil(wish)) {
       throw new NotFoundException('해당 상품은 찜을 하지 않았습니다.');
     }
