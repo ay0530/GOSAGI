@@ -25,43 +25,43 @@ export class Product {
 
   // 원본코드
   @IsNotEmpty({message: '코드를 입력하세요'})
-  @IsNumber()
+  @IsNumber({},{ message: '숫자를 입력해주세요.' } )
   @Column({ type: 'int', nullable: false })
   code: number;
 
   // 상품명
   @IsNotEmpty({message: '상품명을 입력하세요'})
-  @IsString()
+  @IsString({message: '문자형으로 입력해주세요'})
   @Column({ type: 'varchar', nullable: false })
   name: string;
 
   // 상품 설명
   @IsNotEmpty({message: '상품설명을 입력하세요'})
-  @IsString()
+  @IsString({message: '문자형으로 입력해주세요'})
   @Column({ type: 'varchar', nullable: false })
   description: string;
 
   // 지역
   @IsNotEmpty({message: '지역을 입력하세요'})
-  @IsString()
+  @IsString({message: '문자형으로 입력해주세요'})
   @Column({ type: 'varchar', nullable: false })
   location: string;
 
   // 카테고리
   @IsNotEmpty({message: '카테고리를 정하세요'})
-  @IsString()
+  @IsString({message: '문자형으로 입력해주세요'})
   @Column({ type: 'char', nullable: false })
   category: string;
 
   // 포인트
   @IsNotEmpty({message: '포인트를 입력하세요'})
-  @IsString()
+  @IsString({message: '문자형으로 입력해주세요'})
   @Column({ type: 'int' })
   point: string;
 
   // 가격
   @IsNotEmpty({message: '가격을 입력하세요'})
-  @IsString()
+  @IsString({message: '문자형으로 입력해주세요'})
   @Column({ type: 'int' })
   price: string;
 
@@ -71,7 +71,7 @@ export class Product {
 
 
   @IsNotEmpty({message: '썸네일 이미지를 넣으세요'})
-  @IsString()
+  @IsString({message: '문자형으로 입력해주세요'})
   @Column({type : 'varchar'})
   thumbnail_image: string;
 

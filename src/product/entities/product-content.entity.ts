@@ -18,7 +18,7 @@ export class ProductContent {
   id: number;
 
   @IsNotEmpty({message: '내용을 넣으세요'})
-  @IsString()
+  @IsString({message: '문자형으로 입력해주세요'})
   @Column({ type: 'varchar', unique: true, nullable: false })
   content: string;
 

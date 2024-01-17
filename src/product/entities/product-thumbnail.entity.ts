@@ -18,7 +18,7 @@ export class ProductThumbnail {
   id: number;
 
   @IsNotEmpty({message: '이미지를 넣어주세요'})
-  @IsString()
+  @IsString({message: '문자형으로 입력해주세요'})
   @Column({ type: 'varchar', unique: true, nullable: false })
   image_url: string;
 
