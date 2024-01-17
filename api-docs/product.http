@@ -56,7 +56,7 @@ Content-Type: application/JSON
 
 ###
 #상품 코드 가져오기
-GET {{domain}}/code/1
+GET {{domain}}/code/6
 Content-Type: application/JSON
 
 ###
@@ -71,5 +71,5 @@ Content-Type: application/JSON
 
 ###
 #상품 삭제
-DELETE {{domain}}/5
+DELETE {{domain}}/7
 Content-Type: application/JSON

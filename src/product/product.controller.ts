@@ -12,6 +12,7 @@ import {
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ResponseDto } from 'src/ResponseDTO/response-dto';
 
 @Controller('goods')
 export class ProductController {
@@ -24,11 +25,9 @@ export class ProductController {
     ) {
     const data = await this.productService.create(createProductDto, storeId);
     
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: '상품 등록완료',
-      data,
-    }
+    const response = new ResponseDto(true, '상품 등록완료', data)
+
+    return response
   }
 
   //상품 전체 가져오기
@@ -36,64 +35,54 @@ export class ProductController {
   async findAll() {
     const data =  await this.productService.findAll();
     
-    return {
-      statusCode: HttpStatus.OK,
-      message: '상품 조회',
-      data,
-    }
+    const response = new ResponseDto(true, '상품조회 완료', data)
+
+    return response
   }
 
   @Get("/code/:productId")
   async findProductCode(@Param("productId") productId:number){
     const data = await this.productService.findProductCode(productId)
 
-    return {
-      statusCode: HttpStatus.OK,
-      message: '상품 조회',
-      data,
-    }
+    const response = new ResponseDto(true, '상품조회 완료', data)
+
+    return response
+
   }
 
   @Get("/location")
   async findByRegion(@Query('location') location:string){
     const data = await this.productService.findByRegion(location)
-    return {
-      statusCode: HttpStatus.OK,
-      message: '상품 조회',
-      data,
-    }
+    const response = new ResponseDto(true, '상품조회 완료', data)
+
+    return response
   }
 
   @Get("/category/:categotyId")
   async findByCategoty(@Param("categotyId") categoryId: string){
     const data = await this.productService.findByCategory(categoryId)
 
-    return {
-      statusCode: HttpStatus.OK,
-      message: '상품 조회',
-      data,
-    }
+    const response = new ResponseDto(true, '상품조회 완료', data)
+
+    return response
   }
 
   @Get('/detail/:productId')
   async getProductDetail(@Param('productId') productId: number) {
     const data = await this.productService.getProductDetail(productId);
     
-    return {
-      statusCode: HttpStatus.OK,
-      message: '상품 조회',
-      data,
-    }
+    const response = new ResponseDto(true, '상품조회 완료', data)
+
+    return response
   }
 
   @Patch(':productId')
   async update(@Param('productId') productId: number, @Body() updateProductDto: UpdateProductDto) {
     const data = await this.productService.update(productId, updateProductDto);
 
-    return {
-      statusCode: HttpStatus.OK,
-      message: '상품 수정 완료',
-    }
+    const response = new ResponseDto(true, '상품조회 완료', data)
+
+    return response
   }
 
   @Delete(':productId')
@@ -101,9 +90,8 @@ export class ProductController {
     await this.productService.remove(productId);
     
     
-    return {
-      statusCode: HttpStatus.OK,
-      message: '상품 삭제 완료',
-    } 
+    const response = new ResponseDto(true, '상품조회 완료', null)
+
+    return response
   }
 }
