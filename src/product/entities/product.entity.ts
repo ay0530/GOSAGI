@@ -23,8 +23,8 @@ export class Product {
   id: number;
 
   // 원본코드
-  @Column({ type: 'int', nullable: false })
-  code: string;
+  @Column({ type: 'int', select: false, nullable: false })
+  code: number;
 
   // 상품명
   @Column({ type: 'varchar', nullable: false })
