@@ -1,0 +1,28 @@
+@domain = http://localhost:3000
+
+### 
+# 구매 등록
+POST {{domain}}/order
+Content-Type: application/JSON
+
+{
+  "product_id" : 4,
+  "quantity" : 4
+}
+
+###
+# 내가 구매한 상품들 조회
+GET {{domain}}/order
+
+###
+# 상품 별 상세 구매 내역 조회
+GET {{domain}}/order/3
+
+###
+# 환불 완료
+PATCH  {{domain}}/order/4
+Content-Type: application/JSON
+
+{
+  "status": "환불완료"
+}

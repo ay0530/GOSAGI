@@ -36,6 +36,7 @@ import { ProductThumbnail } from './product-thumbnail/entities/product-thumbnail
 import { ProductContent } from './product-content/entities/product-content.entity';
 import { Wish } from './wish/entities/wish.entity';
 import { Cart } from './cart/entities/cart.entity';
+import { Order } from './order/entities/order.entity';
 import { Review } from './review/entities/review.entity';
 import { Question } from './question/entities/question.entity';
 import { Answer } from './answer/entities/answer.entity';
@@ -62,6 +63,7 @@ const typeOrmModuleOptions = {
       ProductContent,
       Wish,
       Cart,
+      Order,
       Review,
       Question,
       Answer,

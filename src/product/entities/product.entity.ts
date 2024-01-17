@@ -45,7 +45,7 @@ export class Product {
 
   // 포인트
   @Column({ type: 'int' })
-  point: string;
+  point: number;
 
   // 가격
   @Column({ type: 'int' })

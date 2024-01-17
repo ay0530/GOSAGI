@@ -1,5 +1,6 @@
 import {
     Column,
+    CreateDateColumn,
     Entity,
     JoinColumn,
     ManyToOne,
@@ -33,6 +34,9 @@ import {
     user: User; // 관계 테이블
     @Column({ type: 'int', nullable: false })
     user_id: number;
+
+    @CreateDateColumn({ name: 'created_at' })
+    createdAt: Date;
   
     // 다대일 관계 설정(products)
     @ManyToOne(() => Product, (product) => product.order)
