@@ -1,0 +1,75 @@
+@domain = http://localhost:3000/goods
+
+###
+# 프로덕트 등록 / 뒤에는 스토어 아이디(스토어가 필요함)
+POST {{domain}}/1
+Content-Type: application/JSON
+
+{
+"code": 1322212, 
+"name": "제주 불닭 한라봉",
+"description" : "맛도좋고 몸도좋은 불닭 한라봉",
+"location": "제주시 애월동",
+"category": "0",
+"point": "30000",
+"price": "150000",
+"thumbnail_image": "https://naver.com/123asidjaisd",
+"productThumbnails": [
+  {
+    "image_url": "https://cdn.poomang.com/auto-generated/talking-potato/images/cover.png?ts=1681789981231"
+  },
+  {
+     "image_url": "https://cdn.poomang.com/auto-generated/talking-potato/images/cover.png?ts=1787914442312"
+  }
+  ],
+"productContents": [
+    {
+      "content": "제주 불닭한라봉"
+    },
+    {
+      "content": "자매품 크림 마라 한라봉"
+    }
+  ]
+}
+
+###
+# 상품 전체 가져오기
+GET {{domain}}
+Content-Type: application/JSON
+
+
+###
+# 지역별 가져오기
+GET {{domain}}/location?location=제주
+Content-Type: application/JSON
+
+
+###
+#카테고리 아이디별 가져오기
+GET {{domain}}/category/0
+Content-Type: application/JSON
+
+###
+#컨텐츠 내용 가져괴
+GET {{domain}}/content/1
+Content-Type: application/JSON
+
+###
+#상품 코드 가져오기
+GET {{domain}}/code/1
+Content-Type: application/JSON
+
+###
+#상품 수정
+PATCH {{domain}}/1
+Content-Type: application/JSON
+
+{
+  "name": "인천",
+  "description": "수정 테스트"
+}
+
+###
+#상품 삭제
+DELETE {{domain}}/5
+Content-Type: application/JSON
