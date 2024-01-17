@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ProductThumbnailService } from './product-thumbnail.service';
-import { CreateProductThumbnailDto } from './dto/create-product-thumbnail.dto';
+import { CreateProductThumbnailDto } from '../product/dto/create-product-thumbnail.dto';
 import { UpdateProductThumbnailDto } from './dto/update-product-thumbnail.dto';
 
 @Controller('product-thumbnail')

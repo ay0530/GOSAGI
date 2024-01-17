@@ -11,8 +11,9 @@ import {
 import { Store } from 'src/store/entities/store.entity';
 import { Wish } from 'src/wish/entities/wish.entity';
 import { Cart } from 'src/cart/entities/cart.entity';
-import { ProductThumbnail } from 'src/product-thumbnail/entities/product-thumbnail.entity';
-import { ProductContent } from 'src/product-content/entities/product-content.entity';
+import { ProductThumbnail } from 'src/product/entities/product-thumbnail.entity';
+import { ProductContent } from 'src/product/entities/product-content.entity';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 @Entity({
   name: 'products',
@@ -23,36 +24,56 @@ export class Product {
   id: number;
 
   // 원본코드
-  @Column({ type: 'int', select: false, nullable: false })
+  @IsNotEmpty({message: '코드를 입력하세요'})
+  @IsNumber({},{ message: '숫자를 입력해주세요.' } )
+  @Column({ type: 'int', nullable: false })
   code: number;
 
   // 상품명
-  @Column({ type: 'varchar', select: false, nullable: false })
+  @IsNotEmpty({message: '상품명을 입력하세요'})
+  @IsString({message: '문자형으로 입력해주세요'})
+  @Column({ type: 'varchar', nullable: false })
   name: string;
 
   // 상품 설명
+  @IsNotEmpty({message: '상품설명을 입력하세요'})
+  @IsString({message: '문자형으로 입력해주세요'})
   @Column({ type: 'varchar', nullable: false })
   description: string;
 
   // 지역
+  @IsNotEmpty({message: '지역을 입력하세요'})
+  @IsString({message: '문자형으로 입력해주세요'})
   @Column({ type: 'varchar', nullable: false })
   location: string;
 
   // 카테고리
+  @IsNotEmpty({message: '카테고리를 정하세요'})
+  @IsString({message: '문자형으로 입력해주세요'})
   @Column({ type: 'char', nullable: false })
   category: string;
 
   // 포인트
+  @IsNotEmpty({message: '포인트를 입력하세요'})
+  @IsString({message: '문자형으로 입력해주세요'})
   @Column({ type: 'int' })
   point: string;
 
   // 가격
+  @IsNotEmpty({message: '가격을 입력하세요'})
+  @IsString({message: '문자형으로 입력해주세요'})
   @Column({ type: 'int' })
   price: string;
 
   // 조회수
-  @Column({ type: 'int' })
-  views: string;
+  @Column({ type: 'int' , nullable: true})
+  views?: string;
+
+
+  @IsNotEmpty({message: '썸네일 이미지를 넣으세요'})
+  @IsString({message: '문자형으로 입력해주세요'})
+  @Column({type : 'varchar'})
+  thumbnail_image: string;
 
   // 다대일 관계 설정(stores)
   @ManyToOne(() => Store, (store) => store.product)
@@ -73,10 +94,13 @@ export class Product {
   @OneToMany(
     () => ProductThumbnail,
     (productThumbnail) => productThumbnail.product,
+    {cascade: true}
   )
   productThumbnail: ProductThumbnail[];
 
   // 일대다 관계 설정(product_content)
-  @OneToMany(() => ProductContent, (productContent) => productContent.product)
+  @OneToMany(() => ProductContent, (productContent) => productContent.product,
+    {cascade: true}  
+  )
   productContent: ProductContent[];
 }
