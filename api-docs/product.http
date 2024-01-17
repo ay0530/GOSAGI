@@ -61,12 +61,12 @@ Content-Type: application/JSON
 
 ###
 #상품 수정
-PATCH {{domain}}/1
+PATCH {{domain}}/6
 Content-Type: application/JSON
 
 {
-  "name": "인천",
-  "description": "수정 테스트"
+  "name": "제주",
+  "description": "제주 삼다수"
 }
 
 ###
