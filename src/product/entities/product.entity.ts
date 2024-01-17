@@ -11,6 +11,7 @@ import {
 import { Store } from 'src/store/entities/store.entity';
 import { Wish } from 'src/wish/entities/wish.entity';
 import { Cart } from 'src/cart/entities/cart.entity';
+import { Order } from 'src/order/entities/order.entity';
 import { ProductThumbnail } from 'src/product-thumbnail/entities/product-thumbnail.entity';
 import { ProductContent } from 'src/product-content/entities/product-content.entity';
 
@@ -65,9 +66,13 @@ export class Product {
   @OneToMany(() => Cart, (cart) => cart.product)
   cart: Cart[];
 
-  // 일대다 관계 설정(carts)
+  // 일대다 관계 설정(wishs)
   @OneToMany(() => Wish, (wish) => wish.product)
   wish: Wish[];
+
+  // 일대다 관계 설정(orders)
+  @OneToMany(() => Wish, (order) => order.product)
+  order: Order[];
 
   // 일대다 관계 설정(product_thumbnail)
   @OneToMany(
