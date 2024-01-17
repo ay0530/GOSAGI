@@ -8,6 +8,7 @@ import {
 
 // entity
 import { Product } from 'src/product/entities/product.entity';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 @Entity({
   name: 'product_contents',
@@ -16,6 +17,8 @@ export class ProductContent {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @IsNotEmpty({message: '내용을 넣으세요'})
+  @IsString()
   @Column({ type: 'varchar', unique: true, nullable: false })
   content: string;
 

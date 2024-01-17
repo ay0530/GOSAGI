@@ -4,7 +4,6 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { DataSource, Like, Repository } from 'typeorm';
-import { take } from 'lodash';
 
 @Injectable()
 export class ProductService {

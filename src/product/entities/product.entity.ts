@@ -13,6 +13,7 @@ import { Wish } from 'src/wish/entities/wish.entity';
 import { Cart } from 'src/cart/entities/cart.entity';
 import { ProductThumbnail } from 'src/product/entities/product-thumbnail.entity';
 import { ProductContent } from 'src/product/entities/product-content.entity';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 @Entity({
   name: 'products',
@@ -23,30 +24,44 @@ export class Product {
   id: number;
 
   // 원본코드
-  @Column({ type: 'int', select: false, nullable: false })
+  @IsNotEmpty({message: '코드를 입력하세요'})
+  @IsNumber()
+  @Column({ type: 'int', nullable: false })
   code: number;
 
   // 상품명
+  @IsNotEmpty({message: '상품명을 입력하세요'})
+  @IsString()
   @Column({ type: 'varchar', nullable: false })
   name: string;
 
   // 상품 설명
+  @IsNotEmpty({message: '상품설명을 입력하세요'})
+  @IsString()
   @Column({ type: 'varchar', nullable: false })
   description: string;
 
   // 지역
+  @IsNotEmpty({message: '지역을 입력하세요'})
+  @IsString()
   @Column({ type: 'varchar', nullable: false })
   location: string;
 
   // 카테고리
+  @IsNotEmpty({message: '카테고리를 정하세요'})
+  @IsString()
   @Column({ type: 'char', nullable: false })
   category: string;
 
   // 포인트
+  @IsNotEmpty({message: '포인트를 입력하세요'})
+  @IsString()
   @Column({ type: 'int' })
   point: string;
 
   // 가격
+  @IsNotEmpty({message: '가격을 입력하세요'})
+  @IsString()
   @Column({ type: 'int' })
   price: string;
 
@@ -54,6 +69,9 @@ export class Product {
   @Column({ type: 'int' , nullable: true})
   views?: string;
 
+
+  @IsNotEmpty({message: '썸네일 이미지를 넣으세요'})
+  @IsString()
   @Column({type : 'varchar'})
   thumbnail_image: string;
 

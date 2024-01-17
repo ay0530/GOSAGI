@@ -8,6 +8,7 @@ import {
 
 // entity
 import { Product } from 'src/product/entities/product.entity';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 @Entity({
   name: 'product_thumbnails',
@@ -16,6 +17,8 @@ export class ProductThumbnail {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @IsNotEmpty({message: '이미지를 넣어주세요'})
+  @IsString()
   @Column({ type: 'varchar', unique: true, nullable: false })
   image_url: string;
 
