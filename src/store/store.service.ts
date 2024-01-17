@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -51,7 +55,7 @@ export class StoreService {
     await this.existingStore(updateStoreDto);
 
     // 매장 정보 수정
-    await this.storeRepository.update(
+    const store = await this.storeRepository.update(
       { id, user_id: userId },
       {
         name: updateStoreDto.name,
@@ -59,6 +63,12 @@ export class StoreService {
         address: updateStoreDto.address,
       },
     );
+
+    // 수정 실패
+    if (!store.affected && store.affected === 0) {
+      // 가드로 나중에 빼야할듯
+      throw new ForbiddenException('권한이 존재하지 않습니다');
+    }
 
     return {
       name: updateStoreDto.name,
@@ -69,7 +79,13 @@ export class StoreService {
 
   // 매장 정보 삭제
   async remove(id: number, userId: number) {
-    await this.storeRepository.delete({ id, user_id: userId });
+    const store = await this.storeRepository.delete({ id, user_id: userId });
+
+    // 삭제 실패
+    if (!store.affected && store.affected === 0) {
+      // 가드로 나중에 빼야할듯
+      throw new ForbiddenException('권한이 존재하지 않습니다');
+    }
   }
 
   // 매장 목록 조회
