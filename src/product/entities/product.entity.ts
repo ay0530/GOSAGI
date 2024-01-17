@@ -24,7 +24,7 @@ export class Product {
 
   // 원본코드
   @Column({ type: 'int', select: false, nullable: false })
-  code: string;
+  code: number;
 
   // 상품명
   @Column({ type: 'varchar', select: false, nullable: false })
