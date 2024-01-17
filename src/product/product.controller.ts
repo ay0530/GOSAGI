@@ -75,9 +75,9 @@ export class ProductController {
     }
   }
 
-  @Get('/content/:productId')
-  async getProductCotents(@Param('productId') productId: number) {
-    const data = await this.productService.getProductCotents(productId);
+  @Get('/detail/:productId')
+  async getProductDetail(@Param('productId') productId: number) {
+    const data = await this.productService.getProductDetail(productId);
     
     return {
       statusCode: HttpStatus.OK,
@@ -87,8 +87,8 @@ export class ProductController {
   }
 
   @Patch(':productId')
-  update(@Param('productId') productId: number, @Body() updateProductDto: UpdateProductDto) {
-    const data =  this.productService.update(productId, updateProductDto);
+  async update(@Param('productId') productId: number, @Body() updateProductDto: UpdateProductDto) {
+    const data = await this.productService.update(productId, updateProductDto);
 
     return {
       statusCode: HttpStatus.OK,

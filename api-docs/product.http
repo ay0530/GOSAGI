@@ -51,7 +51,7 @@ Content-Type: application/JSON
 
 ###
 #컨텐츠 내용 가져괴
-GET {{domain}}/content/1
+GET {{domain}}/detail/6
 Content-Type: application/JSON
 
 ###

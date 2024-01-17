@@ -91,12 +91,13 @@ export class ProductService {
   }
 
 
-  async getProductCotents(productId: number) {
+  async getProductDetail(productId: number) {
     return await this.productRepository.find({
       where: {
         id: productId,
       },
       relations: {
+        productThumbnail: true,
         productContent: true
       }
     })

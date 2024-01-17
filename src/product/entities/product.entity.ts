@@ -23,11 +23,11 @@ export class Product {
   id: number;
 
   // 원본코드
-  @Column({ type: 'int', select: false, nullable: false })
+  @Column({ type: 'int', nullable: false })
   code: string;
 
   // 상품명
-  @Column({ type: 'varchar', select: false, nullable: false })
+  @Column({ type: 'varchar', nullable: false })
   name: string;
 
   // 상품 설명
