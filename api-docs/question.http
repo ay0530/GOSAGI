@@ -1,0 +1,48 @@
+@domain = http://localhost:3000
+
+###
+# 문의 글 등록
+POST {{domain}}/question
+Content-Type: application/JSON
+
+{
+  "title": "title4",
+  "content": "content4"
+}
+
+###
+# 문의 글 조회
+GET {{domain}}/question/detail/1
+
+###
+# 문의 글 수정
+PATCH {{domain}}/question/1
+Content-Type: application/JSON
+
+{
+  "title": "title11",
+  "content": "content11"
+}
+
+###
+# 문의 글 삭제
+DELETE {{domain}}/question/1
+
+### ----- 문의 목록
+###
+# 문의 목록 조회
+GET {{domain}}/question/list
+
+###
+# 문의 목록 검색
+# 검색 조건 : title, content
+GET {{domain}}/question/list/title/1
+
+###
+# 내 문의 목록 조회
+GET {{domain}}/question/myList
+
+###
+# 내 문의 목록 검색
+# 검색 조건 : title, content
+GET {{domain}}/question/myList/title/t
