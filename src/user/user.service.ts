@@ -10,6 +10,8 @@ import { JwtService } from '@nestjs/jwt';
 import _ from 'lodash';
 import { compare, hash } from 'bcrypt';
 
+import { UserRoleType } from './types/userRole.type';
+
 import { RedisService } from 'src/redis/redis.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -26,47 +28,45 @@ export class UserService {
 
   // ---- 회원 1명
   // 회원가입
-  async signup(createDto: CreateUserDto) {
-    try {
-      // 이메일 중복 여부 체크
-      const existingEmail = await this.findOneByEmail(createDto.email);
-      if (existingEmail) {
-        throw new ConflictException(
-          '이미 해당 이메일로 가입된 사용자가 있습니다!',
-        );
-      }
-
-      // 닉네임 중복 체크
-      const existingName = await this.findOneByName(createDto.nickname);
-      if (existingName) {
-        throw new ConflictException(
-          '이미 해당 이름으로 가입된 사용자가 있습니다!',
-        );
-      }
-
-      // 비밀번호 확인 일치 여부 체크
-      if (createDto.password !== createDto.passwordConfirm) {
-        console.log('createDto.passwordConfirm: ', createDto.passwordConfirm);
-        console.log('createDto.password: ', createDto.password);
-        throw new BadRequestException('비밀번호가 일치하지 않습니다.');
-      }
-
-      const hashedPassword = await hash(createDto.password, 10); // 비밀번호 암호화
-
-      // 회원 정보 저장
-      const user = await this.userRepository.save({
-        email: createDto.email,
-        password: hashedPassword,
-        nickname: createDto.nickname,
-        role: createDto.role,
-      });
-      return {
-        message: '회원가입이 완료되었습니다.',
-        user: { id: user.id, email: user.email, nickname: user.nickname },
-      };
-    } catch (e) {
-      console.log(e);
+  async signup(createUserDto: CreateUserDto) {
+    // 이메일 중복 여부 체크
+    const existingEmail = await this.findOneByEmail(createUserDto.email);
+    if (existingEmail) {
+      throw new ConflictException(
+        '이미 해당 이메일로 가입된 사용자가 있습니다!',
+      );
     }
+
+    // 닉네임 중복 체크
+    const existingName = await this.findOneByName(createUserDto.nickname);
+    if (existingName) {
+      throw new ConflictException(
+        '이미 해당 이름으로 가입된 사용자가 있습니다!',
+      );
+    }
+
+    // 비밀번호 확인 일치 여부 체크
+    if (createUserDto.password !== createUserDto.passwordConfirm) {
+      throw new BadRequestException('비밀번호가 일치하지 않습니다.');
+    }
+
+    const hashedPassword = await hash(createUserDto.password, 10); // 비밀번호 암호화
+
+    // 회원 role 반환
+    const roleValue: number = createUserDto.role;
+    const userRole: UserRoleType = roleValue as UserRoleType;
+
+    // 회원 정보 저장
+    const user = await this.userRepository.save({
+      email: createUserDto.email,
+      password: hashedPassword,
+      nickname: createUserDto.nickname,
+      role: userRole,
+    });
+    return {
+      message: '회원가입이 완료되었습니다.',
+      user: { id: user.id, email: user.email, nickname: user.nickname },
+    };
   }
 
   // 로그인
