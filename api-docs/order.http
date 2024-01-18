@@ -16,11 +16,48 @@ GET {{domain}}/order
 
 ###
 # 상품 별 상세 구매 내역 조회
-GET {{domain}}/order/3
+GET {{domain}}/order/1
 
 ###
 # 환불 완료
 PATCH  {{domain}}/order/4
+Content-Type: application/JSON
+
+{
+  "status": "환불완료"
+}
+
+###
+# 배송 완료
+PATCH  {{domain}}/order/manage/1
+Content-Type: application/JSON
+
+{
+  "status": "배송완료"
+}
+
+###
+# 구매확정
+PATCH  {{domain}}/order/confirm/1
+Content-Type: application/JSON
+
+{
+  "status": "구매확정"
+}
+
+###
+# 환불신청
+PATCH  {{domain}}/order/refund/2
+Content-Type: application/JSON
+
+{
+  "status": "환불신청"
+}
+
+
+###
+# 환불완료
+PATCH  {{domain}}/order/manage/refund/2
 Content-Type: application/JSON
 
 {
