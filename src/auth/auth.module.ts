@@ -8,6 +8,7 @@ import { RedisModule } from 'src/redis/redis.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
+import { JwtKakaoStrategy } from 'src/strategy/kakao.strategy';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { JwtAuthGuard } from 'src/guards/jwt.guard';
     UserModule,
     RedisModule,
   ],
-  providers: [AuthService, JwtAuthGuard],
+  providers: [AuthService, JwtAuthGuard, JwtKakaoStrategy],
   exports: [PassportModule],
   controllers: [AuthController],
 })
