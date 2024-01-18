@@ -39,12 +39,12 @@ export class OrderService {
       product_id,
       user_id: user.id,
       quantity,
-      status: "구매 완료"
+      status: '구매 완료'
     });
 
     return {
       success: true,
-      message: "성공적으로 구매에 성공하였습니다.",
+      message: '구매에 성공하였습니다.',
       data: {
         ...createOrder,
         remainPoint: userData.point
@@ -79,7 +79,7 @@ export class OrderService {
     }
     return {
       success: true,
-      message: "구매 내역을 정상적으로 불러왔습니다.",
+      message: '구매 내역을 정상적으로 불러왔습니다.',
       data: {
         order_count: orders.length,
         data
@@ -115,7 +115,7 @@ export class OrderService {
 
     return {
       success: true,
-      message: "구매 내역을 정상적으로 불러왔습니다.",
+      message: '구매 내역을 정상적으로 불러왔습니다.',
       data: mappedItem
     };
   }
@@ -150,7 +150,7 @@ export class OrderService {
 
     return {
       success: true,
-      message: "구매 내역이 변경되었습니다.",
+      message: '구매 내역이 변경되었습니다.',
       data: updateOrder
     };
   }
@@ -159,7 +159,7 @@ export class OrderService {
     const { status } = updateOrderDto;
 
      //dto의 status가 명확한지 한 번 더 확인
-     if(status !== "구매확정"){
+     if(status !== '구매확정'){
       throw new BadRequestException('잘못된 신청입니다.');
     }
 
@@ -177,7 +177,7 @@ export class OrderService {
 
     return {
       success: true,
-      message: "구매 확정이 완료되었습니다. 리뷰를 작성할 수 있습니다.",
+      message: '구매 확정이 완료되었습니다. 리뷰를 작성할 수 있습니다.',
       data: updateOrder
     };
   }
@@ -188,12 +188,12 @@ export class OrderService {
     //구매 확정, 환불 신청, 환불 완료인 상태는 환불 신청이 불가능함.
     //추가로 구매 완료된 시간을 확인해서 구매 시간이 일정 시간이 지나면 불가능 하도록.
     const currentStatus = await this.getOrderStatus(id);
-    if(currentStatus === "구매확정" || currentStatus === "환불신청" || currentStatus === "환불완료"){
+    if(currentStatus === '구매확정' || currentStatus === '환불신청' || currentStatus === '환불완료'){
       throw new BadRequestException('해당 상품은 환불신청이 불가능 합니다.');
     }
 
     //dto의 status가 명확한지 한 번 더 확인
-    if(status !== "환불신청"){
+    if(status !== '환불신청'){
       throw new BadRequestException('잘못된 신청입니다.');
     }
 
@@ -211,15 +211,17 @@ export class OrderService {
 
     return {
       success: true,
-      message: "환불신청이 완료되었습니다.",
+      message: '환불신청이 완료되었습니다.',
       data: RefundOrder
     };
   }
 
   async refundComplete(id: number, updateOrderDto: UpdateOrderDto, user: User) {
+    const { status } = updateOrderDto;
+
     //환불 신청이 와있는 중인지 status 확인 환불 중 일때만 환불 진행 아니면 x
     const currentStatus = await this.getOrderStatus(id);
-    if(currentStatus !== "환불신청"){
+    if(currentStatus !== '환불신청'){
       throw new BadRequestException('해당 상품은 환불신청을 하지 않았습니다.');
     }
 
@@ -242,14 +244,14 @@ export class OrderService {
     });
 
     userData.point += product.point * order.quantity;
-    order.status = "환불완료" //or updateOrderDto.status를 받는다.
+    order.status = status;
     
     const userUpdate = await this.userRepository.save(userData);
     const RefundOrder = await this.orderRepository.save(order);
 
     return {
       success: true,
-      message: "성공적으로 환불에 성공하였습니다.",
+      message: '성공적으로 환불에 성공하였습니다.',
       data: {
         ...RefundOrder,
         remainPoint: userData.point
