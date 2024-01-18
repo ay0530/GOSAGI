@@ -13,6 +13,7 @@ import { Wish } from 'src/wish/entities/wish.entity';
 import { Cart } from 'src/cart/entities/cart.entity';
 import { Order } from 'src/order/entities/order.entity';
 import { Question } from 'src/question/entities/question.entity';
+import { Review } from 'src/review/entities/review.entity';
 
 @Index('email', ['email'], { unique: true })
 @Entity({
@@ -52,6 +53,10 @@ export class User {
   // 일대다 관계 설정(orders)
   @OneToMany(() => Cart, (order) => order.user)
   order: Order[];
+
+  // 일대다 관계 설정(orders)
+  @OneToMany(() => Review, (review) => review.user)
+  review: Review[];
 
   // 일대다 관계 설정(questions)
   @OneToMany(() => Question, (question) => question.user)

@@ -32,7 +32,8 @@ export class ReviewService {
     const createReview = await this.reviewRepository.save({
       content,
       rate,
-      order_id
+      order_id,
+      user_id: user.id
     });
 
     return {
@@ -43,22 +44,29 @@ export class ReviewService {
   }
 
   async findAll(user: User) {
-    const orders = (await this.orderService.findAll(user)).data.data;
+    const reviews = await this.reviewRepository.find({
+      where: { user_id:user.id },
+    })
 
-
-    return `This action returns all review`;
+    return {
+      success: true,
+      message: "리뷰를 정상적으로 불러왔습니다.",
+      data: {
+        review_count: reviews.length,
+        reviews
+      }
+    };
   }
 
   async findOne(id: number, user: User) {
 
+    //해당 user가 id에 해당하는 review의 소유인지 확인하기 위해 user_id도 같이 확인
     const review = await this.reviewRepository.findOne({
-      where: {id},
-    })
+      where: { id, user_id:user.id },
+    });
 
-    const order = (await this.orderService.findOne(review.order_id, user)).data;
-
-    if(order.user_id !== user.id) {
-      throw new NotFoundException('해당 상품의 리뷰 내역을 확인할 수 없습니다.');
+    if (_.isNil(review)) {
+      throw new NotFoundException('해당 리뷰를 확인할 수 없습니다.');
     }
 
     return {
@@ -70,16 +78,16 @@ export class ReviewService {
 
   async update(id: number, updateReviewDto: UpdateReviewDto, user: User) {
     const {content, rate} =  updateReviewDto;
+
+    //해당 user가 id에 해당하는 review의 소유인지 확인하기 위해 user_id도 같이 확인
     const review = await this.reviewRepository.findOne({
-      where: {id},
-    })
-
-    const order = (await this.orderService.findOne(review.order_id, user)).data;
-
-    if(order.user_id !== user.id) {
-      throw new NotFoundException('해당 상품의 리뷰 내역을 확인할 수 없습니다.');
+      where: { id, user_id:user.id },
+    });
+  
+    if (_.isNil(review)) {
+      throw new NotFoundException('해당 리뷰를 확인할 수 없습니다.');
     }
-
+  
     review.content = content;
     review.rate = rate;
     
@@ -93,15 +101,15 @@ export class ReviewService {
   }
 
   async remove(id: number, user: User) {
+    //해당 user가 id에 해당하는 review의 소유인지 확인하기 위해 user_id도 같이 확인
     const review = await this.reviewRepository.findOne({
-      where: {id},
-    })
+      where: { id, user_id:user.id },
+    });
 
-    const order = (await this.orderService.findOne(review.order_id, user)).data;
-
-    if(order.user_id !== user.id) {
-      throw new NotFoundException('해당 상품의 리뷰 내역을 확인할 수 없습니다.');
+    if (_.isNil(review)) {
+      throw new NotFoundException('해당 리뷰를 확인할 수 없습니다.');
     }
+
 
     //삭제
     await this.reviewRepository.delete({ id });
