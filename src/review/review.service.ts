@@ -76,6 +76,11 @@ export class ReviewService {
     }
   }
 
+  async findAllByProductId(productId: number){
+    //order에서 해당하는 product_id를 찾아 각각 review 등록 여부를 확인하고 불러온다 
+    //or productID 역시 저장하게 한다.
+  }
+
   async update(id: number, updateReviewDto: UpdateReviewDto, user: User) {
     const {content, rate} =  updateReviewDto;
 
