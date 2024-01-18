@@ -30,4 +30,6 @@ export class Answer {
   @OneToOne(() => Question)
   @JoinColumn({ name: 'question_id' })
   question: Question[];
+  @Column({ type: 'int', nullable: false })
+  question_id: number;
 }
