@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 // entity
-import { Cart } from 'src/cart/entities/cart.entity';
+import { Order } from 'src/order/entities/order.entity';
 
 @Entity({
   name: 'reviews',
@@ -26,7 +26,10 @@ export class Review {
   rate: number;
 
   // 일대일 관계 설정(answer)
-  @OneToOne(() => Cart)
-  @JoinColumn({ name: 'cart_id' })
-  cart: Cart[];
+  @OneToOne(() => Order)
+  @JoinColumn({ name: 'order_id' })
+  order: Order;
+
+  @Column({type: 'int', nullable: false})
+  order_id: number;
 }
