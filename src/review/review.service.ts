@@ -18,7 +18,7 @@ export class ReviewService {
   async create(createReviewDto: CreateReviewDto, user: User) {
     const {order_id, rate, content} = createReviewDto;
 
-    //해당 order_id가 존재하는지 먼저 확인
+    //해당 user가 작성한 order_id가 존재하는지 먼저 확인
     await this.orderService.findOne(order_id, user);
 
     //order의 status가 구매확정인 경우에만 리뷰 작성 가능
@@ -77,8 +77,18 @@ export class ReviewService {
   }
 
   async findAllByProductId(productId: number){
-    //order에서 해당하는 product_id를 찾아 각각 review 등록 여부를 확인하고 불러온다 
-    //or productID 역시 저장하게 한다.
+    const reviews = await this.reviewRepository.find({
+      where: { order: { product_id: productId } },
+    });
+
+    return {
+      success: true,
+      message: '리뷰 내용을 정상적으로 불러왔습니다.',
+      data: {
+        review_length: reviews.length,
+        data: reviews
+      }
+    };
   }
 
   async update(id: number, updateReviewDto: UpdateReviewDto, user: User) {

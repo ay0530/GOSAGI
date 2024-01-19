@@ -1,0 +1,12 @@
+@domain = http://localhost:3000
+
+### 
+# 리뷰 등록
+POST {{domain}}/order
+Content-Type: application/JSON
+
+{
+  "order_id" : 4,
+  "rate" : 4,
+  "content" : "맛있어요"
+}
