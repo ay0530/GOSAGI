@@ -1,7 +1,7 @@
 interface IOAuthUser {
   user: {
-    email: string;
     name: string;
+    email: string;
     password: string;
   };
 }

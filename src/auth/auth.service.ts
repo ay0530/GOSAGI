@@ -6,7 +6,7 @@ import { UserService } from 'src/user/user.service';
 @Injectable()
 export class AuthService {
   constructor(
-    private jwtService: JwtService,
+    private readonly jwtService: JwtService,
     private readonly userService: UserService,
     private readonly redisService: RedisService,
   ) {}
@@ -23,11 +23,12 @@ export class AuthService {
   }
 
   async OAuthLogin({ req, res }) {
-    const { email, name, password } = req.user;
+    const { email, password, name } = req.user;
+
     const user = await this.userService.findOneByEmail(email);
 
     if (!user) {
-      const user = await this.userService.authSignup(email, name, password);
+      const user = await this.userService.authSignup(email, password, name);
     }
 
     return await this.generateTokens(user);

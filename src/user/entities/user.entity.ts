@@ -33,8 +33,8 @@ export class User {
   @Column({ type: 'int', default: UserRole.USER })
   role: UserRoleType;
 
-  @Column({ type: 'int' })
-  point: string;
+  @Column({ type: 'int', nullable: true })
+  point?: string;
 
   // 일대다 관계 설정(stores)
   @OneToMany(() => Store, (store) => store.user)
