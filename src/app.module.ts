@@ -41,7 +41,7 @@ import { Review } from './review/entities/review.entity';
 import { Question } from './question/entities/question.entity';
 import { Answer } from './answer/entities/answer.entity';
 import { Faq } from './faq/entities/faq.entity';
-import { KakaoModule } from './kakao/kakao.module';
+// import { KakaoModule } from './kakao/kakao.module';
 
 const typeOrmModuleOptions = {
   useFactory: async (
@@ -116,7 +116,7 @@ const typeOrmModuleOptions = {
     QuestionModule,
     AnswerModule,
     FaqModule,
-    KakaoModule,
+    // KakaoModule,
   ],
   controllers: [],
   providers: [],

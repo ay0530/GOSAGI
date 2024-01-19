@@ -24,9 +24,9 @@ export class AuthService {
 
   async OAuthLogin({ req, res }) {
     const { email, name, password } = req.user;
-    const existUser = await this.userService.findOneByEmail(email);
+    const user = await this.userService.findOneByEmail(email);
 
-    if (!existUser) {
+    if (!user) {
       const user = await this.userService.authSignup(email, name, password);
     }
 
