@@ -49,11 +49,8 @@
     "mysql2": "^3.6.5",
     "nest-winston": "^1.9.4",
     "papaparse": "^5.4.1",
-<<<<<<< HEAD
-=======
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
->>>>>>> 92c0348ae1e9d5d69f6db34d525b64402a1250e6
     "passport-jwt": "^4.0.1",
     "passport-naver": "^1.0.6",
     "puppeteer": "^21.7.0",
@@ -74,12 +71,9 @@
     "@types/jest": "^29.5.2",
     "@types/joi": "^17.2.3",
     "@types/node": "^20.3.1",
-<<<<<<< HEAD
     "@types/passport-kakao": "^1.0.3",
-=======
     "@types/passport": "^1.0.16",
     "@types/passport-google-oauth20": "^2.0.14",
->>>>>>> 92c0348ae1e9d5d69f6db34d525b64402a1250e6
     "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
