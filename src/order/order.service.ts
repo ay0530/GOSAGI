@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Repository } from 'typeorm';
@@ -23,13 +27,13 @@ export class OrderService {
     //아니면 front에서 create와 user의 update를 각각 불러와 처리하는 방법도 있다.
 
     const { product_id, quantity } = createOrderDto;
-    
+
     const product = await this.productRepository.findOne({
-      where: {id:product_id},
+      where: { id: product_id },
     });
 
     const userData = await this.userRepository.findOne({
-      where: { id:user.id },
+      where: { id: user.id },
     });
 
     userData.point -= product.point * quantity;
@@ -39,7 +43,7 @@ export class OrderService {
       product_id,
       user_id: user.id,
       quantity,
-      status: '구매 완료'
+      status: '구매 완료',
     });
 
     return {
@@ -47,27 +51,27 @@ export class OrderService {
       message: '구매에 성공하였습니다.',
       data: {
         ...createOrder,
-        remainPoint: userData.point
-      }
+        remainPoint: userData.point,
+      },
     };
   }
 
   async findAll(user: User) {
     const orders = await this.orderRepository.find({
-      where: { user_id: user.id }, 
-    })
+      where: { user_id: user.id },
+    });
 
-   const data = [];
+    const data = [];
     //mapping해서 product 내용도 일부 가져온다.
-    for(const order of orders) {
+    for (const order of orders) {
       const product = await this.productRepository.findOne({
-        where: {id: order.product_id}
+        where: { id: order.product_id },
       });
 
       const mappedItem = {
         id: order.id,
-        product_id : order.product_id,
-        user_id : order.user_id,
+        product_id: order.product_id,
+        user_id: order.user_id,
         productName: product.name,
         productStore: product.store_id,
         quantity: order.quantity,
@@ -75,65 +79,66 @@ export class OrderService {
       };
 
       data.push(mappedItem);
-
     }
     return {
       success: true,
       message: '구매 내역을 정상적으로 불러왔습니다.',
       data: {
         order_count: orders.length,
-        data
-      }
+        data,
+      },
     };
   }
 
   async findOne(id: number, user: User) {
     //해당 user가 id에 해당하는 order의 소유인지 확인하기 위해 user_id도 같이 확인
     const order = await this.orderRepository.findOne({
-      where: { id, user_id:user.id },
-    })
+      where: { id, user_id: user.id },
+    });
 
     if (_.isNil(order)) {
-      throw new NotFoundException('해당 상품의 구매 내역을 확인할 수 없습니다.');
+      throw new NotFoundException(
+        '해당 상품의 구매 내역을 확인할 수 없습니다.',
+      );
     }
 
     const product = await this.productRepository.findOne({
-      where: {id: order.product_id}
+      where: { id: order.product_id },
     });
 
     const mappedItem = {
       id: order.id,
-      product_id : order.product_id,
-      user_id : order.user_id,
+      product_id: order.product_id,
+      user_id: order.user_id,
       status: order.status,
       productName: product.name,
       productPoint: product.point,
       quantity: order.quantity,
-      orderTime: order.createdAt
+      orderTime: order.createdAt,
       // 추가 필요한 매핑 작업 수행
     };
 
     return {
       success: true,
       message: '구매 내역을 정상적으로 불러왔습니다.',
-      data: mappedItem
+      data: mappedItem,
     };
   }
 
-  async getOrderStatus(id:number) {
-    const order =  await this.orderRepository.findOne({
+  async getOrderStatus(id: number) {
+    const order = await this.orderRepository.findOne({
       where: { id },
-      select: ['status']
+      select: ['status'],
     });
 
     return order.status;
   }
 
-  //반복되는 것을 어떻게 줄여볼까? 
+  //반복되는 것을 어떻게 줄여볼까?
   async adminUpdate(id: number, updateOrderDto: UpdateOrderDto) {
     const { status } = updateOrderDto;
 
-    //해당 작업이 필요함. 
+    //해당 작업이 필요함.
     //배송이라던지 돈 입금을 확인하면 자동으로 올려준다던지. 하지만 지금 상황에선 없으므로 status만 변경해준다.
 
     //order update
@@ -142,7 +147,9 @@ export class OrderService {
     });
 
     if (_.isNil(order)) {
-      throw new NotFoundException('해당 상품의 구매 내역을 확인할 수 없습니다.');
+      throw new NotFoundException(
+        '해당 상품의 구매 내역을 확인할 수 없습니다.',
+      );
     }
 
     order.status = status;
@@ -151,25 +158,27 @@ export class OrderService {
     return {
       success: true,
       message: '구매 내역이 변경되었습니다.',
-      data: updateOrder
+      data: updateOrder,
     };
   }
 
   async confirmUpdate(id: number, updateOrderDto: UpdateOrderDto, user: User) {
     const { status } = updateOrderDto;
 
-     //dto의 status가 명확한지 한 번 더 확인
-     if(status !== '구매확정'){
+    //dto의 status가 명확한지 한 번 더 확인
+    if (status !== '구매확정') {
       throw new BadRequestException('잘못된 신청입니다.');
     }
 
     //order update
     const order = await this.orderRepository.findOne({
-      where: { id, user_id:user.id },
+      where: { id, user_id: user.id },
     });
 
     if (_.isNil(order)) {
-      throw new NotFoundException('해당 상품의 구매 내역을 확인할 수 없습니다.');
+      throw new NotFoundException(
+        '해당 상품의 구매 내역을 확인할 수 없습니다.',
+      );
     }
 
     order.status = status;
@@ -178,7 +187,7 @@ export class OrderService {
     return {
       success: true,
       message: '구매 확정이 완료되었습니다. 리뷰를 작성할 수 있습니다.',
-      data: updateOrder
+      data: updateOrder,
     };
   }
 
@@ -188,22 +197,28 @@ export class OrderService {
     //구매 확정, 환불 신청, 환불 완료인 상태는 환불 신청이 불가능함.
     //추가로 구매 완료된 시간을 확인해서 구매 시간이 일정 시간이 지나면 불가능 하도록.
     const currentStatus = await this.getOrderStatus(id);
-    if(currentStatus === '구매확정' || currentStatus === '환불신청' || currentStatus === '환불완료'){
+    if (
+      currentStatus === '구매확정' ||
+      currentStatus === '환불신청' ||
+      currentStatus === '환불완료'
+    ) {
       throw new BadRequestException('해당 상품은 환불신청이 불가능 합니다.');
     }
 
     //dto의 status가 명확한지 한 번 더 확인
-    if(status !== '환불신청'){
+    if (status !== '환불신청') {
       throw new BadRequestException('잘못된 신청입니다.');
     }
 
     //order update
     const order = await this.orderRepository.findOne({
-      where: { id, user_id:user.id },
+      where: { id, user_id: user.id },
     });
 
     if (_.isNil(order)) {
-      throw new NotFoundException('해당 상품의 구매 내역을 확인할 수 없습니다.');
+      throw new NotFoundException(
+        '해당 상품의 구매 내역을 확인할 수 없습니다.',
+      );
     }
 
     order.status = status;
@@ -212,7 +227,7 @@ export class OrderService {
     return {
       success: true,
       message: '환불신청이 완료되었습니다.',
-      data: RefundOrder
+      data: RefundOrder,
     };
   }
 
@@ -221,31 +236,33 @@ export class OrderService {
 
     //환불 신청이 와있는 중인지 status 확인 환불 중 일때만 환불 진행 아니면 x
     const currentStatus = await this.getOrderStatus(id);
-    if(currentStatus !== '환불신청'){
+    if (currentStatus !== '환불신청') {
       throw new BadRequestException('해당 상품은 환불신청을 하지 않았습니다.');
     }
 
     //해당 user가 id에 해당하는 order의 소유인지 확인하기 위해 user_id도 같이 확인
     const order = await this.orderRepository.findOne({
-      where: { id, user_id:user.id },
-    })
+      where: { id, user_id: user.id },
+    });
 
     if (_.isNil(order)) {
-      throw new NotFoundException('해당 상품의 구매 내역을 확인할 수 없습니다.');
+      throw new NotFoundException(
+        '해당 상품의 구매 내역을 확인할 수 없습니다.',
+      );
     }
 
     //user의 point를 되돌려주고 status를 환불 완료로 update해준다.
     const product = await this.productRepository.findOne({
-      where: {id:order.product_id},
+      where: { id: order.product_id },
     });
 
     const userData = await this.userRepository.findOne({
-      where: { id:user.id },
+      where: { id: user.id },
     });
 
     userData.point += product.point * order.quantity;
     order.status = status;
-    
+
     const userUpdate = await this.userRepository.save(userData);
     const RefundOrder = await this.orderRepository.save(order);
 
@@ -254,9 +271,8 @@ export class OrderService {
       message: '성공적으로 환불에 성공하였습니다.',
       data: {
         ...RefundOrder,
-        remainPoint: userData.point
-      }
+        remainPoint: userData.point,
+      },
     };
   }
-
 }

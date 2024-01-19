@@ -1,11 +1,10 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
-  Delete, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
   UseGuards,
   Req,
 } from '@nestjs/common';
@@ -46,21 +45,32 @@ export class OrderController {
 
   //구매 확정 -> user
   @Patch('/confirm/:id')
-  confirmUpdate(@Param('id') id: number, @Body() updateOrderDto: UpdateOrderDto, @Req() req) {
+  confirmUpdate(
+    @Param('id') id: number,
+    @Body() updateOrderDto: UpdateOrderDto,
+    @Req() req,
+  ) {
     const user = req.user;
     return this.orderService.confirmUpdate(id, updateOrderDto, user);
   }
   //환불 신청 -> user
   @Patch('/refund/:id')
-  refundRequest(@Param('id') id: number, @Body() updateOrderDto: UpdateOrderDto, @Req() req) {
+  refundRequest(
+    @Param('id') id: number,
+    @Body() updateOrderDto: UpdateOrderDto,
+    @Req() req,
+  ) {
     const user = req.user;
     return this.orderService.refundRequest(id, updateOrderDto, user);
   }
   //환불 완료
   @Patch('/manage/refund/:id')
-  refundComplete(@Param('id') id: number, @Body() updateOrderDto: UpdateOrderDto, @Req() req) {
+  refundComplete(
+    @Param('id') id: number,
+    @Body() updateOrderDto: UpdateOrderDto,
+    @Req() req,
+  ) {
     const user = req.user;
     return this.orderService.refundComplete(id, updateOrderDto, user);
   }
-
 }
