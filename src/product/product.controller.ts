@@ -80,7 +80,7 @@ export class ProductController {
   async update(@Param('productId') productId: number, @Body() updateProductDto: UpdateProductDto) {
     const data = await this.productService.update(productId, updateProductDto);
 
-    const response = new ResponseDto(true, '상품수정이 완료되었습니다', data)
+    const response = new ResponseDto(true, '상품수정이 완료되었습니다', null)
 
     return response
   }
