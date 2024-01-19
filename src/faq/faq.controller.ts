@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { FaqService } from './faq.service';
 import { CreateFaqDto } from './dto/create-faq.dto';
 import { UpdateFaqDto } from './dto/update-faq.dto';
@@ -7,28 +15,60 @@ import { UpdateFaqDto } from './dto/update-faq.dto';
 export class FaqController {
   constructor(private readonly faqService: FaqService) {}
 
+  // FAQ 생성
   @Post()
-  create(@Body() createFaqDto: CreateFaqDto) {
-    return this.faqService.create(createFaqDto);
+  async createFaq(@Body() createFaqDto: CreateFaqDto) {
+    const data = await this.faqService.createFaq(createFaqDto);
+    return {
+      success: true,
+      message: 'FAQ 생성이 완료되었습니다.',
+      data,
+    };
   }
 
+  // FAQ 조회
   @Get()
-  findAll() {
-    return this.faqService.findAll();
+  async getFaq() {
+    const data = await this.faqService.getFaq();
+    return {
+      success: true,
+      message: 'FAQ 조회가 완료되었습니다.',
+      data,
+    };
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.faqService.findOne(+id);
+  // 특정 FAQ 조회
+  @Get(':faqId')
+  async getOneFaq(@Param('faqId') faqId: string) {
+    const data = await this.faqService.getOneFaq(+faqId);
+    return {
+      success: true,
+      message: '특정 FAQ 조회가 완료되었습니다.',
+      data,
+    };
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFaqDto: UpdateFaqDto) {
-    return this.faqService.update(+id, updateFaqDto);
+  // FAQ 수정
+  @Patch(':faqId')
+  async updateFaq(
+    @Param('faqId') faqId: string,
+    @Body() updateFaqDto: UpdateFaqDto,
+  ) {
+    const data = await this.faqService.updateFaq(+faqId, updateFaqDto);
+    return {
+      success: true,
+      message: 'FAQ 수정이 완료되었습니다.',
+      data,
+    };
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.faqService.remove(+id);
+  // FAQ 삭제
+  @Delete(':faqId')
+  async deleteFaq(@Param('faqId') faqId: string) {
+    await this.faqService.deleteFaq(+faqId);
+    return {
+      success: true,
+      message: 'FAQ 삭제가 완료되었습니다.',
+    };
   }
 }

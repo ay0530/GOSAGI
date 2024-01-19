@@ -17,6 +17,7 @@ import { UserService } from './user.service';
 import { RedisService } from 'src/redis/redis.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ResponseDto } from 'src/ResponseDTO/response-dto';
 import { LoginDto } from './dto/login.dto';
 
 @Controller('user')
@@ -30,7 +31,10 @@ export class UserController {
   // 회원가입
   @Post('signup')
   async signup(@Body() createDto: CreateUserDto) {
-    return await this.userService.signup(createDto);
+    await this.userService.signup(createDto);
+
+    const response = new ResponseDto(true, '회원가입이 완료되었습니다', null);
+    return response;
   }
 
   // 로그인
@@ -47,31 +51,36 @@ export class UserController {
       httpOnly: true,
     }); // 쿠키에 토큰 저장
 
-    return {
-      message: '로그인이 완료되었습니다.',
-    };
+    const response = new ResponseDto(true, '로그인이 완료되었습니다', null);
+    return response;
   }
 
   // 회원 정보 조회
   @UseGuards(JwtAuthGuard)
   @Get()
   async getProfile(@Req() req: any) {
-    const user = await this.userService.findOne(req.user.id);
-    return {
-      message: '회원 정보 조회가 완료되었습니다.',
-      user,
-    };
+    const data = await this.userService.findOne(req.user.id);
+
+    const response = new ResponseDto(
+      true,
+      '회원 정보 조회가 완료되었습니다.',
+      data,
+    );
+    return response;
   }
 
   // 회원 정보 수정
   @UseGuards(JwtAuthGuard)
   @Patch()
   async update(@Req() req: any, @Body() updateUserDto: UpdateUserDto) {
-    const user = await this.userService.update(req.user.id, updateUserDto);
-    return {
-      message: '회원 정보 수정이 완료되었습니다.',
-      user,
-    };
+    const data = await this.userService.update(req.user.id, updateUserDto);
+
+    const response = new ResponseDto(
+      true,
+      '회원 정보 수정이 완료되었습니다.',
+      data,
+    );
+    return response;
   }
 
   // 회원 탈퇴
@@ -85,7 +94,9 @@ export class UserController {
       expires: new Date(0), // 쿠키 유효기간 만료
     });
     await this.redisService.removeRefreshToken(req.user.id); // 리프레시 토큰 삭제
-    return { message: '회원 탈퇴가 완료되었습니다' };
+
+    const response = new ResponseDto(true, '회원 탈퇴가 완료되었습니다.', null);
+    return response;
   }
 
   // 로그아웃
@@ -98,7 +109,9 @@ export class UserController {
       expires: new Date(0), // 쿠키 유효기간 만료
     });
     await this.redisService.removeRefreshToken(req.user.id); // 리프레시 토큰 삭제
-    return { message: '로그아웃이 되었습니다' };
+
+    const response = new ResponseDto(true, '로그아웃 되었습니다', null);
+    return response;
   }
 
   // ---- 회원 목록
@@ -106,11 +119,14 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('list')
   async findAll() {
-    const users = await this.userService.findAll();
-    return {
-      message: '모든 회원 조회가 완료되었습니다.',
-      users,
-    };
+    const data = await this.userService.findAll();
+
+    const response = new ResponseDto(
+      true,
+      '모든 회원 조회가 완료되었습니다',
+      data,
+    );
+    return response;
   }
 
   // 회원 목록 검색 조회
@@ -120,10 +136,9 @@ export class UserController {
     @Param('category') category: string,
     @Param('keyword') keyword: string,
   ) {
-    const users = await this.userService.searchAll(category, keyword);
-    return {
-      message: '검색이 완료되었습니다.',
-      users,
-    };
+    const data = await this.userService.searchAll(category, keyword);
+
+    const response = new ResponseDto(true, '검색이 완료되었습니다', data);
+    return response;
   }
 }

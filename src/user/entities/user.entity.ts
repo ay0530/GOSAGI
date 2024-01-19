@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 // Role
-import { UserRole } from '../types/userRole.type';
+import { UserRole, UserRoleType } from 'src/user/types/userRole.type';
 import { Store } from 'src/store/entities/store.entity';
 import { Wish } from 'src/wish/entities/wish.entity';
 import { Cart } from 'src/cart/entities/cart.entity';
@@ -31,11 +31,12 @@ export class User {
   @Column({ type: 'varchar', unique: true, nullable: false })
   nickname: string;
 
-  @Column({ type: 'enum', enum: UserRole, default: UserRole.User })
-  role: UserRole;
+  @Column({ type: 'int', default: UserRole.USER })
+  role: UserRoleType;
 
-  @Column({ type: 'int' })
-  point: number;
+
+  @Column({ type: 'int', nullable: true })
+  point?: string;
 
   // 일대다 관계 설정(stores)
   @OneToMany(() => Store, (store) => store.user)

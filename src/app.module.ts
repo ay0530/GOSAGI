@@ -14,6 +14,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { RedisModule } from './redis/redis.module';
 
+import { JwtCommonModule } from './common/jwt.common.module';
 import { UserModule } from './user/user.module';
 import { LocationModule } from './location/location.module';
 import { StoreModule } from './store/store.module';
@@ -32,8 +33,8 @@ import { User } from './user/entities/user.entity';
 import { Location } from './location/entities/locaion.entity';
 import { Store } from './store/entities/store.entity';
 import { Product } from './product/entities/product.entity';
-import { ProductThumbnail } from './product-thumbnail/entities/product-thumbnail.entity';
-import { ProductContent } from './product-content/entities/product-content.entity';
+import { ProductThumbnail } from './product/entities/product-thumbnail.entity';
+import { ProductContent } from './product/entities/product-content.entity';
 import { Wish } from './wish/entities/wish.entity';
 import { Cart } from './cart/entities/cart.entity';
 import { Order } from './order/entities/order.entity';
@@ -93,12 +94,7 @@ const typeOrmModuleOptions = {
     // TypeORM
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
     // JWT
-    JwtModule.registerAsync({
-      useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET_KEY'),
-      }),
-      inject: [ConfigService],
-    }),
+    JwtCommonModule,
     // ServeStaticModule
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'views'), // 정적 파일을 제공하는 폴더(views)

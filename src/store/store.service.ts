@@ -1,7 +1,12 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { ProductService } from 'src/product/product.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
 import { Store } from './entities/store.entity';
@@ -11,6 +16,7 @@ export class StoreService {
   constructor(
     @InjectRepository(Store)
     private storeRepository: Repository<Store>,
+    private productService: ProductService,
   ) {}
 
   // 매장 정보 저장
@@ -48,8 +54,8 @@ export class StoreService {
     // 매장 정보 예외 처리
     await this.existingStore(updateStoreDto);
 
-    // 매장 정보 저장
-    await this.storeRepository.update(
+    // 매장 정보 수정
+    const store = await this.storeRepository.update(
       { id, user_id: userId },
       {
         name: updateStoreDto.name,
@@ -57,6 +63,12 @@ export class StoreService {
         address: updateStoreDto.address,
       },
     );
+
+    // 수정 실패
+    if (!store.affected && store.affected === 0) {
+      // 가드로 나중에 빼야할듯
+      throw new ForbiddenException('권한이 존재하지 않습니다');
+    }
 
     return {
       name: updateStoreDto.name,
@@ -67,13 +79,52 @@ export class StoreService {
 
   // 매장 정보 삭제
   async remove(id: number, userId: number) {
-    await this.storeRepository.delete({ id, user_id: userId });
+    const store = await this.storeRepository.delete({ id, user_id: userId });
+
+    // 삭제 실패
+    if (!store.affected && store.affected === 0) {
+      // 가드로 나중에 빼야할듯
+      throw new ForbiddenException('권한이 존재하지 않습니다');
+    }
   }
 
   // 매장 목록 조회
   async findAll() {
     const stores = await this.storeRepository.find();
+
     return stores;
+  }
+
+  // 매장 목록 검색 조회
+  async searchAll(category: string, keyword: string) {
+    // 매장명, 매장 연락처, 매장 주소로 검색 가능
+    const stores = this.storeRepository
+      .createQueryBuilder('store')
+      .where(`store.${category} LIKE :keyword`, {
+        keyword: `%${keyword}%`,
+      })
+      .getMany();
+
+    return stores;
+  }
+
+  // 매장 상품 목록 조회
+  async findProductAll(storeId: number) {
+    const products = await this.productService.findProductAll(storeId);
+
+    return products;
+  }
+
+  // 매장 상품 목록 검색 조회
+  async searchProductAll(storeId: number, category: string, keyword: string) {
+    // 매장명으로 검색 가능
+    const products = this.productService.searchProductAll(
+      storeId,
+      category,
+      keyword,
+    );
+
+    return products;
   }
 
   // ----- 기타 함수
@@ -86,18 +137,5 @@ export class StoreService {
     if (existingName) {
       throw new ConflictException('이미 등록된 매장입니다.');
     }
-  }
-
-  // 회원 목록 검색 조회
-  async searchAll(category: string, keyword: string) {
-    // 매장명, 매장 연락처, 매장 주소로 검색 가능
-    const users = this.storeRepository
-      .createQueryBuilder('store')
-      .where(`store.${category} LIKE :keyword`, {
-        keyword: `%${keyword}%`,
-      })
-      .getMany();
-
-    return users;
   }
 }
