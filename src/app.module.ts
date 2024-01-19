@@ -19,8 +19,8 @@ import { UserModule } from './user/user.module';
 import { LocationModule } from './location/location.module';
 import { StoreModule } from './store/store.module';
 import { ProductModule } from './product/product.module';
-import { ProductThumbnailModule } from './product-thumbnail/product-thumbnail.module';
-import { ProductContentModule } from './product-content/product-content.module';
+import { ProductThumbnailModule } from './product-thumbnail/product.thumbnail.module';
+import { ProductContentModule } from './product-content/product.content.module';
 import { WishModule } from './wish/wish.module';
 import { CartModule } from './cart/cart.module';
 import { ReviewModule } from './review/review.module';
@@ -115,6 +115,7 @@ const typeOrmModuleOptions = {
     QuestionModule,
     AnswerModule,
     FaqModule,
+    // KakaoModule,
   ],
   controllers: [],
   providers: [],

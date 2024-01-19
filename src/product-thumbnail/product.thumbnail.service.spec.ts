@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ProductThumbnailService } from './product-thumbnail.service';
+import { ProductThumbnailService } from './product.thumbnail.service';
 
 describe('ProductThumbnailService', () => {
   let service: ProductThumbnailService;
