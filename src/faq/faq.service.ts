@@ -45,6 +45,18 @@ export class FaqService {
     return getOneFaq;
   }
 
+  // FAQ 검색
+  async searchFaq(keyword: string) {
+    const keywordFaq = this.faqRepository
+      .createQueryBuilder('faq')
+      .where('title', {
+        keyword: `%${keyword}%`,
+      })
+      .getMany();
+
+    return keywordFaq;
+  }
+
   // FAQ 수정
   async updateFaq(faqId: number, updateFaqDto: UpdateFaqDto) {
     const existFaq = await this.faqRepository.findOne({
