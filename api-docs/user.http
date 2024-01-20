@@ -28,6 +28,16 @@ Content-Type: application/JSON
   "nickname": "test11"
 }
 
+### 
+# 비밀번호 수정
+PATCH {{domain}}/user/password
+Content-Type: application/JSON
+
+{
+  "currentPassword": "1234",
+  "newPassword":"12345"
+}
+
 ###
 # 회원 탈퇴
 DELETE {{domain}}/user

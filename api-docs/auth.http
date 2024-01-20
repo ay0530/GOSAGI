@@ -2,7 +2,7 @@
 
 ### 
 # 로그인
-POST {{domain}}/user/login
+POST {{domain}}/auth/login
 Content-Type: application/JSON
 
 {
@@ -12,5 +12,5 @@ Content-Type: application/JSON
 
 ###
 # 로그아웃
-POST {{domain}}/user/logout
+POST {{domain}}/auth/logout
 Content-Type: application/JSON

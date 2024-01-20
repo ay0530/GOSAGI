@@ -18,7 +18,6 @@ import { RedisService } from 'src/redis/redis.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ResponseDto } from 'src/ResponseDTO/response-dto';
-import { LoginDto } from './dto/login.dto';
 
 @Controller('user')
 export class UserController {
@@ -34,24 +33,6 @@ export class UserController {
     await this.userService.signup(createDto);
 
     const response = new ResponseDto(true, '회원가입이 완료되었습니다', null);
-    return response;
-  }
-
-  // 로그인
-  @Post('login')
-  async login(
-    @Body() loginDto: LoginDto,
-    @Res({ passthrough: true }) res: any,
-  ) {
-    const accessToken = await this.userService.login(
-      loginDto.email,
-      loginDto.password,
-    );
-    res.cookie('authorization', `Bearer ${accessToken}`, {
-      httpOnly: true,
-    }); // 쿠키에 토큰 저장
-
-    const response = new ResponseDto(true, '로그인이 완료되었습니다', null);
     return response;
   }
 
@@ -83,6 +64,28 @@ export class UserController {
     return response;
   }
 
+  // 비밀 번호 수정
+  @UseGuards(JwtAuthGuard)
+  @Patch('password')
+  async updatePassword(
+    @Req() req: any,
+    @Body('currentPassword') currentPassword: string,
+    @Body('newPassword') newPassword: string,
+  ) {
+    const data = await this.userService.updatePassword(
+      req.user.email,
+      currentPassword,
+      newPassword,
+    );
+
+    const response = new ResponseDto(
+      true,
+      '비밀번호 수정이 완료되었습니다.',
+      null,
+    );
+    return response;
+  }
+
   // 회원 탈퇴
   @UseGuards(JwtAuthGuard)
   @Delete()
@@ -96,21 +99,6 @@ export class UserController {
     await this.redisService.removeRefreshToken(req.user.id); // 리프레시 토큰 삭제
 
     const response = new ResponseDto(true, '회원 탈퇴가 완료되었습니다.', null);
-    return response;
-  }
-
-  // 로그아웃
-  @UseGuards(JwtAuthGuard)
-  @Post('logout')
-  async logout(@Req() req: any, @Res({ passthrough: true }) res: any) {
-    // 액세스 토큰 삭제(빈 값을 덮어씌움)
-    res.cookie('authorization', '', {
-      httpOnly: true,
-      expires: new Date(0), // 쿠키 유효기간 만료
-    });
-    await this.redisService.removeRefreshToken(req.user.id); // 리프레시 토큰 삭제
-
-    const response = new ResponseDto(true, '로그아웃 되었습니다', null);
     return response;
   }
 
