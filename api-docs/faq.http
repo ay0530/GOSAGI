@@ -78,6 +78,15 @@ GET {{domain}}/faq/6
 Content-Type: application/json
 
 ###
+# FAQ 검색
+GET {{domain}}/faq
+Content-Type: application/json
+
+{
+  "keyword": "배송"
+}
+
+###
 # FAQ 수정
 PATCH {{domain}}/faq/6
 Content-Type: application/json
