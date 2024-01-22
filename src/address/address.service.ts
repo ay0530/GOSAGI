@@ -5,7 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Address } from './entities/address.entity';
-import { ApiQuery } from '@nestjs/swagger';
 
 @Injectable()
 export class AddressService {
