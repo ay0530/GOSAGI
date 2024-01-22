@@ -26,14 +26,13 @@ export class UserService {
     private readonly redisService: RedisService,
   ) {}
 
-  async authSignup(email:string, password:string, name:string){
+  async authSignup(email: string, password: string, name: string) {
     return await this.userRepository.save({
-      email, 
-      password, 
-      nickname: name
-    })
-}
-  
+      email,
+      password,
+      nickname: name,
+    });
+  }
 
   // ---- 회원 1명
   // 회원가입
