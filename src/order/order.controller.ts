@@ -12,7 +12,10 @@ import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
-@UseGuards(JwtAuthGuard)
+import { RolesGuard } from 'src/guards/roles.guard';
+import { Roles } from 'src/guards/roles.decorator';
+import { Role } from 'src/role/user.role';
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('order')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
@@ -44,6 +47,7 @@ export class OrderController {
   }
 
   //구매 확정 -> user
+  @Roles(Role.User)
   @Patch('/confirm/:id')
   confirmUpdate(
     @Param('id') id: number,
