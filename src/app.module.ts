@@ -19,8 +19,8 @@ import { UserModule } from './user/user.module';
 import { LocationModule } from './location/location.module';
 import { StoreModule } from './store/store.module';
 import { ProductModule } from './product/product.module';
-import { ProductThumbnailModule } from './product-thumbnail/product-thumbnail.module';
-import { ProductContentModule } from './product-content/product-content.module';
+import { ProductThumbnailModule } from './product-thumbnail/product.thumbnail.module';
+import { ProductContentModule } from './product-content/product.content.module';
 import { WishModule } from './wish/wish.module';
 import { CartModule } from './cart/cart.module';
 import { ReviewModule } from './review/review.module';
@@ -37,12 +37,10 @@ import { ProductThumbnail } from './product/entities/product-thumbnail.entity';
 import { ProductContent } from './product/entities/product-content.entity';
 import { Wish } from './wish/entities/wish.entity';
 import { Cart } from './cart/entities/cart.entity';
-import { Order } from './order/entities/order.entity';
 import { Review } from './review/entities/review.entity';
 import { Question } from './question/entities/question.entity';
 import { Answer } from './answer/entities/answer.entity';
 import { Faq } from './faq/entities/faq.entity';
-import { OrderModule } from './order/order.module';
 
 const typeOrmModuleOptions = {
   useFactory: async (
@@ -64,7 +62,6 @@ const typeOrmModuleOptions = {
       ProductContent,
       Wish,
       Cart,
-      Order,
       Review,
       Question,
       Answer,
@@ -118,7 +115,7 @@ const typeOrmModuleOptions = {
     QuestionModule,
     AnswerModule,
     FaqModule,
-    OrderModule,
+    // KakaoModule,
   ],
   controllers: [],
   providers: [],
