@@ -9,83 +9,59 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
 import { User } from 'src/user/entities/user.entity';
-import { Product } from 'src/product/entities/product.entity';
+import { ProductService } from 'src/product/product.service';
 import _ from 'lodash';
 @Injectable()
 export class OrderService {
   constructor(
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
-    @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly productService: ProductService,
   ) {}
 
   async create(createOrderDto: CreateOrderDto, user: User) {
-    //구매 : 구매 내역이 status: 구매 완료가 뜨고 해당 가격만큼 user의 point를 깎는다.
-    //아니면 front에서 create와 user의 update를 각각 불러와 처리하는 방법도 있다.
+    //결제는 다른 api에서 진행. 정말 order 생성만 진행한다.
 
-    const { product_id, quantity } = createOrderDto;
+    //해당하는 product의 정보를 가져와 현재 값을 같이 저장한다.
 
-    const product = await this.productRepository.findOne({
-      where: { id: product_id },
-    });
+    const { product_id, receiver, receiver_phone_number, delivery_name, delivery_address, delivery_request, quantity } = createOrderDto;
+    const [ product ] = await this.productService.getProductDetail(product_id);
 
-    const userData = await this.userRepository.findOne({
-      where: { id: user.id },
-    });
-
-    userData.point -= product.point * quantity;
-
-    const userUpdate = await this.userRepository.save(userData);
+    //우리 쇼핑몰 구매는 기부 사이트의 point가 아닌 price로 진행함
+    //product id는 현재 판매하는 상품으로 연결할 때 사용, name과 price는 변동 가능성 있으니 저장
     const createOrder = await this.orderRepository.save({
       product_id,
-      user_id: user.id,
+      product_name: product.name,
+      product_price: product.price,
+      receiver,
+      receiver_phone_number,
+      delivery_name,
+      delivery_address,
+      delivery_request, 
       quantity,
-      status: '구매 완료',
-    });
+      user_id: user.id
+    })
 
+  
     return {
       success: true,
       message: '구매에 성공하였습니다.',
-      data: {
-        ...createOrder,
-        remainPoint: userData.point,
-      },
+      data: createOrder,
     };
   }
 
   async findAll(user: User) {
     const orders = await this.orderRepository.find({
       where: { user_id: user.id },
+      select: ['id', 'status', 'product_name', 'product_price', 'quantity', 'createdAt'],
     });
 
-    const data = [];
-    //mapping해서 product 내용도 일부 가져온다.
-    for (const order of orders) {
-      const product = await this.productRepository.findOne({
-        where: { id: order.product_id },
-      });
-
-      const mappedItem = {
-        id: order.id,
-        product_id: order.product_id,
-        user_id: order.user_id,
-        productName: product.name,
-        productStore: product.store_id,
-        quantity: order.quantity,
-        // 추가 필요한 매핑 작업 수행
-      };
-
-      data.push(mappedItem);
-    }
     return {
       success: true,
       message: '구매 내역을 정상적으로 불러왔습니다.',
       data: {
         order_count: orders.length,
-        data,
+        data: orders,
       },
     };
   }
@@ -102,26 +78,10 @@ export class OrderService {
       );
     }
 
-    const product = await this.productRepository.findOne({
-      where: { id: order.product_id },
-    });
-
-    const mappedItem = {
-      id: order.id,
-      product_id: order.product_id,
-      user_id: order.user_id,
-      status: order.status,
-      productName: product.name,
-      productPoint: product.point,
-      quantity: order.quantity,
-      orderTime: order.createdAt,
-      // 추가 필요한 매핑 작업 수행
-    };
-
     return {
       success: true,
       message: '구매 내역을 정상적으로 불러왔습니다.',
-      data: mappedItem,
+      data: order,
     };
   }
 
@@ -134,12 +94,8 @@ export class OrderService {
     return order.status;
   }
 
-  //반복되는 것을 어떻게 줄여볼까?
   async adminUpdate(id: number, updateOrderDto: UpdateOrderDto) {
     const { status } = updateOrderDto;
-
-    //해당 작업이 필요함.
-    //배송이라던지 돈 입금을 확인하면 자동으로 올려준다던지. 하지만 지금 상황에선 없으므로 status만 변경해준다.
 
     //order update
     const order = await this.orderRepository.findOne({
@@ -179,6 +135,10 @@ export class OrderService {
       throw new NotFoundException(
         '해당 상품의 구매 내역을 확인할 수 없습니다.',
       );
+    }
+
+    if (order.status === '환불신청' || order.status === '환불완료') {
+      throw new BadRequestException('해당 상품은 구매확정이 불가능 합니다.');
     }
 
     order.status = status;
@@ -251,28 +211,14 @@ export class OrderService {
       );
     }
 
-    //user의 point를 되돌려주고 status를 환불 완료로 update해준다.
-    const product = await this.productRepository.findOne({
-      where: { id: order.product_id },
-    });
-
-    const userData = await this.userRepository.findOne({
-      where: { id: user.id },
-    });
-
-    userData.point += product.point * order.quantity;
+    //결제상으로 환불 불러오기
     order.status = status;
-
-    const userUpdate = await this.userRepository.save(userData);
-    const RefundOrder = await this.orderRepository.save(order);
+    const refundOrder = await this.orderRepository.save(order);
 
     return {
       success: true,
       message: '성공적으로 환불에 성공하였습니다.',
-      data: {
-        ...RefundOrder,
-        remainPoint: userData.point,
-      },
+      data: refundOrder
     };
   }
 }

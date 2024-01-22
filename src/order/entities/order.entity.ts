@@ -6,7 +6,6 @@ import {
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 
 // entity
@@ -30,6 +29,9 @@ export class Order {
   //추후 enum으로 교체
   @Column({ type: 'varchar', nullable: false })
   status: string;
+
+  @Column({ type: 'varchar', nullable: false })
+  product_name: string;
 
   //현재의 제품 한 개당 가격
   @Column({ type: 'int', nullable: false })
