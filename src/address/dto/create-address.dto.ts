@@ -8,6 +8,7 @@ export class CreateAddressDto {
   @IsString()
   name: string;
 
+  @IsNotEmpty({ message: '전화번호를 입력해 주세요.' })
   @IsNumber()
   phone: number;
 

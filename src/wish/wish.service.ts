@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { Repository } from 'typeorm';
 import { Wish } from './entities/wish.entity';
@@ -22,60 +26,60 @@ export class WishService {
 
     //같은 유저의 중복 찜 불가
     const wish = await this.wishRepository.find({
-      where: {product_id, user_id:user.id},
-    })
+      where: { product_id, user_id: user.id },
+    });
 
-    if(wish.length) {
+    if (wish.length) {
       throw new BadRequestException('이미 찜한 상품입니다.');
     }
 
     //찜 생성 후 return
     const createWish = await this.wishRepository.save({
-      product_id:product_id,
-      user_id: user.id
+      product_id: product_id,
+      user_id: user.id,
     });
 
     return {
       success: true,
-      message: "찜이 완료되었습니다.",
-      data: createWish
+      message: '찜이 완료되었습니다.',
+      data: createWish,
     };
   }
 
   async findAll(user: User) {
     const wishes = await this.wishRepository.find({
-      where: { user_id:user.id },
-    })
+      where: { user_id: user.id },
+    });
 
     return {
       success: true,
-      message: "찜을 정상적으로 불러왔습니다.",
+      message: '찜을 정상적으로 불러왔습니다.',
       data: {
         wishes_count: wishes.length,
-        wishes
-      }
+        wishes,
+      },
     };
   }
 
   async findByProduct(id: number) {
     const wishes = await this.wishRepository.find({
-      where: { product_id:id },
-    })
+      where: { product_id: id },
+    });
 
     return {
       success: true,
-      message: "찜을 정상적으로 불러왔습니다.",
-      data : {
-        wishes_count: wishes.length
-      }
+      message: '찜을 정상적으로 불러왔습니다.',
+      data: {
+        wishes_count: wishes.length,
+      },
     };
   }
 
   async remove(id: number, user: User) {
-    //id를 통해 wish를 찾는다. 
+    //id를 통해 wish를 찾는다.
     //해당 user가 id에 해당하는 찜을 했는지 확인하기 위해 user_id도 같이 확인
     const wish = await this.wishRepository.findOne({
-      where: { id, user_id:user.id },
+      where: { id, user_id: user.id },
     });
 
     if (_.isNil(wish)) {
@@ -85,10 +89,10 @@ export class WishService {
     //삭제
     await this.wishRepository.delete({ id });
 
-     return {
+    return {
       success: true,
-      message: "찜을 정상적으로 삭제했습니다.",
-      data : wish
+      message: '찜을 정상적으로 삭제했습니다.',
+      data: wish,
     };
   }
 }

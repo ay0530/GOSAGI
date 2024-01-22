@@ -48,6 +48,17 @@ export class FaqController {
     };
   }
 
+  // FAQ 검색
+  @Get(':keyword')
+  async searchFaq(@Param('keyword') keyword: string) {
+    const data = await this.faqService.searchFaq(keyword);
+    return {
+      success: true,
+      message: 'FAQ 검색이 완료되었습니다.',
+      data,
+    };
+  }
+
   // FAQ 수정
   @Patch(':faqId')
   async updateFaq(

@@ -52,6 +52,7 @@ export class FaqService {
       .where('title', {
         keyword: `%${keyword}%`,
       })
+      .orderBy('faq.created_at', 'DESC')
       .getMany();
 
     return keywordFaq;
