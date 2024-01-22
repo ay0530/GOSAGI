@@ -8,14 +8,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-
-import { JwtAuthGuard } from 'src/guards/jwt.guard';
-
 import { AuthService } from './auth.service';
 import { RedisService } from 'src/redis/redis.service';
 import { LoginDto } from 'src/user/dto/login.dto';
 import { ResponseDto } from 'src/ResponseDTO/response-dto';
 import { IOAuthUser } from './IOauthInterface/ioauth.user.interface';
+import { JwtAuthGuard } from 'src/guards/jwt.guard';
 
 @Controller('auth')
 export class AuthController {
