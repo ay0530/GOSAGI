@@ -1,6 +1,25 @@
 @domain = http://localhost:3000/goods
 
 ###
+# Admin 상품 정보 등록 (더미 데이터)
+# DB 포맷 후 진행하시기 바랍니다 (id를 1으로 만들기)
+POST {{domain}}/1
+Content-Type: application/JSON
+
+{
+  "code": 1, 
+  "name": "임시 상품",
+  "description" : "임시 상품",
+  "location": "임시 상품",
+  "category": "0",
+  "point": 0,
+  "price": 0,
+  "thumbnail_image": "임시 상품",
+  "productThumbnails": [{"image_url": "임시 상품"}],
+  "productContents": [{"content": "임시 상품"}]
+}
+
+###
 # 프로덕트 등록 / 뒤에는 스토어 아이디(스토어가 필요함)
 POST {{domain}}/1
 Content-Type: application/JSON
