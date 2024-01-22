@@ -8,8 +8,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { QuestionStatus } from 'src/question/types/questionStatus.type';
-import { QuestionStatusType } from 'src/question/types/questionStatus.type';
 import { User } from 'src/user/entities/user.entity';
 import { Product } from 'src/product/entities/product.entity';
 
@@ -29,9 +27,17 @@ export class Question {
   @Column({ type: 'varchar', nullable: false })
   content: string;
 
-  // 상태
-  @Column({ type: 'int', default: QuestionStatus.ACTIVATE })
-  status: QuestionStatusType;
+  // 삭제 여부
+  @Column({ type: 'boolean', default: false })
+  is_deleted: boolean;
+
+  // 비밀글 여부
+  @Column({ type: 'boolean' })
+  is_private: boolean;
+
+  // 비밀번호 여부
+  @Column({ type: 'varchar', nullable: true })
+  password: string;
 
   // 작성일
   @CreateDateColumn()

@@ -11,4 +11,8 @@ export class CreateQuestionDto {
 
   @IsNotEmpty({ message: '내용을 입력해 주세요' })
   content: string;
+
+  isPrivate: boolean;
+
+  password: string;
 }
