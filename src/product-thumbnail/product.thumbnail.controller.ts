@@ -1,11 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ProductThumbnailService } from './product-thumbnail.service';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
+import { ProductThumbnailService } from './product.thumbnail.service';
 import { CreateProductThumbnailDto } from '../product/dto/create-product-thumbnail.dto';
 import { UpdateProductThumbnailDto } from './dto/update-product-thumbnail.dto';
 
 @Controller('product-thumbnail')
 export class ProductThumbnailController {
-  constructor(private readonly productThumbnailService: ProductThumbnailService) {}
+  constructor(
+    private readonly productThumbnailService: ProductThumbnailService,
+  ) {}
 
   @Post()
   create(@Body() createProductThumbnailDto: CreateProductThumbnailDto) {
@@ -23,7 +33,10 @@ export class ProductThumbnailController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductThumbnailDto: UpdateProductThumbnailDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateProductThumbnailDto: UpdateProductThumbnailDto,
+  ) {
     return this.productThumbnailService.update(+id, updateProductThumbnailDto);
   }
 

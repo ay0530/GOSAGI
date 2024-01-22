@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ProductThumbnailController } from './product-thumbnail.controller';
-import { ProductThumbnailService } from './product-thumbnail.service';
+import { ProductThumbnailController } from './product.thumbnail.controller';
+import { ProductThumbnailService } from './product.thumbnail.service';
 
 describe('ProductThumbnailController', () => {
   let controller: ProductThumbnailController;
@@ -11,7 +11,9 @@ describe('ProductThumbnailController', () => {
       providers: [ProductThumbnailService],
     }).compile();
 
-    controller = module.get<ProductThumbnailController>(ProductThumbnailController);
+    controller = module.get<ProductThumbnailController>(
+      ProductThumbnailController,
+    );
   });
 
   it('should be defined', () => {

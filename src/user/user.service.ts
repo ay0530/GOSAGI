@@ -26,14 +26,13 @@ export class UserService {
     private readonly redisService: RedisService,
   ) {}
 
-  async authSignup(email:string, password:string, name:string){
+  async authSignup(email: string, password: string, name: string) {
     return await this.userRepository.save({
-      email, 
-      password, 
-      nickname: name
-    })
-}
-  
+      email,
+      password,
+      nickname: name,
+    });
+  }
 
   // ---- 회원 1명
   // 회원가입
@@ -46,13 +45,13 @@ export class UserService {
       );
     }
 
-    // 닉네임 중복 체크
-    const existingName = await this.findOneByName(createUserDto.nickname);
-    if (existingName) {
-      throw new ConflictException(
-        '이미 해당 이름으로 가입된 사용자가 있습니다!',
-      );
-    }
+    // // 닉네임 중복 체크
+    // const existingName = await this.findOneByName(createUserDto.nickname);
+    // if (existingName) {
+    //   throw new ConflictException(
+    //     '이미 해당 이름으로 가입된 사용자가 있습니다!',
+    //   );
+    // }
 
     // 비밀번호 확인 일치 여부 체크
     if (createUserDto.password !== createUserDto.passwordConfirm) {
@@ -78,35 +77,6 @@ export class UserService {
     };
   }
 
-  // 로그인
-  async login(email: string, password: string) {
-    // 회원 정보 조회
-    const user = await this.userRepository.findOne({
-      select: ['id', 'email', 'password'],
-      where: { email },
-    });
-
-    // ERR : 회원정보가 없는 경우
-    if (_.isNil(user)) {
-      throw new NotFoundException('이메일을 확인해주세요.');
-    }
-
-    // ERR : 비밀번호가 일치하지 않는 경우
-    if (!(await compare(password, user.password))) {
-      throw new NotFoundException('비밀번호를 확인해주세요.');
-    }
-
-    // access token 생성
-    const payload = { id: user.id };
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '10m' });
-
-    // refresh token 생성
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
-    await this.redisService.setRefreshToken(String(user.id), refreshToken);
-
-    return accessToken;
-  }
-
   // 회원 정보 조회
   async findOne(id: number) {
     // 회원 정보 조회
@@ -122,6 +92,30 @@ export class UserService {
       { nickname: updateUserDto.nickname },
     );
     return { nickname: updateUserDto.nickname };
+  }
+
+  // 회원 비밀번호 수정
+  async updatePassword(
+    email: string,
+    currentPassword: string,
+    newPassword: string,
+  ) {
+    const user = await this.findOneByEmail(email);
+    const userPassword = user.password;
+
+    // ERR : 비밀번호가 일치하지 않는 경우
+    if (!(await compare(currentPassword, userPassword))) {
+      throw new NotFoundException('비밀번호가 일치하지 않습니다.');
+    }
+
+    // 신규 비밀번호 암호화
+    const hashedNewPassword = await hash(newPassword, 10);
+
+    // 비밀번호 수정
+    await this.userRepository.update(
+      { email },
+      { password: hashedNewPassword },
+    );
   }
 
   // 회원 탈퇴
@@ -151,11 +145,15 @@ export class UserService {
     return users;
   }
 
+  // 회원 정보 조회(조건 : 이메일)
   async findOneByEmail(email: string) {
-    return this.userRepository.findOne({ where: { email } });
+    return this.userRepository.findOne({
+      select: ['id', 'email', 'password'],
+      where: { email },
+    });
   }
 
-  async findOneByName(nickname: string) {
-    return this.userRepository.findOne({ where: { nickname } });
-  }
+  // async findOneByName(nickname: string) {
+  //   return this.userRepository.findOne({ where: { nickname } });
+  // }
 }

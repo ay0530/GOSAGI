@@ -12,6 +12,8 @@ import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Store } from 'src/store/entities/store.entity';
 import { Wish } from 'src/wish/entities/wish.entity';
 import { Cart } from 'src/cart/entities/cart.entity';
+import { Order } from 'src/order/entities/order.entity';
+
 import { ProductThumbnail } from 'src/product/entities/product-thumbnail.entity';
 import { ProductContent } from 'src/product/entities/product-content.entity';
 import { Question } from 'src/question/entities/question.entity';
@@ -64,7 +66,7 @@ export class Product {
   @IsNotEmpty({ message: '가격을 입력하세요' })
   @IsString({ message: '문자형으로 입력해주세요' })
   @Column({ type: 'int' })
-  price: string;
+  price: number;
 
   // 조회수
   @Column({ type: 'int', nullable: true })
@@ -86,9 +88,13 @@ export class Product {
   @OneToMany(() => Cart, (cart) => cart.product)
   cart: Cart[];
 
-  // 일대다 관계 설정(carts)
+  // 일대다 관계 설정(wishs)
   @OneToMany(() => Wish, (wish) => wish.product)
   wish: Wish[];
+
+  // 일대다 관계 설정(orders)
+  @OneToMany(() => Wish, (order) => order.product)
+  order: Order[];
 
   // 일대다 관계 설정(product_thumbnail)
   @OneToMany(

@@ -1,0 +1,61 @@
+@domain = http://localhost:3000
+
+### 
+# 구매 등록
+POST {{domain}}/order
+Content-Type: application/JSON
+
+{
+  "product_id" : 4,
+  "quantity" : 4,
+  "receiver" : "배고파",
+  "receiver_phone_number" : "010-1111-1111",
+  "delivery_name" : "집",
+  "delivery_address" : "서울시 강남구"
+}
+
+###
+# 내가 구매한 상품들 조회
+GET {{domain}}/order
+
+###
+# 상세 구매 내역 조회
+GET {{domain}}/order/8
+
+
+###
+# 배송 완료
+PATCH  {{domain}}/order/manage/8
+Content-Type: application/JSON
+
+{
+  "status": "배송완료"
+}
+
+###
+# 구매확정
+PATCH  {{domain}}/order/confirm/8
+Content-Type: application/JSON
+
+{
+  "status": "구매확정"
+}
+
+###
+# 환불신청
+PATCH  {{domain}}/order/refund/7
+Content-Type: application/JSON
+
+{
+  "status": "환불신청"
+}
+
+
+###
+# 환불완료
+PATCH  {{domain}}/order/manage/refund/7
+Content-Type: application/JSON
+
+{
+  "status": "환불완료"
+}
