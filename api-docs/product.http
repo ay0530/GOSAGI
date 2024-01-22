@@ -51,11 +51,17 @@ Content-Type: application/JSON
   ]
 }
 
+### 상품 상세 조회
+GET {{domain}}/detail/2
+
+###
+# 최근 본 상품 목록 조회
+GET {{domain}}/recentView
+
 ###
 # 상품 전체 가져오기
 GET {{domain}}
 Content-Type: application/JSON
-
 
 ###
 # 지역별 가져오기
@@ -66,7 +72,6 @@ Content-Type: application/JSON
 # 상품 검색
 GET {{domain}}/keyword?keyword=불닭
 Content-Type: application/JSON
-
 
 ###
 #카테고리 아이디별 가져오기
