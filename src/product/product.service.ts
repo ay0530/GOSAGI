@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { DataSource, Like, Not, Or, Repository } from 'typeorm';
 import { Wish } from 'src/wish/entities/wish.entity';
+import { Order } from 'src/order/entities/order.entity';
+import { Review } from 'src/review/entities/review.entity';
 
 @Injectable()
 export class ProductService {
@@ -109,16 +111,36 @@ export class ProductService {
 
   //orders테이블 까지 보류 (테이블 관의 관계가 없음)
   async getProductsByReviewRate(){
-    return await this.dataSource.createQueryBuilder()
-    
+    return await this.dataSource.createQueryBuilder(Product, 'p')
+    .select('p.*')
+    .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
+    .leftJoin(Order, 'o', 'o.product_id = p.id')
+    .leftJoin(Review, 'r', 'r.order_id = o.id')
+    .groupBy('p.id')
+    .having('average_rate IS NOT NULL')
+    .orderBy('average_rate', 'DESC')
+    .limit(4)
+    .getRawMany();   
+
   }
 
   //orders테이블 까지 보류
   async getProdcutByOrders(){
     return await this.dataSource.createQueryBuilder()
     .select('p.*')
+    .addSelect('COUNT(o.product_id) as number_of_purchase')
     .from(Product, 'p')
-    
+    .leftJoin(Order, 'o', 'o.product_id = p.id')
+    .where(`o.status IS NOT NULL 
+        AND (o.status = :status1 OR
+          o.status = :status2)`, {
+        status1: '구매완료', 
+        status2: '구매확정'
+      })
+    .groupBy('p.id')    
+    .orderBy('number_of_purchase', 'DESC')
+    .limit(4)
+    .getRawMany()
   }
 
 

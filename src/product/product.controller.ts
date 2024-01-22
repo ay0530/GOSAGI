@@ -102,6 +102,7 @@ export class ProductController {
   }
 
   //구매 완료 개수 순으로 4개(오더 테이블이 있어야됨)
+  @Get('bestOrders')
   async getProdcutByOrders(){
     const data = await this.productService.getProdcutByOrders()
     const response = new ResponseDto(true, '상품조회가 완료되었습니다', data)

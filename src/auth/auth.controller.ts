@@ -62,7 +62,7 @@ export class AuthController {
   }
 
   // 일반 로그아웃
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Post('logout')
   async logout(@Req() req: any, @Res({ passthrough: true }) res: any) {
     // 액세스 토큰 삭제(빈 값을 덮어씌움)

@@ -66,6 +66,18 @@ Content-Type: application/JSON
 
 
 ###
+#리뷰 평점순
+GET {{domain}}/reviewRate
+Content-Type: application/JSON
+
+
+###
+# 주문 많은 수 가져오기
+GET {{domain}}/bestOrders
+Content-Type: application/JSON
+
+
+###
 #최고 상품 가져오기
 GET {{domain}}/bestProducts
 Content-Type: application/JSON
