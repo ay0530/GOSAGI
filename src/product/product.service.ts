@@ -194,6 +194,21 @@ export class ProductService {
       .execute();
   }
 
+  async increaseView(productId: number){
+    
+    const product = await this.productRepository.findOne({
+      where: { id: productId },
+    });
+
+    if (!product) {
+      throw new NotFoundException('선택하신 상품이 존재하지 않습니다.');
+    }
+
+    return await this.productRepository.increment({
+      id: productId,
+    }, "views", +1)
+  }
+
   async remove(productId: number) {
     const product = await this.productRepository.findOne({
       where: { id: productId },

@@ -148,6 +148,16 @@ export class ProductController {
     return response
   }
 
+  //상품 조회수 올리기
+  @Patch('incrementView/:productId')
+  async increaseView(@Param('productId') productId: number ){
+    const data = await this.productService.increaseView(productId);
+
+    const response = new ResponseDto(true, '조회수 증가', null)
+
+    return response
+  }
+
   //상품 삭제(미사용)
   @Delete(':productId')
   async remove(@Param('productId') productId: number) {

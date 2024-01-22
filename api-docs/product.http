@@ -104,6 +104,11 @@ Content-Type: application/JSON
   "description": "인천 삼다수"
 }
 
+###
+#상품 조회수 증가
+PATCH {{domain}}/incrementView/8
+Content-Type: application/JSON
+
 
 ###
 #상품 삭제
