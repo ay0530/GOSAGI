@@ -6,28 +6,28 @@ POST {{domain}}/1
 Content-Type: application/JSON
 
 {
-"code": 1322212, 
-"name": "제주 불닭 한라봉",
-"description" : "맛도좋고 몸도좋은 불닭 한라봉",
-"location": "제주시 애월동",
+"code": 2962612, 
+"name": "인천 불닭 한라봉4",
+"description" : "맛도좋고 몸도좋은 불닭 한라봉4",
+"location": "인천시 애월동",
 "category": "0",
 "point": "30000",
 "price": "150000",
-"thumbnail_image": "https://naver.com/123asidjaisd",
+"thumbnail_image": "https://naver.com/123asidjai123sd",
 "productThumbnails": [
   {
-    "image_url": "https://cdn.poomang.com/auto-generated/talking-potato/images/cover.png?ts=1681789981231"
+    "image_url": "https://cdn.poomang.com/auto-generated/talking-potato/images/cover.png?ts=1611781881"
   },
   {
-     "image_url": "https://cdn.poomang.com/auto-generated/talking-potato/images/cover.png?ts=1787914442312"
+     "image_url": "https://cdn.poomang.com/auto-generated/talking-potato/images/cover.png?ts=118823121442312"
   }
   ],
 "productContents": [
     {
-      "content": "제주 불닭한라봉"
+      "content": "인천 불닭한라봉4"
     },
     {
-      "content": "자매품 크림 마라 한라봉"
+      "content": "자매품 크림 마라 인천 한라봉4"
     }
   ]
 }
@@ -40,7 +40,12 @@ Content-Type: application/JSON
 
 ###
 # 지역별 가져오기
-GET {{domain}}/location?location=제주
+GET {{domain}}/location?location=인천
+Content-Type: application/JSON
+
+###
+# 상품 검색
+GET {{domain}}/keyword?keyword=불닭
 Content-Type: application/JSON
 
 
@@ -50,7 +55,7 @@ GET {{domain}}/category/0
 Content-Type: application/JSON
 
 ###
-#컨텐츠 내용 가져괴
+#컨텐츠 내용 가져오기
 GET {{domain}}/detail/6
 Content-Type: application/JSON
 
@@ -59,6 +64,24 @@ Content-Type: application/JSON
 GET {{domain}}/code/6
 Content-Type: application/JSON
 
+
+###
+#최고 상품 가져오기
+GET {{domain}}/bestProducts
+Content-Type: application/JSON
+
+
+###
+# 찜순 가져오기
+GET {{domain}}/wishes
+Content-Type: application/JSON
+
+###
+# 조회수 순 가져오기
+GET {{domain}}/views
+Content-Type: application/JSON
+
+
 ###
 #상품 수정
 PATCH {{domain}}/6
@@ -66,8 +89,9 @@ Content-Type: application/JSON
 
 {
   "name": "제주",
-  "description": "제주 삼다수"
+  "description": "인천 삼다수"
 }
+
 
 ###
 #상품 삭제
