@@ -3,7 +3,10 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
-import { DataSource, Like, Not, Repository } from 'typeorm';
+import { DataSource, Like, Not, Or, Repository } from 'typeorm';
+import { Wish } from 'src/wish/entities/wish.entity';
+import { Order } from 'src/order/entities/order.entity';
+import { Review } from 'src/review/entities/review.entity';
 
 @Injectable()
 export class ProductService {
@@ -97,6 +100,83 @@ export class ProductService {
     });
   }
 
+  async findByProductKeyword(keyword: string){
+    return await this.productRepository.find({
+      where:[ 
+        {name: Like(`%${keyword}%`)},
+        {description: Like(`%${keyword}%`)}  
+      ]
+    })
+  }
+
+  //orders테이블 까지 보류 (테이블 관의 관계가 없음)
+  async getProductsByReviewRate(){
+    return await this.dataSource.createQueryBuilder(Product, 'p')
+    .select('p.*')
+    .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
+    .leftJoin(Order, 'o', 'o.product_id = p.id')
+    .leftJoin(Review, 'r', 'r.order_id = o.id')
+    .groupBy('p.id')
+    .having('average_rate IS NOT NULL')
+    .orderBy('average_rate', 'DESC')
+    .limit(4)
+    .getRawMany();   
+
+  }
+
+  //orders테이블 까지 보류
+  async getProdcutByOrders(){
+    return await this.dataSource.createQueryBuilder()
+    .select('p.*')
+    .addSelect('COUNT(o.product_id) as number_of_purchase')
+    .from(Product, 'p')
+    .leftJoin(Order, 'o', 'o.product_id = p.id')
+    .where(`o.status IS NOT NULL 
+        AND (o.status = :status1 OR
+          o.status = :status2)`, {
+        status1: '구매완료', 
+        status2: '구매확정'
+      })
+    .groupBy('p.id')    
+    .orderBy('number_of_purchase', 'DESC')
+    .limit(4)
+    .getRawMany()
+  }
+
+
+  async getProductByViewsAndLike(){
+      return await this.dataSource.createQueryBuilder()
+      .select('p.*')
+      .addSelect('COUNT(w.product_id) + SUM(p.views) as best_products')
+      .from(Product, 'p')
+      .leftJoin(Wish, 'w', 'w.product_id = p.id')
+      .groupBy('p.id')
+      .orderBy('best_products', 'DESC')
+      .limit(4)
+      .getRawMany()
+    }
+  
+  async getProductByLike(){
+    return await this.dataSource.createQueryBuilder()
+    .select('p.*')
+    .addSelect('COUNT(w.product_id)', 'wish_count')
+    .from(Product, 'p')
+    .leftJoin(Wish, 'w', 'w.product_id = p.id')
+    .groupBy('p.id')
+    .limit(4)
+    .getRawMany();
+  }
+
+  async getProductByViews(){
+    return await this.productRepository.find({
+      order: {
+        views: "DESC"
+      },
+      take: 4,
+    })    
+  }
+  
+
   async update(productId: number, updateProductDto: UpdateProductDto) {
     const product = await this.productRepository.findOne({
       where: { id: productId },
@@ -112,6 +192,21 @@ export class ProductService {
       .set({ ...updateProductDto })
       .where(`id = ${productId}`)
       .execute();
+  }
+
+  async increaseView(productId: number){
+    
+    const product = await this.productRepository.findOne({
+      where: { id: productId },
+    });
+
+    if (!product) {
+      throw new NotFoundException('선택하신 상품이 존재하지 않습니다.');
+    }
+
+    return await this.productRepository.increment({
+      id: productId,
+    }, "views", +1)
   }
 
   async remove(productId: number) {

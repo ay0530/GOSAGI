@@ -4,7 +4,6 @@ import {
   ExecutionContext,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
 import { RedisService } from 'src/redis/redis.service';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
@@ -13,7 +12,6 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
-    private reflector: Reflector,
     private readonly redisService: RedisService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,

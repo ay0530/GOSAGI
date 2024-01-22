@@ -52,7 +52,7 @@ export class WishService {
       message: "찜을 정상적으로 불러왔습니다.",
       data: {
         wishes_count: wishes.length,
-        wishes
+        data: wishes
       }
     };
   }
