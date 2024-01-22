@@ -7,7 +7,11 @@ Content-Type: application/JSON
 
 {
   "product_id" : 4,
-  "quantity" : 4
+  "quantity" : 4,
+  "receiver" : "배고파",
+  "receiver_phone_number" : "010-1111-1111",
+  "delivery_name" : "집",
+  "delivery_address" : "서울시 강남구"
 }
 
 ###
@@ -15,21 +19,13 @@ Content-Type: application/JSON
 GET {{domain}}/order
 
 ###
-# 상품 별 상세 구매 내역 조회
-GET {{domain}}/order/1
+# 상세 구매 내역 조회
+GET {{domain}}/order/8
 
-###
-# 환불 완료
-PATCH  {{domain}}/order/4
-Content-Type: application/JSON
-
-{
-  "status": "환불완료"
-}
 
 ###
 # 배송 완료
-PATCH  {{domain}}/order/manage/1
+PATCH  {{domain}}/order/manage/8
 Content-Type: application/JSON
 
 {
@@ -38,7 +34,7 @@ Content-Type: application/JSON
 
 ###
 # 구매확정
-PATCH  {{domain}}/order/confirm/1
+PATCH  {{domain}}/order/confirm/8
 Content-Type: application/JSON
 
 {
@@ -47,7 +43,7 @@ Content-Type: application/JSON
 
 ###
 # 환불신청
-PATCH  {{domain}}/order/refund/2
+PATCH  {{domain}}/order/refund/7
 Content-Type: application/JSON
 
 {
@@ -57,7 +53,7 @@ Content-Type: application/JSON
 
 ###
 # 환불완료
-PATCH  {{domain}}/order/manage/refund/2
+PATCH  {{domain}}/order/manage/refund/7
 Content-Type: application/JSON
 
 {

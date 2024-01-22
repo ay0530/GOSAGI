@@ -66,7 +66,7 @@ export class Product {
   @IsNotEmpty({ message: '가격을 입력하세요' })
   @IsString({ message: '문자형으로 입력해주세요' })
   @Column({ type: 'int' })
-  price: string;
+  price: number;
 
   // 조회수
   @Column({ type: 'int', nullable: true })

@@ -24,25 +24,33 @@ export class OrderService {
 
     //해당하는 product의 정보를 가져와 현재 값을 같이 저장한다.
 
-    const { product_id, receiver, receiver_phone_number, delivery_name, delivery_address, delivery_request, quantity } = createOrderDto;
-    const [ product ] = await this.productService.getProductDetail(product_id);
+    const {
+      product_id,
+      receiver,
+      receiver_phone_number,
+      delivery_name,
+      delivery_address,
+      delivery_request,
+      quantity,
+    } = createOrderDto;
+    const [product] = await this.productService.getProductDetail(product_id);
 
     //우리 쇼핑몰 구매는 기부 사이트의 point가 아닌 price로 진행함
     //product id는 현재 판매하는 상품으로 연결할 때 사용, name과 price는 변동 가능성 있으니 저장
     const createOrder = await this.orderRepository.save({
       product_id,
-      product_name: product.name,
-      product_price: product.price,
+      status: '구매완료',
       receiver,
       receiver_phone_number,
       delivery_name,
       delivery_address,
-      delivery_request, 
+      delivery_request,
       quantity,
-      user_id: user.id
-    })
+      product_name: product.name,
+      product_price: product.price,
+      user_id: user.id,
+    });
 
-  
     return {
       success: true,
       message: '구매에 성공하였습니다.',
@@ -53,7 +61,14 @@ export class OrderService {
   async findAll(user: User) {
     const orders = await this.orderRepository.find({
       where: { user_id: user.id },
-      select: ['id', 'status', 'product_name', 'product_price', 'quantity', 'createdAt'],
+      select: [
+        'id',
+        'status',
+        'product_name',
+        'product_price',
+        'quantity',
+        'createdAt',
+      ],
     });
 
     return {
@@ -218,7 +233,7 @@ export class OrderService {
     return {
       success: true,
       message: '성공적으로 환불에 성공하였습니다.',
-      data: refundOrder
+      data: refundOrder,
     };
   }
 }
