@@ -13,6 +13,7 @@ import { RedisService } from 'src/redis/redis.service';
 import { LoginDto } from 'src/user/dto/login.dto';
 import { ResponseDto } from 'src/ResponseDTO/response-dto';
 import { IOAuthUser } from './IOauthInterface/ioauth.user.interface';
+import { JwtAuthGuard } from 'src/guards/jwt.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -62,7 +63,7 @@ export class AuthController {
   }
 
   // 일반 로그아웃
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @Post('logout')
   async logout(@Req() req: any, @Res({ passthrough: true }) res: any) {
     // 액세스 토큰 삭제(빈 값을 덮어씌움)

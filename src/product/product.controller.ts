@@ -148,7 +148,7 @@ export class ProductController {
     return response
   }
 
-  //상품 조회수 올리기
+  //상품 조회수 올리기 (필요할것 같아서 만들었습니당)
   @Patch('incrementView/:productId')
   async increaseView(@Param('productId') productId: number ){
     const data = await this.productService.increaseView(productId);
