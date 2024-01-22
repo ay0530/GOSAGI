@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
-import { RedisService } from 'src/redis/redis.service';
+
+import { RedisJwtService } from 'src/redis/redis-jwt.service';
 import { UserService } from 'src/user/user.service';
 
 @Injectable()
@@ -9,7 +10,7 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
-    private readonly redisService: RedisService,
+    private readonly redisJwtService: RedisJwtService,
   ) {}
 
   // JWT 토큰 발급
@@ -20,7 +21,7 @@ export class AuthService {
 
     // 리프레시 토큰 생성
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
-    await this.redisService.setRefreshToken(String(user.id), refreshToken);
+    await this.redisJwtService.setRefreshToken(String(user.id), refreshToken);
 
     return accessToken;
   }
