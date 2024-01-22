@@ -1,10 +1,13 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+import { ApprovalStatusType } from './types/approval-status.type';
 
 import { ProductService } from 'src/product/product.service';
 import { CreateStoreDto } from './dto/create-store.dto';
@@ -41,18 +44,52 @@ export class StoreService {
     const store = await this.storeRepository.findOne({
       where: { id },
     });
+
     return {
       name: store.name,
       phone_number: store.phone_number,
       business_number: store.business_number,
       address: store.address,
+      aproval_status: store.approval_status,
+      reasons_rejection: store.reasons_rejection,
     };
   }
 
   // 매장 정보 수정
   async update(id: number, updateStoreDto: UpdateStoreDto, userId: number) {
+    // 매장 이름 조회
+    const storeInfo = await this.findOne(id);
+    const storeName = storeInfo.name;
+
     // 매장 정보 예외 처리
-    await this.existingStore(updateStoreDto);
+    if (storeName !== updateStoreDto.name) {
+      await this.existingStore(updateStoreDto);
+    }
+
+    // 문의 글 상태 반환
+    const statusValue: number = updateStoreDto.approvalStatus;
+    const approval_status: ApprovalStatusType =
+      statusValue as ApprovalStatusType;
+
+    // 승인을 반려할 때 반려 사유가 작성되지 않은 경우
+    if (
+      updateStoreDto.approvalStatus === 2 &&
+      updateStoreDto.reasonsRejection === ''
+    ) {
+      throw new BadRequestException(
+        '상점 등록 승인 반려 시 반려 사유가 필요합니다',
+      );
+    }
+
+    // 승인할 때 반려 사유가 작성된 경우
+    if (
+      updateStoreDto.approvalStatus === 1 &&
+      updateStoreDto.reasonsRejection
+    ) {
+      throw new BadRequestException(
+        '상점 등록 승인 시 반려 사유를 제거해주시기 바랍니다',
+      );
+    }
 
     // 매장 정보 수정
     const store = await this.storeRepository.update(
@@ -61,6 +98,8 @@ export class StoreService {
         name: updateStoreDto.name,
         phone_number: updateStoreDto.phoneNumber,
         address: updateStoreDto.address,
+        approval_status,
+        reasons_rejection: updateStoreDto.reasonsRejection,
       },
     );
 

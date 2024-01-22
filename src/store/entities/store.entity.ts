@@ -7,7 +7,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-// entity
+import { ApprovalStatus } from './../types/approval-status.type';
+import { ApprovalStatusType } from './../types/approval-status.type';
 import { User } from 'src/user/entities/user.entity';
 import { Product } from 'src/product/entities/product.entity';
 
@@ -34,6 +35,14 @@ export class Store {
   // 사업자 주소
   @Column({ type: 'varchar' })
   address: string;
+
+  // 승인 여부
+  @Column({ type: 'int', default: ApprovalStatus.PENDINF })
+  approval_status: ApprovalStatusType;
+
+  // 반려 사유
+  @Column({ type: 'varchar' })
+  reasons_rejection: string;
 
   // 다대일 관계 설정(users)
   @ManyToOne(() => User, (user) => user.store)
