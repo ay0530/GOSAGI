@@ -6,8 +6,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 
-import { QuestionStatusType } from './types/questionStatus.type';
-
 import { AnswerService } from 'src/answer/answer.service';
 import { ProductService } from 'src/product/product.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
@@ -25,12 +23,19 @@ export class QuestionService {
 
   // 문의 글 저장
   async create(createQuestionDto: CreateQuestionDto, userId: number) {
+    // 비밀 문의 글 일 경우 비밀번호 입력 여부 검사
+    if (createQuestionDto.isPrivate && !createQuestionDto.password) {
+      throw new BadRequestException('비밀번호를 입력해주세요');
+    }
+
     // 문의 글 저장
     const question = await this.questionRepository.save({
       user_id: userId,
       product_id: createQuestionDto.productId,
       title: createQuestionDto.title,
       content: createQuestionDto.content,
+      is_private: createQuestionDto.isPrivate,
+      password: createQuestionDto.password,
     });
 
     return question;
@@ -69,15 +74,11 @@ export class QuestionService {
       throw new BadRequestException('답변이 완료된 글입니다.');
     }
 
-    // 문의 글 상태 반환
-    const statusValue: number = updateQuestionDto.status;
-    const status: QuestionStatusType = statusValue as QuestionStatusType;
-
     // 문의 글 수정
     const question = await this.questionRepository.update(
       { id, user_id: userId },
       {
-        status,
+        is_deleted: updateQuestionDto.isDeleted,
         title: updateQuestionDto.title,
         content: updateQuestionDto.content,
       },
@@ -111,10 +112,10 @@ export class QuestionService {
   //   }
   // }
 
-  // 문의 목록 조회
+  // 문의 목록 조회(회원)
   async findAll() {
     const questions = await this.questionRepository.find({
-      where: { status: 0 },
+      where: { is_deleted: false },
       order: { created_at: 'DESC' },
     });
 
@@ -129,7 +130,7 @@ export class QuestionService {
       .where(`question.${category} LIKE :keyword`, {
         keyword: `%${keyword}%`,
       })
-      .andWhere(`question.status = 0`)
+      .andWhere(`question.is_deleted = 0`)
       .orderBy('question.created_at', 'DESC')
       .getMany();
 
@@ -139,7 +140,7 @@ export class QuestionService {
   // 내 문의 목록 조회
   async findMyAll(userId: number) {
     const questions = await this.questionRepository.find({
-      where: { user_id: userId, status: 0 },
+      where: { user_id: userId, is_deleted: false },
       order: { created_at: 'DESC' },
     });
 
@@ -157,7 +158,7 @@ export class QuestionService {
       .andWhere(`question.user_id = :userId`, {
         userId,
       })
-      .andWhere(`question.status = 0`)
+      .andWhere(`question.is_deleted = false`)
       .orderBy('question.created_at', 'DESC')
       .getMany();
 
@@ -171,7 +172,7 @@ export class QuestionService {
 
     // 상품 번호들로 검색해
     const questions = await this.questionRepository.find({
-      where: { product_id: In(productIds), status: 0 },
+      where: { product_id: In(productIds), is_deleted: false },
       order: { created_at: 'DESC' },
     });
 
@@ -188,7 +189,7 @@ export class QuestionService {
       .createQueryBuilder('question')
       .where(`question.${category} LIKE :keyword`, { keyword: `%${keyword}%` })
       .andWhere(`question.product_id IN (:...productIds)`, { productIds })
-      .andWhere(`question.status = 0`)
+      .andWhere(`question.is_deleted = false`)
       .orderBy('question.created_at', 'DESC')
       .getMany();
 
@@ -198,7 +199,7 @@ export class QuestionService {
   // 내 매장의 특정 상품 문의 목록 조회
   async findProductAll(productId: number) {
     const questions = await this.questionRepository.find({
-      where: { product_id: productId, status: 0 },
+      where: { product_id: productId, is_deleted: false },
       order: { created_at: 'DESC' },
     });
 
@@ -216,7 +217,7 @@ export class QuestionService {
       .andWhere(`question.product_id = :productId`, {
         productId,
       })
-      .andWhere(`question.status = 0`)
+      .andWhere(`question.is_deleted = false`)
       .orderBy('question.created_at', 'DESC')
       .getMany();
 

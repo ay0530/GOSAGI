@@ -10,18 +10,18 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
+import { IOAuthUser } from './IOauthInterface/ioauth.user.interface';
 
 import { AuthService } from './auth.service';
-import { RedisService } from 'src/redis/redis.service';
+import { RedisJwtService } from 'src/redis/redis-jwt.service';
 import { LoginDto } from 'src/user/dto/login.dto';
 import { ResponseDto } from 'src/ResponseDTO/response-dto';
-import { IOAuthUser } from './IOauthInterface/ioauth.user.interface';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly redisService: RedisService,
+    private readonly redisJwtService: RedisJwtService,
   ) {}
 
   // 일반 로그인
@@ -73,7 +73,7 @@ export class AuthController {
       httpOnly: true,
       expires: new Date(0), // 쿠키 유효기간 만료
     });
-    await this.redisService.removeRefreshToken(req.user.id); // 리프레시 토큰 삭제
+    await this.redisJwtService.removeRefreshToken(req.user.id); // 리프레시 토큰 삭제
 
     const response = new ResponseDto(true, '로그아웃 되었습니다', null);
     return response;

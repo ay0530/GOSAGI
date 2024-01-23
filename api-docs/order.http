@@ -6,7 +6,7 @@ POST {{domain}}/order
 Content-Type: application/JSON
 
 {
-  "product_id" : 4,
+  "product_id" : 8,
   "quantity" : 4,
   "receiver" : "배고파",
   "receiver_phone_number" : "010-1111-1111",

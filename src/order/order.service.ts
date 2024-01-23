@@ -33,7 +33,10 @@ export class OrderService {
       delivery_request,
       quantity,
     } = createOrderDto;
-    const [product] = await this.productService.getProductDetail(product_id);
+    const product = await this.productService.getProductDetail(
+      product_id,
+      user.id,
+    );
 
     //우리 쇼핑몰 구매는 기부 사이트의 point가 아닌 price로 진행함
     //product id는 현재 판매하는 상품으로 연결할 때 사용, name과 price는 변동 가능성 있으니 저장

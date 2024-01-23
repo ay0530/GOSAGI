@@ -6,13 +6,11 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { JwtService } from '@nestjs/jwt';
 import _ from 'lodash';
 import { compare, hash } from 'bcrypt';
 
 import { UserRoleType } from './types/userRole.type';
 
-import { RedisService } from 'src/redis/redis.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -22,8 +20,6 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private readonly jwtService: JwtService,
-    private readonly redisService: RedisService,
   ) {}
 
   async authSignup(email: string, password: string, name: string) {
