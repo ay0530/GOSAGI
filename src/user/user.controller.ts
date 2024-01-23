@@ -14,7 +14,7 @@ import {
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 
 import { UserService } from './user.service';
-import { RedisService } from 'src/redis/redis.service';
+import { RedisJwtService } from 'src/redis/redis-jwt.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ResponseDto } from 'src/ResponseDTO/response-dto';
@@ -23,7 +23,7 @@ import { ResponseDto } from 'src/ResponseDTO/response-dto';
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly redisService: RedisService,
+    private readonly redisJwtService: RedisJwtService,
   ) {}
 
   // ---- 회원 1명
@@ -96,7 +96,7 @@ export class UserController {
       httpOnly: true,
       expires: new Date(0), // 쿠키 유효기간 만료
     });
-    await this.redisService.removeRefreshToken(req.user.id); // 리프레시 토큰 삭제
+    await this.redisJwtService.removeRefreshToken(req.user.id); // 리프레시 토큰 삭제
 
     const response = new ResponseDto(true, '회원 탈퇴가 완료되었습니다.', null);
     return response;

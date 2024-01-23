@@ -6,37 +6,56 @@ import {
   Patch,
   Param,
   Delete,
+   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { JwtAuthGuard } from 'src/guards/jwt.guard';
+
 
 @Controller('review')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createReviewDto: CreateReviewDto) {
-    return this.reviewService.create(createReviewDto);
+  create(@Body() createReviewDto: CreateReviewDto, @Req() req) {
+    const user = req.user;
+    return this.reviewService.create(createReviewDto, user);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.reviewService.findAll();
+  findAll(@Req() req) {
+    const user = req.user;
+    return this.reviewService.findAll(user);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.reviewService.findOne(+id);
+  findOne(@Param('id') id: number, @Req() req) {
+    const user = req.user;
+    return this.reviewService.findOne(id, user);
   }
 
+  @Get('/product/:productId')
+  findByProduct(@Param('productId') productId: number) {
+    return this.reviewService.findAllByProductId(productId);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {
-    return this.reviewService.update(+id, updateReviewDto);
+  update(@Param('id') id: number, @Body() updateReviewDto: UpdateReviewDto, @Req() req) {
+    const user = req.user;
+    return this.reviewService.update(id, updateReviewDto, user);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reviewService.remove(+id);
+  remove(@Param('id') id: number, @Req() req) {
+    const user = req.user;
+    return this.reviewService.remove(id, user);
   }
 }
