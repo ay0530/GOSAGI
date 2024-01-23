@@ -144,7 +144,7 @@ export class UserService {
   // 회원 정보 조회(조건 : 이메일)
   async findOneByEmail(email: string) {
     return this.userRepository.findOne({
-      select: ['id', 'email', 'password'],
+      select: ['id', 'email', 'password', 'role'],
       where: { email },
     });
   }
