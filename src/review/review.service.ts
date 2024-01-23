@@ -54,11 +54,14 @@ export class ReviewService {
       where: { user_id: user.id },
     });
 
+    const totalRate = reviews.reduce((sum, review) => sum + review.rate, 0);
+
     return {
       success: true,
       message: '리뷰를 정상적으로 불러왔습니다.',
       data: {
         review_count: reviews.length,
+        review_average_rate: totalRate / reviews.length,
         reviews,
       },
     };
