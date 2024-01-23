@@ -35,7 +35,6 @@ export class User {
   @Column({ type: 'int', default: UserRole.USER })
   role: UserRoleType;
 
-
   @Column({ type: 'int', nullable: true })
   point?: string;
 

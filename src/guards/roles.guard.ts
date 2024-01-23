@@ -1,35 +1,30 @@
 import { AuthGuard } from '@nestjs/passport';
 import { Reflector } from '@nestjs/core';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Role } from 'src/role/user.role';
+import { UserRoleType } from 'src/user/types/userRole.type';
+import { Repository } from 'typeorm';
+import { User } from 'src/user/entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
-export class RolesGuard extends AuthGuard('jwt') implements CanActivate {
-  constructor(private reflector: Reflector) {
-    super();
-  }
+export class RolesGuard implements CanActivate {
+  constructor(private readonly reflector: Reflector) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     //authenticated 먼저 확인
-    const authenticated = await super.canActivate(context);
-    if (!authenticated) {
-      return false;
-    }
 
     //각 role 에 해당하는 값을 가져와서 저장한다. reflector
-    const requiredRoles = this.reflector.getAllAndOverride<Role[]>('roles', [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const requiredRoles = this.reflector.getAllAndOverride<UserRoleType[]>(
+      'roles',
+      [context.getHandler(), context.getClass()],
+    );
 
-    console.log(requiredRoles);
     if (!requiredRoles) {
       return true;
     }
 
     const { user } = context.switchToHttp().getRequest();
     //해당 배열에 포함되는 role이라면 true
-    console.log(user.role);
     return requiredRoles.includes(user.role);
   }
 }
