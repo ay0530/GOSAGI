@@ -3,8 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { createClient, RedisClientType } from 'redis';
 
 @Injectable()
-export class RedisService implements OnModuleInit, OnModuleDestroy {
+export class RedisCoreService implements OnModuleInit, OnModuleDestroy {
   private client: RedisClientType; // redis DB와 상호작용 시 사용
+  private isConnected = false; // 연결 상태 플래그
 
   constructor(private configService: ConfigService) {}
 
@@ -21,7 +22,13 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
     this.client.on('error', (error) => console.error(`Redis Error: ${error}`));
 
-    await this.client.connect();
+    try {
+      await this.client.connect();
+      this.isConnected = true; // 연결 성공시 플래그 업데이트
+      console.log('Redis client connected');
+    } catch (error) {
+      console.error('Redis connection error:', error);
+    }
   }
 
   // redis 연결 종료
@@ -29,20 +36,16 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     await this.client.quit();
   }
 
-  // refresh token 생성
-  async setRefreshToken(userId: string, token: string): Promise<void> {
-    await this.client.set(`refresh_token:${userId}`, token, {
-      EX: 60 * 60 * 24 * 7, // 7일 유효기간
-    });
+  // client 초기화
+  getClient(): RedisClientType {
+    if (!this.isConnected) {
+      throw new Error('Redis client is not connected');
+    }
+    return this.client;
   }
 
-  // refresh token 조회
-  async getRefreshToken(userId: string): Promise<string | null> {
-    return await this.client.get(`refresh_token:${userId}`);
-  }
-
-  // refresh token 삭제
-  async removeRefreshToken(userId: string): Promise<void> {
-    await this.client.del(`refresh_token:${userId}`);
+  // redis 연결 성공 값 반환
+  public returnConnected(): boolean {
+    return this.isConnected;
   }
 }

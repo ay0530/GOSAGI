@@ -4,15 +4,16 @@ import {
   ExecutionContext,
   UnauthorizedException,
 } from '@nestjs/common';
-import { RedisService } from 'src/redis/redis.service';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
+import { RedisJwtService } from 'src/redis/redis-jwt.service';
+
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
-    private readonly redisService: RedisService,
+    private readonly redisJwtService: RedisJwtService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
@@ -47,7 +48,7 @@ export class JwtAuthGuard implements CanActivate {
             const userId = expiredToken.id;
             // 리프레시 토큰 조회
             const refreshToken =
-              await this.redisService.getRefreshToken(userId);
+              await this.redisJwtService.getRefreshToken(userId);
 
             // 리프레시 토큰이 존재할 경우
             if (refreshToken) {
