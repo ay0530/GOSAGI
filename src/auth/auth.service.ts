@@ -16,7 +16,7 @@ export class AuthService {
   // JWT 토큰 발급
   async generateJwtToken(user: any) {
     // 액세스 토큰 생성
-    const payload = { id: user.id, email: user.email };
+    const payload = { id: user.id, email: user.email, role: user.role };
     const accessToken = this.jwtService.sign(payload, { expiresIn: '10m' });
 
     // 리프레시 토큰 생성
