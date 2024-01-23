@@ -16,7 +16,12 @@ export class AddressService {
   async createAddress(createAddressDto: CreateAddressDto, userId: number) {
     const address = await this.addressRepository.save({
       user_id: userId,
-      createAddressDto,
+      address_name: createAddressDto.address_name,
+      name: createAddressDto.name,
+      phone: createAddressDto.phone,
+      address: createAddressDto.address,
+      detail_address: createAddressDto.detail_address,
+      post_code: createAddressDto.post_code,
     });
     return address;
   }

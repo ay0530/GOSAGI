@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { User } from 'src/user/entities/user.entity';
 
@@ -7,7 +13,7 @@ import { User } from 'src/user/entities/user.entity';
 })
 export class Address {
   // 기본키
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   // 배송지명
@@ -19,7 +25,7 @@ export class Address {
   name: string;
 
   // 전화번호
-  @Column({ type: 'int' })
+  @Column({ type: 'varchar' })
   phone: number;
 
   // 주소
@@ -31,7 +37,7 @@ export class Address {
   detail_address: string;
 
   // 우편번호
-  @Column({ type: 'int', nullable: false })
+  @Column({ type: 'varchar', nullable: false })
   post_code: number;
 
   // 다대일 관계 설정(users)
