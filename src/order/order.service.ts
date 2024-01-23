@@ -123,6 +123,10 @@ export class OrderService {
       );
     }
 
+    if (order.status === '환불신청' || order.status === '환불완료') {
+      throw new BadRequestException('해당 주문은 환불을 신청하였습니다.');
+    }
+
     order.status = status;
     const updateOrder = await this.orderRepository.save(order);
 
