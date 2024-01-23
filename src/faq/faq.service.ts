@@ -6,7 +6,7 @@ import {
 import { CreateFaqDto } from './dto/create-faq.dto';
 import { UpdateFaqDto } from './dto/update-faq.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Faq } from './entities/faq.entity';
 
 @Injectable()
@@ -47,15 +47,10 @@ export class FaqService {
 
   // FAQ 검색
   async searchFaq(keyword: string) {
-    const keywordFaq = this.faqRepository
-      .createQueryBuilder('faq')
-      .where('title', {
-        keyword: `%${keyword}%`,
-      })
-      .orderBy('faq.created_at', 'DESC')
-      .getMany();
-
-    return keywordFaq;
+    const searchFaq = await this.faqRepository.find({
+      where: { title: Like(`%${keyword}%`) },
+    });
+    return searchFaq;
   }
 
   // FAQ 수정
