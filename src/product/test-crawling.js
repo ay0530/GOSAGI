@@ -1,5 +1,8 @@
 const puppeteer = require('puppeteer');
-
+const axios = require('axios');
+// import "reflect-metadata";
+// import { createConnection } from 'typeorm';
+// import { Product } from './entity/Product';
 // 크롤링이 실패할 경우 개발자에게 연락을 취하는 로직 구현해야할 듯
 // 크롤링이 실패할 경우 -> 고사기의 html 구성이 바뀌어 값들을 제대로 가져오지 못 할 때가 예상됨
 
@@ -52,7 +55,8 @@ async function scrapeProductCode(url) {
       const img = item.querySelector('.item_img');
       if (img) {
         const imgSrc = img.getAttribute('src');
-        const productCode = imgSrc.match(/G\d+/);
+        const match = imgSrc.match(/G(\d+)/);
+        const productCode = match[1];
         productCodeList.push(productCode);
       }
     });
@@ -60,35 +64,29 @@ async function scrapeProductCode(url) {
     return productCodeList;
   });
 
-
   // 목록에서 크롤링 한 데이터들 상품 코드들로 반복문 돌려서 뽑아내기!
   // 일단 12개만 하자
-
-
-  productCodeList.forEach(e => {
-    console.log(e);
-  });
-
-  await browser.close();
-}
-
-// 이미지 크롤링하기
-async function scrapeImageSrc(url) {
-
-
-  // 2002002697
-  /*
-  for (let i = 2002005119; i < 2002005121; i++) {
-
+  for (const productCode of productCodeList) {
     // 로그인 후 지정된 URL로 이동
-    await page.goto(`${url}${i}`, { waitUntil: 'networkidle2' });
+    await page.goto(`https://ilovegohyang.go.kr/items/details-main.html?code=G${productCode}`, { waitUntil: 'networkidle2' });
 
     // 데이터를 가져올 때 에는 html의 id, class 태그의 textContent나 innerHTML과 같은 값을 가져와서 사용
     // 썸네일 이미지 가져오기
     // evaluate : puppeteer의 메소드, 웹 페이지 내부의 DOM 요소에 접근함
     const imageSrc = await page.evaluate(() => {
-      const img = document.querySelector('.swiper_img');
-      return img ? img.src : null;
+      const imgs = document.querySelectorAll('.swiper_img img');
+      return Array.from(imgs).map(img => img.src);
+    });
+
+
+    // 상품 카테고리 가져오기
+    // 카테고리가 고민인게 답례품 > 소고기 도 있고 답례품 > 고기 > 소고기 도 있음..
+    const categorySrc = await page.evaluate(() => {
+      const categoryElement = document.querySelector('.ali_breadcrumb');
+      const spanElements = categoryElement ? categoryElement.querySelectorAll('span') : [];
+
+      // 두 번째 span 요소의 텍스트를 반환합니다. 인덱스는 0부터 시작하므로 두 번째 요소는 인덱스 1입니다.
+      return spanElements[1] ? spanElements[1].textContent.trim() : '';
     });
 
     // 지역 정보 가져오기
@@ -117,9 +115,11 @@ async function scrapeImageSrc(url) {
 
     // 가격 가져오기
     const priceSrc = await page.evaluate(() => {
-      const priceHtml = document.querySelector('.op_price');
-      return priceHtml ? priceHtml.textContent.trim() : null;
+      // 가격에서 사용하는 class : op_price, price, present_price
+      let priceHtml = document.querySelector('.op_price, .price, .present_price');
+      return priceHtml ? priceHtml.textContent.trim().replace("P", "") : null;
     });
+
 
     // 판매자 가져오기
     const seller = await page.evaluate(() => {
@@ -127,7 +127,6 @@ async function scrapeImageSrc(url) {
 
       let seller = null;
       let origin = null; // 원산지가 없을 수 있음
-      let delivery = null;
 
       shopInfoElements.forEach((element) => {
         const titleColElement = element.querySelector('.title_col');
@@ -142,46 +141,68 @@ async function scrapeImageSrc(url) {
           const paraColElement = element.querySelector('.para_col');
           origin = paraColElement.querySelector('p').textContent;
         }
-        if (title === '배송') {
-          const paraColElement = element.querySelector('.para_col');
-          const deliverys = paraColElement.querySelectorAll('p');
-          delivery = deliverys[1].textContent.trim().split(':');
-          delivery = delivery[1];
-        }
-        return seller, origin, delivery;
+        return seller, origin;
       });
 
-      return [seller, origin, delivery];
+      return [seller, origin];
     });
+
+    // // 상품 이미지/텍스트 가져오기
+    // const contentSrc = await page.evaluate(() => {
+    //   const contentElements = document.querySelectorAll('div#nav-detail img, #nav-detail .item_detail p');
+    //   return Array.from(contentElements).map(el => {
+    //     if (el.tagName !== 'br') {
+    //       if (el.tagName.toLowerCase() === 'img') {
+    //         return `https://ilovegohyang.go.kr${el.getAttribute('src')}`;
+    //       } else if (el.tagName.toLowerCase() === 'p') {
+    //         const textContent = el.textContent.trim();
+    //         if (textContent.length > 0) {
+    //           return textContent;
+    //         }
+    //       }
+    //     }
+    //   }).filter(el => el != null && el !== '');
+    // });
 
     // 상품 이미지/텍스트 가져오기
     const contentSrc = await page.evaluate(() => {
-      const contentImgHtml = document.querySelector('div#nav-detail img');
-      if (contentImgHtml) {
-        return `https://ilovegohyang.go.kr${contentImgHtml.getAttribute(
-          'src',
-        )}`;
-      }
-      if (!contentImgHtml) {
-        const pElements = document.querySelectorAll(
-          '#nav-detail .item_detail p',
-        );
-        return Array.from(pElements).map((p) => p.textContent.trim());
-      }
+      const contentElements = document.querySelector('.item_detail');
+      return contentElements ? [contentElements.innerHTML] : null;
     });
 
-    console.log('img: ', imageSrc);
-    console.log('Area:', areaSrc);
-    console.log('Name:', nameSrc);
-    console.log('description:', descriptionSrc);
-    console.log('Price:', priceSrc);
-    console.log('Seller:', seller);
-    console.log('contentSrc: ', contentSrc);
-  }
-  */
+    // console.log('categorySrc: ', categorySrc);
+    // console.log('img: ', imageSrc);
+    // console.log('Area:', areaSrc);
+    // console.log('Name:', nameSrc);
+    // console.log('description:', descriptionSrc);
+    // console.log('Price:', Number(priceSrc.replace(',', '')));
+    // console.log('Seller:', seller);
+    // console.log('contentSrc: ', contentSrc);
+
+
+    await axios.post(
+      'http://localhost:3000/goods/1',
+      {
+        code: Number(productCode),
+        name: nameSrc,
+        description: descriptionSrc,
+        location: areaSrc,
+        category: categorySrc,
+        point: Number(priceSrc.replace(',', '')),
+        price: 0,
+        thumbnail_image: imageSrc[0],
+        productThumbnails: imageSrc.map(url => ({ image_url: url })),
+        productContents: contentSrc.map(content => ({ content }))
+      }
+    ).then(res => {
+      console.log("성공!");
+    }).catch(err => {
+      console.log("엘어발생");
+    });
+  };
   await browser.close();
 }
 
-// scrapeImageSrc('https://ilovegohyang.go.kr/items/details-main.html?code=G2002002697');
-// scrapeImageSrc('https://ilovegohyang.go.kr/items/details-main.html?code=');
+// 업데이트 로직도 필요함
+
 scrapeProductCode('https://ilovegohyang.go.kr/goods/index-main.html');
