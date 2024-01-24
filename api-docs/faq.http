@@ -74,7 +74,12 @@ Content-Type: application/json
 
 ###
 # 특정 FAQ 조회
-GET {{domain}}/faq/6
+GET {{domain}}/faq/detail/6
+Content-Type: application/json
+
+###
+# FAQ 검색
+GET {{domain}}/faq/keyword?keyword=배송
 Content-Type: application/json
 
 ###

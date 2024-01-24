@@ -27,6 +27,7 @@ import { ReviewModule } from './review/review.module';
 import { QuestionModule } from './question/question.module';
 import { AnswerModule } from './answer/answer.module';
 import { FaqModule } from './faq/faq.module';
+import { AddressModule } from './address/address.module';
 
 // Entity
 import { User } from './user/entities/user.entity';
@@ -42,6 +43,7 @@ import { Review } from './review/entities/review.entity';
 import { Question } from './question/entities/question.entity';
 import { Answer } from './answer/entities/answer.entity';
 import { Faq } from './faq/entities/faq.entity';
+import { Address } from './address/entities/address.entity';
 
 const typeOrmModuleOptions = {
   useFactory: async (
@@ -68,6 +70,7 @@ const typeOrmModuleOptions = {
       Question,
       Answer,
       Faq,
+      Address,
     ],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
@@ -117,6 +120,7 @@ const typeOrmModuleOptions = {
     QuestionModule,
     AnswerModule,
     FaqModule,
+    AddressModule,
     // KakaoModule,
   ],
   controllers: [],

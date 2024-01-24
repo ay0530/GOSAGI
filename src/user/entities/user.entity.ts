@@ -14,6 +14,7 @@ import { Cart } from 'src/cart/entities/cart.entity';
 import { Order } from 'src/order/entities/order.entity';
 import { Question } from 'src/question/entities/question.entity';
 import { Review } from 'src/review/entities/review.entity';
+import { Address } from 'src/address/entities/address.entity';
 
 @Index('email', ['email'], { unique: true })
 @Entity({
@@ -61,4 +62,8 @@ export class User {
   // 일대다 관계 설정(questions)
   @OneToMany(() => Question, (question) => question.user)
   question: Question[];
+
+  // 일대다 관계 설정(addresses)
+  @OneToMany(() => Address, (address) => address.user)
+  address: Address[];
 }

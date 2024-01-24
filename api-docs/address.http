@@ -1,0 +1,74 @@
+@domain = http://localhost:3000
+
+### ----- 회원 1명
+###
+# 회원 가입
+# role : 0(admin), 1(user), 2(seller)
+POST {{domain}}/user/signup
+Content-Type: application/JSON
+
+{
+  "email": "test2@test.com",
+  "password": "1234",
+  "passwordConfirm": "1234",
+  "nickname": "test2",
+  "role": 0
+}
+
+###
+# 로그인
+POST {{domain}}/auth/login
+Content-Type: application/JSON
+
+{
+  "email": "test2@test.com",
+  "password": "1234"
+}
+
+### ----- 회원 목록
+###
+# 회원 목록 조회
+GET {{domain}}/user/list
+
+###
+# 배송지 등록
+POST {{domain}}/address
+Content-Type: application/json
+
+{
+    "address_name": "집",
+    "name": "테스트용",
+    "phone": "01012345678",
+    "address": "서울시 종로구",
+    "detail_address": "사직로 161",
+    "post_code": "03045"
+}
+
+###
+# 배송지 조회
+GET {{domain}}/address
+Content-Type: application/json
+
+
+###
+# 배송지 상세 조회
+GET {{domain}}/address/2
+
+###
+# 배송지 수정
+PATCH {{domain}}/address/2
+Content-Type: application/json
+
+{
+    "address_name": "궁궐",
+    "name": "수정용",
+    "phone": "01012345678",
+    "address": "서울시 중구",
+    "detail_address": "세종대로 99",
+    "post_code": "04519"
+}
+
+###
+# 배송지 삭제
+DELETE {{domain}}/address/1
+Content-Type: application/json

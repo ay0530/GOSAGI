@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 
 // 크롤링이 실패할 경우 개발자에게 연락을 취하는 로직 구현해야할 듯
-// 크롤링이 실패할 경우 -> 고사기의 html 구성이 바뀌어 값들을 제대로 가져오지 못 할 때가 예상됨 
+// 크롤링이 실패할 경우 -> 고사기의 html 구성이 바뀌어 값들을 제대로 가져오지 못 할 때가 예상됨
 
 // 이미지 크롤링하기
 async function scrapeImageSrc(url) {
@@ -10,26 +10,29 @@ async function scrapeImageSrc(url) {
     // --no-sandbox : Chromium 브라우저의 Sandbox 옵션 비활성화
     // --disable-dev-shm-usage : Chromium 브라우저의 Shared Memory 비활성화
     // Chromium 브라우저 : Chrome의 오픈 소스 버전, Puppeteer를 실행했을 때 사용됨(Puppeteer 아니어도 사용!!)
-    args: ['--no-sandbox', '--disable-dev-shm-usage']
+    args: ['--no-sandbox', '--disable-dev-shm-usage'],
   });
 
   const context = await browser.createIncognitoBrowserContext(); // 시크릿 모드 설정
   const page = await context.newPage(); // 새로운 페이지 실행
-  await page.goto('https://ilovegohyang.go.kr/users/login.html?target=%2Fgoods%2Findex-main.html',
+  await page.goto(
+    'https://ilovegohyang.go.kr/users/login.html?target=%2Fgoods%2Findex-main.html',
     // waitUntil : 페이지가 ''의 상태일 때 까지 기다림
     // networkidle2 : 네트워크 활동이 없을 때 까지 기다림
-    { waitUntil: 'networkidle2' }
+    { waitUntil: 'networkidle2' },
   );
 
   // 로그인
   await page.type('#id', 'hwt4oxh00v8'); // page.type : 입력
   await page.type('#pw', 'as49265504!'); // page.type : 입력
-  const loginButton = await page.$x('/html/body/div[1]/div/div[3]/section/div/form/div[2]/button'); // 로그인 버튼의 xpath 위치
+  const loginButton = await page.$x(
+    '/html/body/div[1]/div/div[3]/section/div/form/div[2]/button',
+  ); // 로그인 버튼의 xpath 위치
   if (loginButton.length > 0) {
     try {
       await Promise.all([
         await loginButton[0].click(), // 로그인 버튼 클릭
-        await page.waitForNavigation({ waitUntil: 'networkidle2' })
+        await page.waitForNavigation({ waitUntil: 'networkidle2' }),
       ]);
     } catch (e) {
       console.log(e);
@@ -116,11 +119,15 @@ async function scrapeImageSrc(url) {
     const contentSrc = await page.evaluate(() => {
       const contentImgHtml = document.querySelector('div#nav-detail img');
       if (contentImgHtml) {
-        return `https://ilovegohyang.go.kr${contentImgHtml.getAttribute('src')}`;
+        return `https://ilovegohyang.go.kr${contentImgHtml.getAttribute(
+          'src',
+        )}`;
       }
       if (!contentImgHtml) {
-        const pElements = document.querySelectorAll('#nav-detail .item_detail p');
-        return Array.from(pElements).map(p => p.textContent.trim());
+        const pElements = document.querySelectorAll(
+          '#nav-detail .item_detail p',
+        );
+        return Array.from(pElements).map((p) => p.textContent.trim());
       }
     });
 
@@ -131,8 +138,6 @@ async function scrapeImageSrc(url) {
     console.log('Price:', priceSrc);
     console.log('Seller:', seller);
     console.log('contentSrc: ', contentSrc);
-
-
   }
   await browser.close();
 }
