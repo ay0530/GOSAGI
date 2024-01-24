@@ -3,8 +3,8 @@ const puppeteer = require('puppeteer');
 // 크롤링이 실패할 경우 개발자에게 연락을 취하는 로직 구현해야할 듯
 // 크롤링이 실패할 경우 -> 고사기의 html 구성이 바뀌어 값들을 제대로 가져오지 못 할 때가 예상됨
 
-// 이미지 크롤링하기
-async function scrapeImageSrc(url) {
+// 상품 목록에서 상품 코드 크롤링하기
+async function scrapeProductCode(url) {
   const browser = await puppeteer.launch({
     headless: true, // 브라우저를 화면이 없는 모드로 실행 -> 백그라운드에서 브라우저가 열림
     // --no-sandbox : Chromium 브라우저의 Sandbox 옵션 비활성화
@@ -15,8 +15,9 @@ async function scrapeImageSrc(url) {
 
   const context = await browser.createIncognitoBrowserContext(); // 시크릿 모드 설정
   const page = await context.newPage(); // 새로운 페이지 실행
+
   await page.goto(
-    'https://ilovegohyang.go.kr/users/login.html?target=%2Fgoods%2Findex-main.html',
+    'https://ilovegohyang.go.kr/users/login.html?target=%2Fmain.html', // 로그인 페이지
     // waitUntil : 페이지가 ''의 상태일 때 까지 기다림
     // networkidle2 : 네트워크 활동이 없을 때 까지 기다림
     { waitUntil: 'networkidle2' },
@@ -34,13 +35,51 @@ async function scrapeImageSrc(url) {
         await loginButton[0].click(), // 로그인 버튼 클릭
         await page.waitForNavigation({ waitUntil: 'networkidle2' }),
       ]);
+      console.log("로그인 성공");
     } catch (e) {
       console.log(e);
     }
   }
 
+  await page.goto('https://ilovegohyang.go.kr/goods/index-main.html', { waitUntil: 'networkidle2' }); // 상품 목록 페이지로 이동
+  await page.waitForSelector('.item_img'); // .item_img가 로딩될 때 까지 대기
+
+  const productCodeList = await page.evaluate(() => {
+    const goodsItems = document.querySelectorAll('.goods-list-items');
+    const productCodeList = [];
+
+    goodsItems.forEach(item => {
+      const img = item.querySelector('.item_img');
+      if (img) {
+        const imgSrc = img.getAttribute('src');
+        const productCode = imgSrc.match(/G\d+/);
+        productCodeList.push(productCode);
+      }
+    });
+
+    return productCodeList;
+  });
+
+
+  // 목록에서 크롤링 한 데이터들 상품 코드들로 반복문 돌려서 뽑아내기!
+  // 일단 12개만 하자
+
+
+  productCodeList.forEach(e => {
+    console.log(e);
+  });
+
+  await browser.close();
+}
+
+// 이미지 크롤링하기
+async function scrapeImageSrc(url) {
+
+
   // 2002002697
+  /*
   for (let i = 2002005119; i < 2002005121; i++) {
+
     // 로그인 후 지정된 URL로 이동
     await page.goto(`${url}${i}`, { waitUntil: 'networkidle2' });
 
@@ -139,8 +178,10 @@ async function scrapeImageSrc(url) {
     console.log('Seller:', seller);
     console.log('contentSrc: ', contentSrc);
   }
+  */
   await browser.close();
 }
 
 // scrapeImageSrc('https://ilovegohyang.go.kr/items/details-main.html?code=G2002002697');
-scrapeImageSrc('https://ilovegohyang.go.kr/items/details-main.html?code=G');
+// scrapeImageSrc('https://ilovegohyang.go.kr/items/details-main.html?code=');
+scrapeProductCode('https://ilovegohyang.go.kr/goods/index-main.html');
