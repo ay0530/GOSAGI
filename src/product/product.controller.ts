@@ -17,12 +17,18 @@ import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ResponseDto } from 'src/ResponseDTO/response-dto';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { Roles } from 'src/guards/roles.decorator';
+import { UserRole } from 'src/user/types/userRole.type';
 
 @Controller('goods')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   //상품 등록하기
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.SELLER, UserRole.ADMIN)
   @Post(':storeId')
   async create(
     @Body() createProductDto: CreateProductDto,
@@ -147,6 +153,8 @@ export class ProductController {
   }
 
   //상품 수정(미사용)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.SELLER, UserRole.ADMIN)
   @Patch(':productId')
   async update(
     @Param('productId') productId: number,
@@ -170,6 +178,8 @@ export class ProductController {
   }
 
   //상품 삭제(미사용)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.SELLER, UserRole.ADMIN)
   @Delete(':productId')
   async remove(@Param('productId') productId: number) {
     await this.productService.remove(productId);

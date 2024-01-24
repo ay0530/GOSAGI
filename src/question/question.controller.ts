@@ -11,6 +11,9 @@ import {
 } from '@nestjs/common';
 
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { Roles } from 'src/guards/roles.decorator';
+import { UserRole } from 'src/user/types/userRole.type';
 
 import { QuestionService } from './question.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
@@ -35,10 +38,25 @@ export class QuestionController {
   }
 
   // 문의 글 상세 조회
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.USER)
+  @Get('detail/user/:id')
+  async findOneForUser(@Param('id') id: string, @Req() req: any) {
+    const data = await this.questionService.findOneForUser(+id, req.user.id);
+
+    const response = new ResponseDto(
+      true,
+      '문의 내용 조회가 완료되었습니다',
+      data,
+    );
+    return response;
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.SELLER, UserRole.ADMIN)
   @Get('detail/:id')
   async findOne(@Param('id') id: string, @Req() req: any) {
-    const data = await this.questionService.findOne(+id, req.user.id);
+    const data = await this.questionService.findOne(+id);
 
     const response = new ResponseDto(
       true,

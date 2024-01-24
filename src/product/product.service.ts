@@ -18,7 +18,8 @@ export class ProductService {
     @InjectRepository(Product) private productRepository: Repository<Product>,
   ) {}
 
-  //스토어가 있는지에 대한 유효성 검사 추가 예정
+  //스토어가 있는지에 대한 유효성 검사 추가 예정 -> 필요할 것 같음
+  //더불어서 현재 로그인한 주인이 storeId를 가지고 있는 판매자인지도 확인하는 작업이 필요할 것 같습니다.
   async create(createProductDto: CreateProductDto, storeId: number) {
     const {
       code,
@@ -175,6 +176,7 @@ export class ProductService {
       .from(Product, 'p')
       .leftJoin(Wish, 'w', 'w.product_id = p.id')
       .groupBy('p.id')
+      .orderBy('wish_count', 'DESC')
       .limit(4)
       .getRawMany();
   }

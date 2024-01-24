@@ -69,8 +69,8 @@ export class Product {
   price: number;
 
   // 조회수
-  @Column({ type: 'int', nullable: true })
-  views?: string;
+  @Column({ type: 'int', nullable: true, default: 0 })
+  views?: number;
 
   @IsNotEmpty({ message: '썸네일 이미지를 넣으세요' })
   @IsString({ message: '문자형으로 입력해주세요' })

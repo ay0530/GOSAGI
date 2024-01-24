@@ -16,11 +16,8 @@ import { RedisModule } from './redis/redis.module';
 
 import { JwtCommonModule } from './common/jwt.common.module';
 import { UserModule } from './user/user.module';
-import { LocationModule } from './location/location.module';
 import { StoreModule } from './store/store.module';
 import { ProductModule } from './product/product.module';
-import { ProductThumbnailModule } from './product-thumbnail/product.thumbnail.module';
-import { ProductContentModule } from './product-content/product.content.module';
 import { WishModule } from './wish/wish.module';
 import { CartModule } from './cart/cart.module';
 import { ReviewModule } from './review/review.module';
@@ -31,7 +28,6 @@ import { AddressModule } from './address/address.module';
 
 // Entity
 import { User } from './user/entities/user.entity';
-import { Location } from './location/entities/locaion.entity';
 import { Store } from './store/entities/store.entity';
 import { Product } from './product/entities/product.entity';
 import { ProductThumbnail } from './product/entities/product-thumbnail.entity';
@@ -58,7 +54,6 @@ const typeOrmModuleOptions = {
     database: configService.get('DB_NAME'),
     entities: [
       User,
-      Location,
       Store,
       Product,
       ProductThumbnail,
@@ -109,11 +104,8 @@ const typeOrmModuleOptions = {
     RedisModule,
     // Module
     UserModule,
-    LocationModule,
     StoreModule,
     ProductModule,
-    ProductThumbnailModule,
-    ProductContentModule,
     WishModule,
     CartModule,
     ReviewModule,
