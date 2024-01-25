@@ -35,7 +35,7 @@ export class AuthController {
       loginDto.password,
     );
     res.cookie('authorization', `Bearer ${accessToken}`, {
-      httpOnly: true,
+      httpOnly: false,
     }); // 쿠키에 토큰 저장
 
     const response = new ResponseDto(true, '로그인이 완료되었습니다', null);
