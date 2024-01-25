@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Like, Not, Repository } from 'typeorm';
 
@@ -9,18 +13,22 @@ import { Product } from './entities/product.entity';
 import { Wish } from 'src/wish/entities/wish.entity';
 import { Order } from 'src/order/entities/order.entity';
 import { Review } from 'src/review/entities/review.entity';
+import { StoreService } from 'src/store/store.service';
 
 @Injectable()
 export class ProductService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly redisViewsService: RedisViewsService,
+    private readonly storeService: StoreService,
     @InjectRepository(Product) private productRepository: Repository<Product>,
   ) {}
 
-  //스토어가 있는지에 대한 유효성 검사 추가 예정 -> 필요할 것 같음
-  //더불어서 현재 로그인한 주인이 storeId를 가지고 있는 판매자인지도 확인하는 작업이 필요할 것 같습니다.
-  async create(createProductDto: CreateProductDto, storeId: number) {
+  async create(
+    createProductDto: CreateProductDto,
+    storeId: number,
+    userId: number,
+  ) {
     const {
       code,
       name,
@@ -33,6 +41,19 @@ export class ProductService {
       productThumbnails,
       productContents,
     } = createProductDto;
+
+    const store = await this.storeService.findOne(storeId);
+
+    //store가 존재하고, 그 주인만이 상품을 올릴 수 있다.
+    if (!store || store.aproval_status !== 1) {
+      throw new NotFoundException('해당 상점을 확인할 수 없습니다.');
+    }
+
+    if (store.user_id !== userId) {
+      throw new ForbiddenException(
+        '해당 상점에 상품을 등록할 수 있는 권한이 없습니다.',
+      );
+    }
 
     return await this.productRepository.save({
       code,
@@ -258,7 +279,7 @@ export class ProductService {
 
   // ---- 기타 함수
   // 매장의 상품 목록 조회
-  async findProductAll(storeId: number) {
+  async findProductAllByStore(storeId: number) {
     const products = await this.productRepository.find({
       where: { store_id: storeId },
     });
@@ -267,7 +288,11 @@ export class ProductService {
   }
 
   // 매장 상품 목록 검색 조회
-  async searchProductAll(storeId: number, category: string, keyword: string) {
+  async searchProductAllByStore(
+    storeId: number,
+    category: string,
+    keyword: string,
+  ) {
     // 매장명으로 검색 가능
     const products = this.productRepository
       .createQueryBuilder('product')

@@ -8,8 +8,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { ApprovalStatusType } from './types/approval-status.type';
-
-import { ProductService } from 'src/product/product.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
 import { Store } from './entities/store.entity';
@@ -19,7 +17,6 @@ export class StoreService {
   constructor(
     @InjectRepository(Store)
     private storeRepository: Repository<Store>,
-    private productService: ProductService,
   ) {}
 
   // 매장 정보 저장
@@ -52,6 +49,7 @@ export class StoreService {
       address: store.address,
       aproval_status: store.approval_status,
       reasons_rejection: store.reasons_rejection,
+      user_id: store.user_id,
     };
   }
 
@@ -145,25 +143,6 @@ export class StoreService {
       .getMany();
 
     return stores;
-  }
-
-  // 매장 상품 목록 조회
-  async findProductAll(storeId: number) {
-    const products = await this.productService.findProductAll(storeId);
-
-    return products;
-  }
-
-  // 매장 상품 목록 검색 조회
-  async searchProductAll(storeId: number, category: string, keyword: string) {
-    // 매장명으로 검색 가능
-    const products = this.productService.searchProductAll(
-      storeId,
-      category,
-      keyword,
-    );
-
-    return products;
   }
 
   // ----- 기타 함수

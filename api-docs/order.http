@@ -20,6 +20,10 @@ Content-Type: application/JSON
 GET {{domain}}/order
 
 ###
+# 기간 별 조회 day, month 조회 가능
+GET {{domain}}/order/period?period=7days
+
+###
 # 상세 구매 내역 조회
 GET {{domain}}/order/8
 

@@ -5,6 +5,7 @@ import {
   Body,
   Patch,
   Param,
+  Query,
   UseGuards,
   Req,
 } from '@nestjs/common';
@@ -40,6 +41,13 @@ export class OrderController {
     return this.orderService.findAllByProduct(productId);
   }
 
+  //기간별 조회
+  @Get('/period')
+  findAllByUserPeriod(@Query('period') period: string, @Req() req) {
+    const user = req.user;
+    return this.orderService.findAllByUserPeriod(period, user);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: number, @Req() req) {
     const user = req.user;
@@ -49,7 +57,11 @@ export class OrderController {
   //배송지 변경
   @Roles(UserRole.USER)
   @Patch('/address/:id')
-  updateAddress(@Param('id') id: number, @Body() updateOrderDeliveryDto: UpdateOrderDeliveryDto, @Req() req,) {
+  updateAddress(
+    @Param('id') id: number,
+    @Body() updateOrderDeliveryDto: UpdateOrderDeliveryDto,
+    @Req() req,
+  ) {
     const user = req.user;
     return this.orderService.updateAddress(id, updateOrderDeliveryDto, user);
   }

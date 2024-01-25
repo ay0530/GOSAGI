@@ -5,12 +5,13 @@ import {
 } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
 import { User } from 'src/user/entities/user.entity';
 import { ProductService } from 'src/product/product.service';
 import _ from 'lodash';
+import { UpdateOrderDeliveryDto } from './dto/update-order-delivery.dto';
 @Injectable()
 export class OrderService {
   constructor(
@@ -66,6 +67,9 @@ export class OrderService {
   async findAllByUser(user: User) {
     const orders = await this.orderRepository.find({
       where: { user_id: user.id },
+      order: {
+        createdAt: 'DESC', // createdAt을 기준으로 내림차순 정렬
+      },
       select: [
         'id',
         'status',
@@ -89,6 +93,48 @@ export class OrderService {
   async findAllByProduct(productId: number) {
     const orders = await this.orderRepository.find({
       where: { product_id: productId },
+      order: {
+        createdAt: 'DESC', // createdAt을 기준으로 내림차순 정렬
+      },
+      select: [
+        'id',
+        'status',
+        'product_name',
+        'product_price',
+        'quantity',
+        'createdAt',
+      ],
+    });
+
+    return {
+      success: true,
+      message: '구매 내역을 정상적으로 불러왔습니다.',
+      data: {
+        order_count: orders.length,
+        data: orders,
+      },
+    };
+  }
+
+  async findAllByUserPeriod(period: string, user: User) {
+    let startDate = new Date();
+    const periodValue = Number(period.replace(/\D/g, ''));
+
+    if (period.includes('day')) {
+      startDate.setDate(startDate.getDate() - periodValue);
+    } else if (period.includes('month')) {
+      startDate.setMonth(startDate.getMonth() - periodValue);
+    } else {
+      //default는 전체 주문을 보여준다.
+      return this.findAllByUser(user);
+    }
+
+    //기간 별 조회
+    const orders = await this.orderRepository.find({
+      where: { user_id: user.id, createdAt: Between(startDate, new Date()) },
+      order: {
+        createdAt: 'DESC', // createdAt을 기준으로 내림차순 정렬
+      },
       select: [
         'id',
         'status',
@@ -165,8 +211,48 @@ export class OrderService {
     };
   }
 
-  async updateAddress(id: number, updateOrderDto: UpdateOrderDto, user: User) {
+  async updateAddress(
+    id: number,
+    updateOrderDeliveryDto: UpdateOrderDeliveryDto,
+    user: User,
+  ) {
+    const {
+      receiver,
+      receiver_phone_number,
+      delivery_name,
+      delivery_address,
+      post_code,
+      delivery_request,
+    } = updateOrderDeliveryDto;
 
+    const order = await this.orderRepository.findOne({
+      where: { id, user_id: user.id },
+    });
+
+    if (_.isNil(order)) {
+      throw new NotFoundException(
+        '해당 상품의 구매 내역을 확인할 수 없습니다.',
+      );
+    }
+    //배송 중일 때는 배송지 변경이 불가능
+    if (order.status !== '입금대기' && order.status !== '입금완료') {
+      throw new BadRequestException('해당 상품은 배송지 변경이 불가능합니다.');
+    }
+
+    order.receiver = receiver;
+    order.receiver_phone_number = receiver_phone_number;
+    order.delivery_name = delivery_name;
+    order.delivery_address = delivery_address;
+    order.post_code = post_code;
+    order.delivery_request = delivery_request;
+
+    const updateOrder = await this.orderRepository.save(order);
+
+    return {
+      success: true,
+      message: '배송지가 변경되었습니다.',
+      data: updateOrder,
+    };
   }
 
   async updateConfirm(id: number, updateOrderDto: UpdateOrderDto, user: User) {
