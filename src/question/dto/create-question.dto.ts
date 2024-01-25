@@ -13,6 +13,4 @@ export class CreateQuestionDto {
   content: string;
 
   isPrivate: boolean;
-
-  password: string;
 }

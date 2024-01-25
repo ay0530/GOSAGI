@@ -23,11 +23,6 @@ export class QuestionService {
 
   // 문의 글 저장
   async create(createQuestionDto: CreateQuestionDto, userId: number) {
-    // 비밀 문의 글 일 경우 비밀번호 입력 여부 검사
-    if (createQuestionDto.isPrivate && !createQuestionDto.password) {
-      throw new BadRequestException('비밀번호를 입력해주세요');
-    }
-
     // 문의 글 저장
     const question = await this.questionRepository.save({
       user_id: userId,
@@ -35,14 +30,36 @@ export class QuestionService {
       title: createQuestionDto.title,
       content: createQuestionDto.content,
       is_private: createQuestionDto.isPrivate,
-      password: createQuestionDto.password,
     });
 
     return question;
   }
 
-  // 문의 글 상세 조회
-  async findOne(id: number, userId: number) {
+  // 문의 글 상세 조회 (user)
+  async findOneForUser(id: number, userId: number) {
+    // 문의 글 상세 조회
+    const question = await this.questionRepository.findOne({
+      where: { id },
+    });
+
+    //비밀글일 때 자신만 확인이 가능함.
+    if (question.is_private && question.user_id !== userId) {
+      throw new ForbiddenException('해당 문의글을 확인할 수 없습니다.');
+    }
+
+    // 문의 답변 조회
+    const answer = await this.answerService.findOne(id);
+
+    // 답변이 있을 경우 답변도 함께 조회
+    if (answer) {
+      return { question, answer };
+    } else {
+      return question;
+    }
+  }
+
+  // 문의 글 상세 조회 (admin, seller)
+  async findOne(id: number) {
     // 문의 글 상세 조회
     const question = await this.questionRepository.findOne({
       where: { id },

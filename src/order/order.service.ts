@@ -61,9 +61,32 @@ export class OrderService {
     };
   }
 
-  async findAll(user: User) {
+  async findAllByUser(user: User) {
     const orders = await this.orderRepository.find({
       where: { user_id: user.id },
+      select: [
+        'id',
+        'status',
+        'product_name',
+        'product_price',
+        'quantity',
+        'createdAt',
+      ],
+    });
+
+    return {
+      success: true,
+      message: '구매 내역을 정상적으로 불러왔습니다.',
+      data: {
+        order_count: orders.length,
+        data: orders,
+      },
+    };
+  }
+
+  async findAllByProduct(productId: number) {
+    const orders = await this.orderRepository.find({
+      where: { product_id: productId },
       select: [
         'id',
         'status',

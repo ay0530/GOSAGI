@@ -35,10 +35,6 @@ export class Question {
   @Column({ type: 'boolean' })
   is_private: boolean;
 
-  // 비밀번호 여부
-  @Column({ type: 'varchar', nullable: true })
-  password: string;
-
   // 작성일
   @CreateDateColumn()
   created_at: Date;

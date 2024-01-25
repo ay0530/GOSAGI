@@ -15,13 +15,16 @@ import { StoreService } from './store.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
 import { ResponseDto } from 'src/ResponseDTO/response-dto';
-
+import { RolesGuard } from 'src/guards/roles.guard';
+import { Roles } from 'src/guards/roles.decorator';
+import { UserRole } from 'src/user/types/userRole.type';
 @Controller('store')
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
   // 매장 정보 저장
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.SELLER, UserRole.ADMIN)
   @Post()
   async create(@Body() createStoreDto: CreateStoreDto, @Req() req: any) {
     const data = await this.storeService.create(createStoreDto, req.user.id);
@@ -48,7 +51,8 @@ export class StoreController {
   }
 
   // 매장 정보 수정
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.SELLER, UserRole.ADMIN)
   @Patch(':id')
   async update(
     @Param('id') id: number,
@@ -70,7 +74,8 @@ export class StoreController {
   }
 
   // 매장 정보 삭제
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.SELLER, UserRole.ADMIN)
   @Delete(':id')
   async remove(@Param('id') id: string, @Req() req: any) {
     await this.storeService.remove(+id, req.user.id);

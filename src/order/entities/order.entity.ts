@@ -46,7 +46,7 @@ export class Order {
   receiver_phone_number: string;
 
   //배송지명
-  @Column({ type: 'varchar', nullable: false })
+  @Column({ type: 'varchar', nullable: true })
   delivery_name: string;
 
   //배송지 주소

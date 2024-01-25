@@ -1,11 +1,6 @@
-import { AuthGuard } from '@nestjs/passport';
 import { Reflector } from '@nestjs/core';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { UserRoleType } from 'src/user/types/userRole.type';
-import { Repository } from 'typeorm';
-import { User } from 'src/user/entities/user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}

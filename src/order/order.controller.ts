@@ -28,15 +28,21 @@ export class OrderController {
   }
 
   @Get()
-  findAll(@Req() req) {
+  findAllByUser(@Req() req) {
     const user = req.user;
-    return this.orderService.findAll(user);
+    return this.orderService.findAllByUser(user);
+  }
+
+  @Roles(UserRole.SELLER, UserRole.ADMIN)
+  @Get('/product/:productId')
+  findAllByProduct(@Param('productId') productId: number) {
+    return this.orderService.findAllByProduct(productId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Req() req) {
+  findOne(@Param('id') id: number, @Req() req) {
     const user = req.user;
-    return this.orderService.findOne(+id, user);
+    return this.orderService.findOne(id, user);
   }
 
   //입금 확인 완료, 상품 준비 중, 배송 중, 배송 완료 -> admin

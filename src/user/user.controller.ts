@@ -18,6 +18,9 @@ import { RedisJwtService } from 'src/redis/redis-jwt.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ResponseDto } from 'src/ResponseDTO/response-dto';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { Roles } from 'src/guards/roles.decorator';
+import { UserRole } from 'src/user/types/userRole.type';
 
 @Controller('user')
 export class UserController {
@@ -104,7 +107,8 @@ export class UserController {
 
   // ---- 회원 목록
   // 모든 회원 목록 조회
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Get('list')
   async findAll() {
     const data = await this.userService.findAll();
@@ -118,7 +122,8 @@ export class UserController {
   }
 
   // 회원 목록 검색 조회
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Get('list/:category/:keyword')
   async searchAll(
     @Param('category') category: string,
