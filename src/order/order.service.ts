@@ -32,6 +32,7 @@ export class OrderService {
       delivery_address,
       delivery_request,
       quantity,
+      post_code,
     } = createOrderDto;
     const product = await this.productService.getProductDetail(
       product_id,
@@ -51,6 +52,7 @@ export class OrderService {
       quantity,
       product_name: product.name,
       product_price: product.price,
+      post_code,
       user_id: user.id,
     });
 

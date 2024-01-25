@@ -11,7 +11,8 @@ Content-Type: application/JSON
   "receiver" : "배고파",
   "receiver_phone_number" : "010-1111-1111",
   "delivery_name" : "집",
-  "delivery_address" : "서울시 강남구"
+  "delivery_address" : "서울시 강남구",
+  "post_code" : "03045"
 }
 
 ###
