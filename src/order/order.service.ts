@@ -43,7 +43,7 @@ export class OrderService {
     //product id는 현재 판매하는 상품으로 연결할 때 사용, name과 price는 변동 가능성 있으니 저장
     const createOrder = await this.orderRepository.save({
       product_id,
-      status: '구매완료',
+      status: '입금대기',
       receiver,
       receiver_phone_number,
       delivery_name,
@@ -137,7 +137,7 @@ export class OrderService {
     return order.status;
   }
 
-  async adminUpdate(id: number, updateOrderDto: UpdateOrderDto) {
+  async updateAdmin(id: number, updateOrderDto: UpdateOrderDto) {
     const { status } = updateOrderDto;
 
     //order update
@@ -165,7 +165,11 @@ export class OrderService {
     };
   }
 
-  async confirmUpdate(id: number, updateOrderDto: UpdateOrderDto, user: User) {
+  async updateAddress(id: number, updateOrderDto: UpdateOrderDto, user: User) {
+
+  }
+
+  async updateConfirm(id: number, updateOrderDto: UpdateOrderDto, user: User) {
     const { status } = updateOrderDto;
 
     //dto의 status가 명확한지 한 번 더 확인

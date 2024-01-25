@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class CreateOrderDto {
+export class UpdateOrderDeliveryDto {
   @IsNotEmpty({ message: '수령인을 입력해 주세요.' })
   receiver: string;
 
