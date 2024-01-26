@@ -5,16 +5,15 @@ import { Repository } from 'typeorm';
 import { Cart } from './entities/cart.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
-import { Product } from 'src/product/entities/product.entity';
 import _ from 'lodash';
+import { ProductService } from 'src/product/product.service';
 
 @Injectable()
 export class CartService {
   constructor(
     @InjectRepository(Cart)
     private readonly cartRepository: Repository<Cart>,
-    @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>,
+    private readonly productService: ProductService,
   ) {}
 
   async create(createCartDto: CreateCartDto, user: User) {
@@ -49,16 +48,14 @@ export class CartService {
     const data = [];
     //mapping해서 product 내용도 일부 가져온다.
     for (const cart of carts) {
-      const product = await this.productRepository.findOne({
-        where: { id: cart.product_id },
-      });
+      const product = await this.productService.getProductInfo(cart.product_id);
 
       const mappedItem = {
         id: cart.id,
         product_id: cart.product_id,
         user_id: cart.user_id,
         productName: product.name,
-        productPoint: product.point,
+        productPrice: product.price,
         productStore: product.store_id,
         quantity: cart.quantity,
         // 추가 필요한 매핑 작업 수행
@@ -84,10 +81,7 @@ export class CartService {
       );
     }
 
-    const product = await this.productRepository.findOne({
-      where: { id: cart.product_id },
-    });
-
+    const product = await this.productService.getProductInfo(cart.product_id);
     const mappedItem = {
       id: cart.id,
       product_id: cart.product_id,

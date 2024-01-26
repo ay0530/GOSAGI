@@ -1,5 +1,6 @@
 import {
   ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -15,6 +16,7 @@ import { Order } from 'src/order/entities/order.entity';
 import { Review } from 'src/review/entities/review.entity';
 import { StoreService } from 'src/store/store.service';
 
+const pageLimit = 12;
 @Injectable()
 export class ProductService {
   constructor(
@@ -72,18 +74,21 @@ export class ProductService {
     });
   }
 
-  async findAll() {
-    return await this.productRepository.find({
-      select: {
-        name: true,
-        description: true,
-        location: true,
-        point: true,
-        price: true,
-        thumbnail_image: true,
-      },
-      where: { id: Not(0) },
-    });
+  async findAll(page: number) {
+    console.log(page); //2
+    return await this.dataSource
+      .createQueryBuilder(Product, 'p')
+      .select('p.*')
+      .addSelect('COUNT(w.product_id) as wish_count')
+      .leftJoin(Wish, 'w', 'w.product_id = p.id')
+      .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
+      .addSelect('COUNT(r.id) as review_count')
+      .leftJoin(Order, 'o', 'o.product_id = p.id')
+      .leftJoin(Review, 'r', 'r.order_id = o.id')
+      .groupBy('p.id')
+      .limit(pageLimit)
+      .offset((page - 1) * pageLimit)
+      .getRawMany();
   }
 
   async findProductCode(productId: number) {
@@ -126,6 +131,17 @@ export class ProductService {
     });
 
     this.recentProduct(productId, userId, product.thumbnail_image);
+    return product;
+  }
+
+  // 상품 정보 상세 조회
+  async getProductInfo(productId: number) {
+    const product = await this.productRepository.findOne({
+      where: {
+        id: productId,
+      },
+    });
+
     return product;
   }
 
