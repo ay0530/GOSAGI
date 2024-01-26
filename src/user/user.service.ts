@@ -104,6 +104,11 @@ export class UserService {
       throw new NotFoundException('비밀번호가 일치하지 않습니다.');
     }
 
+    // ERR : 현재 비밀번호와 새 비밀번호가 일치한 경우
+    if (currentPassword === newPassword) {
+      throw new NotFoundException('현재 비밀번호와 일치합니다');
+    }
+
     // 신규 비밀번호 암호화
     const hashedNewPassword = await hash(newPassword, 10);
 

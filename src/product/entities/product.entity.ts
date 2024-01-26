@@ -70,7 +70,7 @@ export class Product {
 
   // 조회수
   @Column({ type: 'int', nullable: true, default: 0 })
-  views?: number;
+  views: number;
 
   @IsNotEmpty({ message: '썸네일 이미지를 넣으세요' })
   @IsString({ message: '문자형으로 입력해주세요' })
@@ -93,7 +93,7 @@ export class Product {
   wish: Wish[];
 
   // 일대다 관계 설정(orders)
-  @OneToMany(() => Wish, (order) => order.product)
+  @OneToMany(() => Order, (order) => order.product)
   order: Order[];
 
   // 일대다 관계 설정(product_thumbnail)

@@ -11,12 +11,17 @@ Content-Type: application/JSON
   "receiver" : "배고파",
   "receiver_phone_number" : "010-1111-1111",
   "delivery_name" : "집",
-  "delivery_address" : "서울시 강남구"
+  "delivery_address" : "서울시 강남구",
+  "post_code" : "03045"
 }
 
 ###
 # 내가 구매한 상품들 조회
 GET {{domain}}/order
+
+###
+# 기간 별 조회 day, month 조회 가능
+GET {{domain}}/order/period?period=7days
 
 ###
 # 상세 구매 내역 조회

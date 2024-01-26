@@ -5,12 +5,13 @@ import {
 } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
 import { User } from 'src/user/entities/user.entity';
 import { ProductService } from 'src/product/product.service';
 import _ from 'lodash';
+import { UpdateOrderDeliveryDto } from './dto/update-order-delivery.dto';
 @Injectable()
 export class OrderService {
   constructor(
@@ -32,6 +33,7 @@ export class OrderService {
       delivery_address,
       delivery_request,
       quantity,
+      post_code,
     } = createOrderDto;
     const product = await this.productService.getProductDetail(
       product_id,
@@ -42,7 +44,7 @@ export class OrderService {
     //product id는 현재 판매하는 상품으로 연결할 때 사용, name과 price는 변동 가능성 있으니 저장
     const createOrder = await this.orderRepository.save({
       product_id,
-      status: '구매완료',
+      status: '입금대기',
       receiver,
       receiver_phone_number,
       delivery_name,
@@ -51,19 +53,19 @@ export class OrderService {
       quantity,
       product_name: product.name,
       product_price: product.price,
+      post_code,
       user_id: user.id,
     });
 
-    return {
-      success: true,
-      message: '구매에 성공하였습니다.',
-      data: createOrder,
-    };
+    return createOrder;
   }
 
   async findAllByUser(user: User) {
     const orders = await this.orderRepository.find({
       where: { user_id: user.id },
+      order: {
+        createdAt: 'DESC', // createdAt을 기준으로 내림차순 정렬
+      },
       select: [
         'id',
         'status',
@@ -75,18 +77,17 @@ export class OrderService {
     });
 
     return {
-      success: true,
-      message: '구매 내역을 정상적으로 불러왔습니다.',
-      data: {
-        order_count: orders.length,
-        data: orders,
-      },
+      order_count: orders.length,
+      data: orders,
     };
   }
 
   async findAllByProduct(productId: number) {
     const orders = await this.orderRepository.find({
       where: { product_id: productId },
+      order: {
+        createdAt: 'DESC', // createdAt을 기준으로 내림차순 정렬
+      },
       select: [
         'id',
         'status',
@@ -98,12 +99,65 @@ export class OrderService {
     });
 
     return {
-      success: true,
-      message: '구매 내역을 정상적으로 불러왔습니다.',
-      data: {
-        order_count: orders.length,
-        data: orders,
+      order_count: orders.length,
+      data: orders,
+    };
+  }
+
+  async findAllByUserPeriod(period: string, user: User) {
+    let startDate = new Date();
+    const periodValue = Number(period.replace(/\D/g, ''));
+
+    if (period.includes('day')) {
+      startDate.setDate(startDate.getDate() - periodValue);
+    } else if (period.includes('month')) {
+      startDate.setMonth(startDate.getMonth() - periodValue);
+    } else {
+      //default는 전체 주문을 보여준다.
+      return this.findAllByUser(user);
+    }
+
+    //기간 별 조회
+    const orders = await this.orderRepository.find({
+      where: { user_id: user.id, createdAt: Between(startDate, new Date()) },
+      order: {
+        createdAt: 'DESC', // createdAt을 기준으로 내림차순 정렬
       },
+      select: [
+        'id',
+        'status',
+        'product_name',
+        'product_price',
+        'quantity',
+        'createdAt',
+      ],
+    });
+
+    return {
+      order_count: orders.length,
+      data: orders,
+    };
+  }
+
+  async findAllByUserStatus(status: string, user: User) {
+    const orders = await this.orderRepository.find({
+      where: { user_id: user.id, status: status },
+      order: {
+        createdAt: 'DESC', // createdAt을 기준으로 내림차순 정렬
+      },
+      select: [
+        'id',
+        'status',
+        'product_name',
+        'product_price',
+        'quantity',
+        'createdAt',
+      ],
+    });
+
+    return {
+      order_count: orders.length,
+      data: orders,
     };
   }
 
@@ -119,11 +173,7 @@ export class OrderService {
       );
     }
 
-    return {
-      success: true,
-      message: '구매 내역을 정상적으로 불러왔습니다.',
-      data: order,
-    };
+    return order;
   }
 
   async getOrderStatus(id: number) {
@@ -135,7 +185,7 @@ export class OrderService {
     return order.status;
   }
 
-  async adminUpdate(id: number, updateOrderDto: UpdateOrderDto) {
+  async updateAdmin(id: number, updateOrderDto: UpdateOrderDto) {
     const { status } = updateOrderDto;
 
     //order update
@@ -156,14 +206,50 @@ export class OrderService {
     order.status = status;
     const updateOrder = await this.orderRepository.save(order);
 
-    return {
-      success: true,
-      message: '구매 내역이 변경되었습니다.',
-      data: updateOrder,
-    };
+    return updateOrder;
   }
 
-  async confirmUpdate(id: number, updateOrderDto: UpdateOrderDto, user: User) {
+  async updateAddress(
+    id: number,
+    updateOrderDeliveryDto: UpdateOrderDeliveryDto,
+    user: User,
+  ) {
+    const {
+      receiver,
+      receiver_phone_number,
+      delivery_name,
+      delivery_address,
+      post_code,
+      delivery_request,
+    } = updateOrderDeliveryDto;
+
+    const order = await this.orderRepository.findOne({
+      where: { id, user_id: user.id },
+    });
+
+    if (_.isNil(order)) {
+      throw new NotFoundException(
+        '해당 상품의 구매 내역을 확인할 수 없습니다.',
+      );
+    }
+    //배송 중일 때는 배송지 변경이 불가능
+    if (order.status !== '입금대기' && order.status !== '입금완료') {
+      throw new BadRequestException('해당 상품은 배송지 변경이 불가능합니다.');
+    }
+
+    order.receiver = receiver;
+    order.receiver_phone_number = receiver_phone_number;
+    order.delivery_name = delivery_name;
+    order.delivery_address = delivery_address;
+    order.post_code = post_code;
+    order.delivery_request = delivery_request;
+
+    const updateOrder = await this.orderRepository.save(order);
+
+    return updateOrder;
+  }
+
+  async updateConfirm(id: number, updateOrderDto: UpdateOrderDto, user: User) {
     const { status } = updateOrderDto;
 
     //dto의 status가 명확한지 한 번 더 확인
@@ -189,11 +275,7 @@ export class OrderService {
     order.status = status;
     const updateOrder = await this.orderRepository.save(order);
 
-    return {
-      success: true,
-      message: '구매 확정이 완료되었습니다. 리뷰를 작성할 수 있습니다.',
-      data: updateOrder,
-    };
+    return updateOrder;
   }
 
   async refundRequest(id: number, updateOrderDto: UpdateOrderDto, user: User) {
@@ -227,13 +309,9 @@ export class OrderService {
     }
 
     order.status = status;
-    const RefundOrder = await this.orderRepository.save(order);
+    const refundOrder = await this.orderRepository.save(order);
 
-    return {
-      success: true,
-      message: '환불신청이 완료되었습니다.',
-      data: RefundOrder,
-    };
+    return refundOrder;
   }
 
   async refundComplete(id: number, updateOrderDto: UpdateOrderDto, user: User) {
@@ -260,10 +338,6 @@ export class OrderService {
     order.status = status;
     const refundOrder = await this.orderRepository.save(order);
 
-    return {
-      success: true,
-      message: '성공적으로 환불에 성공하였습니다.',
-      data: refundOrder,
-    };
+    return refundOrder;
   }
 }

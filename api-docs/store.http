@@ -59,12 +59,3 @@ GET {{domain}}/store/list
 # 매장 목록 검색
 # 검색 조건 : name, phone_number, address
 GET {{domain}}/store/list/name/3
-
-###
-# 매장 상품 목록 조회
-GET {{domain}}/store/productList/1
-
-###
-# 매장 상품 목록 검색
-# 검색 조건 : name
-GET {{domain}}/store/productList/1/name/2

@@ -21,14 +21,14 @@ Content-Type: application/JSON
 
 ###
 # 프로덕트 등록 / 뒤에는 스토어 아이디(스토어가 필요함)
-POST {{domain}}/1
+POST {{domain}}/2
 Content-Type: application/JSON
 
 {
 "code": 2962612, 
-"name": "인천 불닭 한라봉4",
-"description" : "맛도좋고 몸도좋은 불닭 한라봉4",
-"location": "인천시 애월동",
+"name": "인천 불닭 한라봉5",
+"description" : "맛도좋고 몸도좋은 불닭 한라봉5",
+"location": "인천시 애월동1",
 "category": "0",
 "point": "30000",
 "price": "150000",
@@ -52,7 +52,7 @@ Content-Type: application/JSON
 }
 
 ### 상품 상세 조회
-GET {{domain}}/detail/2
+GET {{domain}}/detail/4
 
 ###
 # 최근 본 상품 목록 조회
@@ -77,6 +77,18 @@ Content-Type: application/JSON
 #카테고리 아이디별 가져오기
 GET {{domain}}/category/0
 Content-Type: application/JSON
+
+###
+# 매장 별 상품 조회
+GET {{domain}}/store/1
+Content-Type: application/JSON
+
+###
+# 매장 별 상품 검색
+# 검색 조건 name
+GET {{domain}}/store/1/name/임시
+Content-Type: application/JSON
+
 
 ###
 #컨텐츠 내용 가져오기
@@ -138,3 +150,4 @@ Content-Type: application/JSON
 #상품 삭제
 DELETE {{domain}}/7
 Content-Type: application/JSON
+

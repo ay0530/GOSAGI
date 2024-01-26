@@ -4,7 +4,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, Repository, SelectQueryBuilder, getRepository } from 'typeorm';
 
 import { AnswerService } from 'src/answer/answer.service';
 import { ProductService } from 'src/product/product.service';
@@ -52,9 +52,9 @@ export class QuestionService {
 
     // 답변이 있을 경우 답변도 함께 조회
     if (answer) {
-      return { question, answer };
+      return { question, answer, status: '답변완료' };
     } else {
-      return question;
+      return { question, status: '답변대기' };
     }
   }
 
@@ -70,9 +70,9 @@ export class QuestionService {
 
     // 답변이 있을 경우 답변도 함께 조회
     if (answer) {
-      return { question, answer };
+      return { question, answer, status: '답변완료' };
     } else {
-      return question;
+      return { question, status: '답변대기' };
     }
   }
 
@@ -131,19 +131,38 @@ export class QuestionService {
 
   // 문의 목록 조회(회원)
   async findAll() {
-    const questions = await this.questionRepository.find({
-      where: { is_deleted: false },
-      order: { created_at: 'DESC' },
+    const questions = await this.questionRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.answer', 'answer') // LEFT JOIN
+      .where('question.is_deleted = 0')
+      .orderBy('question.created_at', 'DESC')
+      .getMany();
+
+    // 답변 여부에 따라 맵핑
+    const result = questions.map((question) => {
+      if (question.answer) {
+        return { question, status: '답변완료' };
+      } else {
+        return { question, status: '답변대기' };
+      }
     });
 
-    return questions;
+    return result;
+
+    // const questions = await this.questionRepository.find({
+    //   where: { is_deleted: false },
+    //   order: { created_at: 'DESC' },
+    // });
+
+    // return questions;
   }
 
   // 문의 목록 검색
   async searchAll(category: string, keyword: string) {
     // 제목, 내용으로 검색 가능
-    const questions = this.questionRepository
+    const questions = await this.questionRepository
       .createQueryBuilder('question')
+      .leftJoinAndSelect('question.answer', 'answer') // LEFT JOIN
       .where(`question.${category} LIKE :keyword`, {
         keyword: `%${keyword}%`,
       })
@@ -151,24 +170,46 @@ export class QuestionService {
       .orderBy('question.created_at', 'DESC')
       .getMany();
 
-    return questions;
+    const result = questions.map((question) => {
+      if (question.answer) {
+        return { question, status: '답변완료' };
+      } else {
+        return { question, status: '답변대기' };
+      }
+    });
+
+    return result;
   }
 
   // 내 문의 목록 조회
   async findMyAll(userId: number) {
-    const questions = await this.questionRepository.find({
-      where: { user_id: userId, is_deleted: false },
-      order: { created_at: 'DESC' },
+    const questions = await this.questionRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.answer', 'answer') // LEFT JOIN
+      .where('question.is_deleted = 0 AND question.user_id = :userId', {
+        userId: userId,
+      })
+      .orderBy('question.created_at', 'DESC')
+      .getMany();
+
+    // 답변 여부에 따라 맵핑
+    const result = questions.map((question) => {
+      if (question.answer) {
+        return { question, status: '답변완료' };
+      } else {
+        return { question, status: '답변대기' };
+      }
     });
 
-    return questions;
+    return result;
   }
 
   // 내 문의 목록 검색
   async searchMyAll(category: string, keyword: string, userId: number) {
     // 제목, 내용으로 검색 가능
-    const questions = this.questionRepository
+    const questions = await this.questionRepository
       .createQueryBuilder('question')
+      .leftJoinAndSelect('question.answer', 'answer') // LEFT JOIN
       .where(`question.${category} LIKE :keyword`, {
         keyword: `%${keyword}%`,
       })
@@ -179,7 +220,16 @@ export class QuestionService {
       .orderBy('question.created_at', 'DESC')
       .getMany();
 
-    return questions;
+    // 답변 여부에 따라 맵핑
+    const result = questions.map((question) => {
+      if (question.answer) {
+        return { question, status: '답변완료' };
+      } else {
+        return { question, status: '답변대기' };
+      }
+    });
+
+    return result;
   }
 
   // 내 매장의 문의 목록 조회
@@ -191,9 +241,18 @@ export class QuestionService {
     const questions = await this.questionRepository.find({
       where: { product_id: In(productIds), is_deleted: false },
       order: { created_at: 'DESC' },
+      relations: ['answer'],
     });
 
-    return questions;
+    const result = questions.map((question) => {
+      if (question.answer) {
+        return { question, status: '답변완료' };
+      } else {
+        return { question, status: '답변대기' };
+      }
+    });
+
+    return result;
   }
 
   // 내 매장의 문의 목록 검색
@@ -202,15 +261,25 @@ export class QuestionService {
     const productIds = await this.productService.findProductIds(storeId);
 
     // 제목, 내용으로 검색 가능
-    const questions = this.questionRepository
+    const questions = await this.questionRepository
       .createQueryBuilder('question')
+      .leftJoinAndSelect('question.answer', 'answer') // LEFT JOIN
       .where(`question.${category} LIKE :keyword`, { keyword: `%${keyword}%` })
       .andWhere(`question.product_id IN (:...productIds)`, { productIds })
       .andWhere(`question.is_deleted = false`)
       .orderBy('question.created_at', 'DESC')
       .getMany();
 
-    return questions;
+    // 답변 여부에 따라 맵핑
+    const result = questions.map((question) => {
+      if (question.answer) {
+        return { question, status: '답변완료' };
+      } else {
+        return { question, status: '답변대기' };
+      }
+    });
+
+    return result;
   }
 
   // 내 매장의 특정 상품 문의 목록 조회
@@ -218,16 +287,26 @@ export class QuestionService {
     const questions = await this.questionRepository.find({
       where: { product_id: productId, is_deleted: false },
       order: { created_at: 'DESC' },
+      relations: ['answer'],
     });
 
-    return questions;
+    const result = questions.map((question) => {
+      if (question.answer) {
+        return { question, status: '답변완료' };
+      } else {
+        return { question, status: '답변대기' };
+      }
+    });
+
+    return result;
   }
 
   // 내 매장의 특정 상품 문의 목록 검색
   async searchProductAll(category: string, keyword: string, productId: number) {
     // 제목, 내용으로 검색 가능
-    const questions = this.questionRepository
+    const questions = await this.questionRepository
       .createQueryBuilder('question')
+      .leftJoinAndSelect('question.answer', 'answer') // LEFT JOIN
       .where(`question.${category} LIKE :keyword`, {
         keyword: `%${keyword}%`,
       })
@@ -238,6 +317,14 @@ export class QuestionService {
       .orderBy('question.created_at', 'DESC')
       .getMany();
 
-    return questions;
+    const result = questions.map((question) => {
+      if (question.answer) {
+        return { question, status: '답변완료' };
+      } else {
+        return { question, status: '답변대기' };
+      }
+    });
+
+    return result;
   }
 }

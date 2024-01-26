@@ -16,6 +16,7 @@ import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { Roles } from 'src/guards/roles.decorator';
 import { UserRole } from 'src/user/types/userRole.type';
+import { ResponseDto } from 'src/ResponseDTO/response-dto';
 
 @Controller('faq')
 export class FaqController {
@@ -27,44 +28,36 @@ export class FaqController {
   @Post()
   async createFaq(@Body() createFaqDto: CreateFaqDto) {
     const data = await this.faqService.createFaq(createFaqDto);
-    return {
-      success: true,
-      message: 'FAQ 생성이 완료되었습니다.',
-      data,
-    };
+    const response = new ResponseDto(true, 'FAQ 생성이 완료되었습니다.', data);
+    return response;
   }
 
   // FAQ 조회
   @Get()
   async getFaq() {
     const data = await this.faqService.getFaq();
-    return {
-      success: true,
-      message: 'FAQ 조회가 완료되었습니다.',
-      data,
-    };
+    const response = new ResponseDto(true, 'FAQ 조회가 완료되었습니다.', data);
+    return response;
   }
 
   // 특정 FAQ 조회
   @Get('/detail/:faqId')
-  async getOneFaq(@Param('faqId') faqId: string) {
-    const data = await this.faqService.getOneFaq(+faqId);
-    return {
-      success: true,
-      message: '특정 FAQ 조회가 완료되었습니다.',
+  async getOneFaq(@Param('faqId') faqId: number) {
+    const data = await this.faqService.getOneFaq(faqId);
+    const response = new ResponseDto(
+      true,
+      '특정 FAQ 조회가 완료되었습니다.',
       data,
-    };
+    );
+    return response;
   }
 
   // FAQ 검색
   @Get('keyword')
   async searchFaq(@Query('keyword') keyword: string) {
     const data = await this.faqService.searchFaq(keyword);
-    return {
-      success: true,
-      message: 'FAQ 검색이 완료되었습니다.',
-      data,
-    };
+    const response = new ResponseDto(true, 'FAQ 검색이 완료되었습니다.', data);
+    return response;
   }
 
   // FAQ 수정
@@ -72,26 +65,21 @@ export class FaqController {
   @Roles(UserRole.ADMIN)
   @Patch(':faqId')
   async updateFaq(
-    @Param('faqId') faqId: string,
+    @Param('faqId') faqId: number,
     @Body() updateFaqDto: UpdateFaqDto,
   ) {
-    const data = await this.faqService.updateFaq(+faqId, updateFaqDto);
-    return {
-      success: true,
-      message: 'FAQ 수정이 완료되었습니다.',
-      data,
-    };
+    const data = await this.faqService.updateFaq(faqId, updateFaqDto);
+    const response = new ResponseDto(true, 'FAQ 수정이 완료되었습니다.', data);
+    return response;
   }
 
   // FAQ 삭제
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Delete(':faqId')
-  async deleteFaq(@Param('faqId') faqId: string) {
-    await this.faqService.deleteFaq(+faqId);
-    return {
-      success: true,
-      message: 'FAQ 삭제가 완료되었습니다.',
-    };
+  async deleteFaq(@Param('faqId') faqId: number) {
+    await this.faqService.deleteFaq(faqId);
+    const response = new ResponseDto(true, 'FAQ 삭제가 완료되었습니다.', null);
+    return response;
   }
 }

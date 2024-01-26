@@ -58,8 +58,8 @@ export class AddressController {
   // 배송지 상세조회
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getOneAddress(@Param('id') id: string, @Req() req: any) {
-    const data = await this.addressService.getOneAddress(+id, req.user.id);
+  async getOneAddress(@Param('id') id: number, @Req() req: any) {
+    const data = await this.addressService.getOneAddress(id, req.user.id);
 
     const response = new ResponseDto(
       true,
@@ -73,12 +73,12 @@ export class AddressController {
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async updateAddress(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateAddressDto: UpdateAddressDto,
     @Req() req: any,
   ) {
     const data = await this.addressService.updateAddress(
-      +id,
+      id,
       updateAddressDto,
       req.user.id,
     );
@@ -94,8 +94,8 @@ export class AddressController {
   // 배송지 삭제
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async deleteAddress(@Param('id') id: string, @Req() req: any) {
-    const data = await this.addressService.deleteAddress(+id, req.user.id);
+  async deleteAddress(@Param('id') id: number, @Req() req: any) {
+    const data = await this.addressService.deleteAddress(id, req.user.id);
     const response = new ResponseDto(
       true,
       '배송지 삭제가 완료되었습니다.',

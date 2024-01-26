@@ -4,12 +4,14 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 import { User } from 'src/user/entities/user.entity';
 import { Product } from 'src/product/entities/product.entity';
+import { Answer } from 'src/answer/entities/answer.entity';
 
 @Entity({
   name: 'questions',
@@ -56,4 +58,7 @@ export class Question {
   product: Product; // 관계 테이블
   @Column({ type: 'int', nullable: false })
   product_id: number;
+
+  @OneToOne(() => Answer, (answer) => answer.question)
+  answer: Answer;
 }

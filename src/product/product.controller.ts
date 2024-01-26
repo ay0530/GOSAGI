@@ -33,8 +33,13 @@ export class ProductController {
   async create(
     @Body() createProductDto: CreateProductDto,
     @Param('storeId') storeId: number,
+    @Req() req: any,
   ) {
-    const data = await this.productService.create(createProductDto, storeId);
+    const data = await this.productService.create(
+      createProductDto,
+      storeId,
+      req.user.id,
+    );
 
     const response = new ResponseDto(true, '상품이 등록완료되었습니다', data);
 
@@ -42,9 +47,9 @@ export class ProductController {
   }
 
   //상품 전체 가져오기
-  @Get()
-  async findAll() {
-    const data = await this.productService.findAll();
+  @Get('/page')
+  async findAll(@Query('page') page: number) {
+    const data = await this.productService.findAll(page);
 
     const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
 
@@ -71,8 +76,8 @@ export class ProductController {
   }
 
   //카테고리 별로 가져오기
-  @Get('/category/:categotyId')
-  async findByCategoty(@Param('categotyId') categoryId: string) {
+  @Get('/category/:categoryId')
+  async findByCategoty(@Param('categoryId') categoryId: string) {
     const data = await this.productService.findByCategory(categoryId);
 
     const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
@@ -201,6 +206,34 @@ export class ProductController {
       data,
     );
 
+    return response;
+  }
+
+  // 매장 별 상품 조회
+  @UseGuards(JwtAuthGuard)
+  @Get('/store/:storeId')
+  async findProductAllByStore(@Param('storeId') storeId: number) {
+    const data = await this.productService.findProductAllByStore(storeId);
+
+    const response = new ResponseDto(true, '검색이 완료되었습니다', data);
+    return response;
+  }
+
+  // 매장 별 상품 조회 검색
+  @UseGuards(JwtAuthGuard)
+  @Get('/store/:storeId/:category/:keyword')
+  async searchProductAllByStore(
+    @Param('storeId') storeId: number,
+    @Param('category') category: string,
+    @Param('keyword') keyword: string,
+  ) {
+    const data = await this.productService.searchProductAllByStore(
+      storeId,
+      category,
+      keyword,
+    );
+
+    const response = new ResponseDto(true, '검색이 완료되었습니다', data);
     return response;
   }
 }

@@ -42,11 +42,7 @@ export class ReviewService {
       user_id: user.id,
     });
 
-    return {
-      success: true,
-      message: '리뷰 작성에 성공하였습니다.',
-      data: createReview,
-    };
+    return createReview;
   }
 
   async findAll(user: User) {
@@ -57,13 +53,9 @@ export class ReviewService {
     const totalRate = reviews.reduce((sum, review) => sum + review.rate, 0);
 
     return {
-      success: true,
-      message: '리뷰를 정상적으로 불러왔습니다.',
-      data: {
-        review_count: reviews.length,
-        review_average_rate: totalRate / reviews.length,
-        reviews,
-      },
+      review_count: reviews.length,
+      review_average_rate: totalRate / reviews.length,
+      reviews,
     };
   }
 
@@ -77,11 +69,7 @@ export class ReviewService {
       throw new NotFoundException('해당 리뷰를 확인할 수 없습니다.');
     }
 
-    return {
-      success: true,
-      message: '리뷰 내용을 정상적으로 불러왔습니다.',
-      data: review,
-    };
+    return review;
   }
 
   async findAllByProductId(productId: number) {
@@ -92,13 +80,9 @@ export class ReviewService {
     const totalRate = reviews.reduce((sum, review) => sum + review.rate, 0);
 
     return {
-      success: true,
-      message: '리뷰 내용을 정상적으로 불러왔습니다.',
-      data: {
-        review_length: reviews.length,
-        review_average_rate: totalRate / reviews.length,
-        data: reviews,
-      },
+      review_length: reviews.length,
+      review_average_rate: totalRate / reviews.length,
+      data: reviews,
     };
   }
 
@@ -119,11 +103,7 @@ export class ReviewService {
 
     const updateReview = await this.reviewRepository.save(review);
 
-    return {
-      success: true,
-      message: '리뷰가 정상적으로 수정되었습니다.',
-      data: updateReview,
-    };
+    return updateReview;
   }
 
   async remove(id: number, user: User) {
@@ -139,10 +119,6 @@ export class ReviewService {
     //삭제
     await this.reviewRepository.delete({ id });
 
-    return {
-      success: true,
-      message: '리뷰를 정상적으로 삭제했습니다.',
-      data: review,
-    };
+    return review;
   }
 }
