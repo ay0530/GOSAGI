@@ -24,7 +24,7 @@ export class CartController {
     const data = await this.cartService.create(createCartDto, req.user);
     const response = new ResponseDto(
       true,
-      '카트에 상품이 등록되었습니다.',
+      '장바구니에 상품이 등록되었습니다.',
       data,
     );
     return response;
@@ -62,7 +62,7 @@ export class CartController {
     const data = await this.cartService.update(id, updateCartDto, req.user);
     const response = new ResponseDto(
       true,
-      '카트에 있는 해당 상품의 수량이 변경되었습니다.',
+      '장바구니에 있는 해당 상품의 수량이 변경되었습니다.',
       data,
     );
     return response;
