@@ -47,7 +47,7 @@ export class ProductController {
   }
 
   //상품 전체 가져오기
-  @Get('/page')
+  @Get()
   async findAll(@Query('page') page: number) {
     const data = await this.productService.findAll(page);
 
@@ -68,8 +68,11 @@ export class ProductController {
 
   //지역으로 검색하기
   @Get('/location')
-  async findByRegion(@Query('location') location: string) {
-    const data = await this.productService.findByRegion(location);
+  async findByRegion(
+    @Query('location') location: string,
+    @Query('page') page: number,
+  ) {
+    const data = await this.productService.findByRegion(location, page);
     const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
 
     return response;

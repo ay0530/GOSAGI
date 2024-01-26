@@ -60,12 +60,12 @@ GET {{domain}}/recentView
 
 ###
 # 상품 전체 가져오기
-GET {{domain}}
+GET {{domain}}?page=1
 Content-Type: application/JSON
 
 ###
 # 지역별 가져오기
-GET {{domain}}/location?location=인천
+GET {{domain}}/location?location=인천&page=1
 Content-Type: application/JSON
 
 ###

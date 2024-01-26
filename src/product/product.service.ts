@@ -102,11 +102,13 @@ export class ProductService {
     });
   }
 
-  async findByRegion(location: string) {
+  async findByRegion(location: string, page: number) {
     return await this.productRepository.find({
       where: {
         location: Like(`%${location}%`),
       },
+      skip: (page - 1) * pageLimit,
+      take: pageLimit,
     });
   }
 
