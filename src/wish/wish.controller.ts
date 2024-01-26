@@ -12,7 +12,7 @@ import {
 import { WishService } from './wish.service';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
-
+import { ResponseDto } from 'src/ResponseDTO/response-dto';
 
 @Controller('wish')
 export class WishController {
@@ -21,30 +21,47 @@ export class WishController {
   //찜하기
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createWishDto: CreateWishDto, @Req() req) {
-    const user = req.user;
-    return this.wishService.create(createWishDto, user);
+  async create(@Body() createWishDto: CreateWishDto, @Req() req) {
+    const data = await this.wishService.create(createWishDto, req.user);
+    const response = new ResponseDto(true, '찜이 완료되었습니다.', data);
+    return response;
   }
 
-  //내가 찜한 상품 전체 보기 
+  //내가 찜한 상품 전체 보기
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll(@Req() req) {
-    const user = req.user;
-    return this.wishService.findAll(user);
+  async findAll(@Req() req) {
+    const data = await this.wishService.findAll(req.user);
+    const response = new ResponseDto(
+      true,
+      '찜을 정상적으로 불러왔습니다.',
+      data,
+    );
+    return response;
   }
 
   //상품별 찜 보기
   @Get(':productId')
-  findByProduct(@Param('productId') id: string) {
-    return this.wishService.findByProduct(+id);
+  async findByProduct(@Param('productId') id: number) {
+    const data = await this.wishService.findByProduct(id);
+    const response = new ResponseDto(
+      true,
+      '찜을 정상적으로 불러왔습니다.',
+      data,
+    );
+    return response;
   }
 
   //찜 취소
   @UseGuards(JwtAuthGuard)
   @Delete(':wishid')
-  remove(@Param('wishid') id: string, @Req() req) {
-    const user = req.user;
-    return this.wishService.remove(+id, user);
+  async remove(@Param('wishid') id: number, @Req() req) {
+    const data = await this.wishService.remove(id, req.user);
+    const response = new ResponseDto(
+      true,
+      '찜을 정상적으로 삭제했습니다.',
+      data,
+    );
+    return response;
   }
 }

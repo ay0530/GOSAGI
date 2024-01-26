@@ -57,11 +57,7 @@ export class OrderService {
       user_id: user.id,
     });
 
-    return {
-      success: true,
-      message: '구매에 성공하였습니다.',
-      data: createOrder,
-    };
+    return createOrder;
   }
 
   async findAllByUser(user: User) {
@@ -81,12 +77,8 @@ export class OrderService {
     });
 
     return {
-      success: true,
-      message: '구매 내역을 정상적으로 불러왔습니다.',
-      data: {
-        order_count: orders.length,
-        data: orders,
-      },
+      order_count: orders.length,
+      data: orders,
     };
   }
 
@@ -107,12 +99,8 @@ export class OrderService {
     });
 
     return {
-      success: true,
-      message: '구매 내역을 정상적으로 불러왔습니다.',
-      data: {
-        order_count: orders.length,
-        data: orders,
-      },
+      order_count: orders.length,
+      data: orders,
     };
   }
 
@@ -146,12 +134,30 @@ export class OrderService {
     });
 
     return {
-      success: true,
-      message: '구매 내역을 정상적으로 불러왔습니다.',
-      data: {
-        order_count: orders.length,
-        data: orders,
+      order_count: orders.length,
+      data: orders,
+    };
+  }
+
+  async findAllByUserStatus(status: string, user: User) {
+    const orders = await this.orderRepository.find({
+      where: { user_id: user.id, status: status },
+      order: {
+        createdAt: 'DESC', // createdAt을 기준으로 내림차순 정렬
       },
+      select: [
+        'id',
+        'status',
+        'product_name',
+        'product_price',
+        'quantity',
+        'createdAt',
+      ],
+    });
+
+    return {
+      order_count: orders.length,
+      data: orders,
     };
   }
 
@@ -167,11 +173,7 @@ export class OrderService {
       );
     }
 
-    return {
-      success: true,
-      message: '구매 내역을 정상적으로 불러왔습니다.',
-      data: order,
-    };
+    return order;
   }
 
   async getOrderStatus(id: number) {
@@ -204,11 +206,7 @@ export class OrderService {
     order.status = status;
     const updateOrder = await this.orderRepository.save(order);
 
-    return {
-      success: true,
-      message: '구매 내역이 변경되었습니다.',
-      data: updateOrder,
-    };
+    return updateOrder;
   }
 
   async updateAddress(
@@ -248,11 +246,7 @@ export class OrderService {
 
     const updateOrder = await this.orderRepository.save(order);
 
-    return {
-      success: true,
-      message: '배송지가 변경되었습니다.',
-      data: updateOrder,
-    };
+    return updateOrder;
   }
 
   async updateConfirm(id: number, updateOrderDto: UpdateOrderDto, user: User) {
@@ -281,11 +275,7 @@ export class OrderService {
     order.status = status;
     const updateOrder = await this.orderRepository.save(order);
 
-    return {
-      success: true,
-      message: '구매 확정이 완료되었습니다. 리뷰를 작성할 수 있습니다.',
-      data: updateOrder,
-    };
+    return updateOrder;
   }
 
   async refundRequest(id: number, updateOrderDto: UpdateOrderDto, user: User) {
@@ -319,13 +309,9 @@ export class OrderService {
     }
 
     order.status = status;
-    const RefundOrder = await this.orderRepository.save(order);
+    const refundOrder = await this.orderRepository.save(order);
 
-    return {
-      success: true,
-      message: '환불신청이 완료되었습니다.',
-      data: RefundOrder,
-    };
+    return refundOrder;
   }
 
   async refundComplete(id: number, updateOrderDto: UpdateOrderDto, user: User) {
@@ -352,10 +338,6 @@ export class OrderService {
     order.status = status;
     const refundOrder = await this.orderRepository.save(order);
 
-    return {
-      success: true,
-      message: '성공적으로 환불에 성공하였습니다.',
-      data: refundOrder,
-    };
+    return refundOrder;
   }
 }
