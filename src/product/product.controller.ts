@@ -47,9 +47,9 @@ export class ProductController {
   }
 
   //상품 전체 가져오기
-  @Get()
-  async findAll() {
-    const data = await this.productService.findAll();
+  @Get('/page')
+  async findAll(@Query('page') page: number) {
+    const data = await this.productService.findAll(page);
 
     const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
 
