@@ -28,12 +28,11 @@ async function scrapeProductCode(url) {
   // 상품 목록에서 추출 한 상품 코드로 상품 상세 정보 추출
   for (const productCode of productCodeList) {
     await getProductDetail(page, productCode);
-  };
+  }
 
   // 브라우저 종료
   await browser.close();
 }
-
 
 // 로그인 함수
 async function login(page) {
@@ -57,9 +56,9 @@ async function login(page) {
         await loginButton[0].click(), // 로그인 버튼 클릭
         await page.waitForNavigation({ waitUntil: 'networkidle2' }),
       ]);
-      console.log("로그인 성공");
+      console.log('로그인 성공');
     } catch (err) {
-      console.log("로그인 에러 : ", err);
+      console.log('로그인 에러 : ', err);
     }
   }
 }
@@ -68,18 +67,22 @@ async function login(page) {
 async function getProductCodes(page) {
   // 상품 목록 페이지로 이동
   // 추후 다음 버튼을 눌러서 다음 상품 목록을 가져오는 기능 추가 필요
-  await page.goto('https://ilovegohyang.go.kr/goods/index-main.html', { waitUntil: 'networkidle2' }); // 상품 목록 페이지로 이동
+  await page.goto('https://ilovegohyang.go.kr/goods/index-main.html', {
+    waitUntil: 'networkidle2',
+  }); // 상품 목록 페이지로 이동
   await page.waitForSelector('.item_img'); // .item_img가 로딩될 때 까지 대기
 
   try {
-    const productCodeList = await page.$$eval('.goods-list-items .item_img', imgs =>
-      imgs.map(img => {
-        const match = img.getAttribute('src').match(/G(\d+)/); // G 뒤의 숫자들 가져오기
-        return match ? match[1] : null;
-      })
+    const productCodeList = await page.$$eval(
+      '.goods-list-items .item_img',
+      (imgs) =>
+        imgs.map((img) => {
+          const match = img.getAttribute('src').match(/G(\d+)/); // G 뒤의 숫자들 가져오기
+          return match ? match[1] : null;
+        }),
     );
 
-    console.log("상품 목록 추출 성공");
+    console.log('상품 목록 추출 성공');
     return productCodeList;
   } catch (err) {
     console.error('상품 목록 추출 에러 : ', err);
@@ -89,16 +92,32 @@ async function getProductCodes(page) {
 // 상품 상세 정보 추출
 async function getProductDetail(page, productCode) {
   // 상품 상세 페이지로 이동
-  await page.goto(`https://ilovegohyang.go.kr/items/details-main.html?code=G${productCode}`, { waitUntil: 'networkidle2' });
+  await page.goto(
+    `https://ilovegohyang.go.kr/items/details-main.html?code=G${productCode}`,
+    { waitUntil: 'networkidle2' },
+  );
 
   // $eval, $$eval : puppeteer의 메소드, 웹 페이지 내부의 DOM 요소에 접근함 / querySelector, querySelectorAll
   // 태그(id, class, a 등) 값으로 textContent, innerHTML 등 값 추출
-  const thumbnailImages = await page.$$eval('.swiper_img img', imgs => imgs.map(img => img.src)); // 썸네일 이미지
-  const name = await page.$eval('.info_title h2 span', name => name.textContent.trim()); // 상품명
-  const description = await page.$eval('.info_title p span', description => description.textContent.trim()); // 상품 설명
-  const category = await page.$eval('.ali_breadcrumb span:nth-last-child(2) a', a => a.textContent.trim() ? a.textContent.trim() : null); // 카데고리
-  const area = await page.$eval('.brand_mall', area => area.textContent.trim()); // 지역
-  const price = await page.$eval('.op_price, .price, .present_price', price => price.textContent.trim().replace("P", "")); // 가격
+  const thumbnailImages = await page.$$eval('.swiper_img img', (imgs) =>
+    imgs.map((img) => img.src),
+  ); // 썸네일 이미지
+  const name = await page.$eval('.info_title h2 span', (name) =>
+    name.textContent.trim(),
+  ); // 상품명
+  const description = await page.$eval('.info_title p span', (description) =>
+    description.textContent.trim(),
+  ); // 상품 설명
+  const category = await page.$eval(
+    '.ali_breadcrumb span:nth-last-child(2) a',
+    (a) => (a.textContent.trim() ? a.textContent.trim() : null),
+  ); // 카데고리
+  const area = await page.$eval('.brand_mall', (area) =>
+    area.textContent.trim(),
+  ); // 지역
+  const price = await page.$eval('.op_price, .price, .present_price', (price) =>
+    price.textContent.trim().replace('P', ''),
+  ); // 가격
   const origin = await page.evaluate(() => {
     const spans = Array.from(document.querySelectorAll('.shop_info'));
     for (const sapn of spans) {
@@ -110,12 +129,13 @@ async function getProductDetail(page, productCode) {
     }
     return null;
   });
-  const content = await page.$eval('.item_detail', content => [content.innerHTML]); // 본문 HTML
+  const content = await page.$eval('.item_detail', (content) => [
+    content.innerHTML,
+  ]); // 본문 HTML
 
   // 상품 저장하기
-  await axios.post(
-    'http://localhost:3000/goods/1',
-    {
+  await axios
+    .post('http://localhost:3000/goods/1', {
       code: Number(productCode),
       name,
       description,
@@ -124,16 +144,18 @@ async function getProductDetail(page, productCode) {
       point: Number(price.replace(',', '')),
       price: 0,
       thumbnail_image: thumbnailImages[0],
-      productThumbnails: thumbnailImages.map(imageUrl => ({ image_url: imageUrl })),
-      productContents: content.map(content => ({ content }))
-    }
-  ).then(res => {
-    console.log("상품 저장 성공");
-  }).catch(err => {
-    console.log(err);
-  });
+      productThumbnails: thumbnailImages.map((imageUrl) => ({
+        image_url: imageUrl,
+      })),
+      productContents: content.map((content) => ({ content })),
+    })
+    .then((res) => {
+      console.log('상품 저장 성공');
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 }
-
 
 // 업데이트 로직도 필요함
 

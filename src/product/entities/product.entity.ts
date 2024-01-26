@@ -53,7 +53,7 @@ export class Product {
   // 카테고리
   @IsNotEmpty({ message: '카테고리를 정하세요' })
   @IsString({ message: '문자형으로 입력해주세요' })
-  @Column({ type: 'char', nullable: false })
+  @Column({ type: 'varchar', nullable: false })
   category: string;
 
   // 포인트
