@@ -39,11 +39,7 @@ export class WishService {
       user_id: user.id,
     });
 
-    return {
-      success: true,
-      message: '찜이 완료되었습니다.',
-      data: createWish,
-    };
+    return createWish;
   }
 
   async findAll(user: User) {
@@ -52,12 +48,8 @@ export class WishService {
     });
 
     return {
-      success: true,
-      message: '찜을 정상적으로 불러왔습니다.',
-      data: {
-        wishes_count: wishes.length,
-        data: wishes,
-      },
+      wishes_count: wishes.length,
+      data: wishes,
     };
   }
 
@@ -67,11 +59,7 @@ export class WishService {
     });
 
     return {
-      success: true,
-      message: '찜을 정상적으로 불러왔습니다.',
-      data: {
-        wishes_count: wishes.length,
-      },
+      wishes_count: wishes.length,
     };
   }
 
@@ -89,10 +77,6 @@ export class WishService {
     //삭제
     await this.wishRepository.delete({ id });
 
-    return {
-      success: true,
-      message: '찜을 정상적으로 삭제했습니다.',
-      data: wish,
-    };
+    return wish;
   }
 }

@@ -82,8 +82,8 @@ export class QuestionController {
 
     const message =
       updateQuestionDto.isDeleted === true
-        ? '수정이 완료되었습니다'
-        : '삭제가 완료되었습니다';
+        ? '삭제가 완료되었습니다'
+        : '수정이 완료되었습니다';
     const responseData = updateQuestionDto.isDeleted === true ? data : null;
     const response = new ResponseDto(true, message, responseData);
     return response;

@@ -53,6 +53,10 @@ export class Order {
   @Column({ type: 'varchar', nullable: false })
   delivery_address: string;
 
+  //우편 번호
+  @Column({ type: 'varchar', nullable: false })
+  post_code: string;
+
   //고객의 요청사항
   @Column({ type: 'varchar', nullable: true })
   delivery_request: string;
