@@ -112,11 +112,13 @@ export class ProductService {
     });
   }
 
-  async findByCategory(categoryId: string) {
+  async findByCategory(categoryId: string, page: number) {
     return await this.productRepository.find({
       where: {
         category: categoryId,
       },
+      skip: (page - 1) * pageLimit,
+      take: pageLimit,
     });
   }
 
@@ -147,12 +149,14 @@ export class ProductService {
     return product;
   }
 
-  async findByProductKeyword(keyword: string) {
+  async findByProductKeyword(keyword: string, page: number) {
     return await this.productRepository.find({
       where: [
         { name: Like(`%${keyword}%`) },
         { description: Like(`%${keyword}%`) },
       ],
+      skip: (page - 1) * pageLimit,
+      take: pageLimit,
     });
   }
 
@@ -297,9 +301,11 @@ export class ProductService {
 
   // ---- 기타 함수
   // 매장의 상품 목록 조회
-  async findProductAllByStore(storeId: number) {
+  async findProductAllByStore(storeId: number, page: number) {
     const products = await this.productRepository.find({
       where: { store_id: storeId },
+      skip: (page - 1) * pageLimit,
+      take: pageLimit,
     });
 
     return products;
@@ -310,6 +316,7 @@ export class ProductService {
     storeId: number,
     category: string,
     keyword: string,
+    page: number,
   ) {
     // 매장명으로 검색 가능
     const products = this.productRepository
@@ -318,6 +325,8 @@ export class ProductService {
         keyword: `%${keyword}%`,
       })
       .andWhere(`product.store_id = :storeId`, { storeId })
+      .limit(pageLimit)
+      .offset((page - 1) * pageLimit)
       .getMany();
 
     return products;

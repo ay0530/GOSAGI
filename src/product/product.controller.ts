@@ -80,8 +80,11 @@ export class ProductController {
 
   //카테고리 별로 가져오기
   @Get('/category/:categoryId')
-  async findByCategoty(@Param('categoryId') categoryId: string) {
-    const data = await this.productService.findByCategory(categoryId);
+  async findByCategoty(
+    @Param('categoryId') categoryId: string,
+    @Query('page') page: number,
+  ) {
+    const data = await this.productService.findByCategory(categoryId, page);
 
     const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
 
@@ -107,9 +110,12 @@ export class ProductController {
 
   //상품 키워드 검색기능
   @Get('keyword')
-  async findByProductKeyword(@Query('keyword') keyword: string) {
+  async findByProductKeyword(
+    @Query('keyword') keyword: string,
+    @Query('page') page: number,
+  ) {
     console.log(keyword);
-    const data = await this.productService.findByProductKeyword(keyword);
+    const data = await this.productService.findByProductKeyword(keyword, page);
     const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
 
     return response;
@@ -215,8 +221,11 @@ export class ProductController {
   // 매장 별 상품 조회
   @UseGuards(JwtAuthGuard)
   @Get('/store/:storeId')
-  async findProductAllByStore(@Param('storeId') storeId: number) {
-    const data = await this.productService.findProductAllByStore(storeId);
+  async findProductAllByStore(
+    @Param('storeId') storeId: number,
+    @Query('page') page: number,
+  ) {
+    const data = await this.productService.findProductAllByStore(storeId, page);
 
     const response = new ResponseDto(true, '검색이 완료되었습니다', data);
     return response;
@@ -229,11 +238,13 @@ export class ProductController {
     @Param('storeId') storeId: number,
     @Param('category') category: string,
     @Param('keyword') keyword: string,
+    @Query('page') page: number,
   ) {
     const data = await this.productService.searchProductAllByStore(
       storeId,
       category,
       keyword,
+      page,
     );
 
     const response = new ResponseDto(true, '검색이 완료되었습니다', data);
