@@ -40,9 +40,10 @@ export class WishController {
   }
 
   //상품별 찜 보기
+  @UseGuards(JwtAuthGuard)
   @Get(':productId')
-  async findByProduct(@Param('productId') id: number) {
-    const data = await this.wishService.findByProduct(id);
+  async findByProduct(@Param('productId') id: number, @Req() req) {
+    const data = await this.wishService.findByProduct(id, req.user);
     const response = new ResponseDto(
       true,
       '찜을 정상적으로 불러왔습니다.',
@@ -53,8 +54,8 @@ export class WishController {
 
   //찜 취소
   @UseGuards(JwtAuthGuard)
-  @Delete(':wishid')
-  async remove(@Param('wishid') id: number, @Req() req) {
+  @Delete(':wishId')
+  async remove(@Param('wishId') id: number, @Req() req) {
     const data = await this.wishService.remove(id, req.user);
     const response = new ResponseDto(
       true,
