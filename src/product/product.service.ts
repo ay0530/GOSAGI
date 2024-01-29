@@ -75,7 +75,6 @@ export class ProductService {
   }
 
   async findAll(page: number) {
-    console.log(page); //2
     return await this.dataSource
       .createQueryBuilder(Product, 'p')
       .select('p.*')
@@ -103,23 +102,37 @@ export class ProductService {
   }
 
   async findByRegion(location: string, page: number) {
-    return await this.productRepository.find({
-      where: {
-        location: Like(`%${location}%`),
-      },
-      skip: (page - 1) * pageLimit,
-      take: pageLimit,
-    });
+    return await this.dataSource
+      .createQueryBuilder(Product, 'p')
+      .select('p.*')
+      .addSelect('COUNT(w.product_id) as wish_count')
+      .leftJoin(Wish, 'w', 'w.product_id = p.id')
+      .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
+      .addSelect('COUNT(r.id) as review_count')
+      .leftJoin(Order, 'o', 'o.product_id = p.id')
+      .leftJoin(Review, 'r', 'r.order_id = o.id')
+      .where('p.location LIKE :location', { location: `%${location}%` })
+      .groupBy('p.id')
+      .limit(pageLimit)
+      .offset((page - 1) * pageLimit)
+      .getRawMany();
   }
 
   async findByCategory(categoryId: string, page: number) {
-    return await this.productRepository.find({
-      where: {
-        category: categoryId,
-      },
-      skip: (page - 1) * pageLimit,
-      take: pageLimit,
-    });
+    return await this.dataSource
+      .createQueryBuilder(Product, 'p')
+      .select('p.*')
+      .addSelect('COUNT(w.product_id) as wish_count')
+      .leftJoin(Wish, 'w', 'w.product_id = p.id')
+      .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
+      .addSelect('COUNT(r.id) as review_count')
+      .leftJoin(Order, 'o', 'o.product_id = p.id')
+      .leftJoin(Review, 'r', 'r.order_id = o.id')
+      .where('p.category = :categoryId', { categoryId })
+      .groupBy('p.id')
+      .limit(pageLimit)
+      .offset((page - 1) * pageLimit)
+      .getRawMany();
   }
 
   // 상품 정보 상세 조회
@@ -166,8 +179,11 @@ export class ProductService {
       .createQueryBuilder(Product, 'p')
       .select('p.*')
       .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
+      .addSelect('COUNT(r.id) as review_count')
       .leftJoin(Order, 'o', 'o.product_id = p.id')
       .leftJoin(Review, 'r', 'r.order_id = o.id')
+      .addSelect('COUNT(w.product_id) as wish_count')
+      .leftJoin(Wish, 'w', 'w.product_id = p.id')
       .groupBy('p.id')
       .having('average_rate IS NOT NULL')
       .orderBy('average_rate', 'DESC')
@@ -182,7 +198,12 @@ export class ProductService {
       .select('p.*')
       .addSelect('COUNT(o.product_id) as number_of_purchase')
       .from(Product, 'p')
+      .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
+      .addSelect('COUNT(r.id) as review_count')
       .leftJoin(Order, 'o', 'o.product_id = p.id')
+      .leftJoin(Review, 'r', 'r.order_id = o.id')
+      .addSelect('COUNT(w.product_id) as wish_count')
+      .leftJoin(Wish, 'w', 'w.product_id = p.id')
       .where(
         `o.status IS NOT NULL 
         AND (o.status = :status1 OR
@@ -203,8 +224,13 @@ export class ProductService {
       .createQueryBuilder()
       .select('p.*')
       .addSelect('COUNT(w.product_id) + SUM(p.views) as best_products')
+      .addSelect('COUNT(w.product_id) as wish_count')
       .from(Product, 'p')
       .leftJoin(Wish, 'w', 'w.product_id = p.id')
+      .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
+      .addSelect('COUNT(r.id) as review_count')
+      .leftJoin(Order, 'o', 'o.product_id = p.id')
+      .leftJoin(Review, 'r', 'r.order_id = o.id')
       .groupBy('p.id')
       .orderBy('best_products', 'DESC')
       .limit(4)
@@ -218,6 +244,10 @@ export class ProductService {
       .addSelect('COUNT(w.product_id)', 'wish_count')
       .from(Product, 'p')
       .leftJoin(Wish, 'w', 'w.product_id = p.id')
+      .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
+      .addSelect('COUNT(r.id) as review_count')
+      .leftJoin(Order, 'o', 'o.product_id = p.id')
+      .leftJoin(Review, 'r', 'r.order_id = o.id')
       .groupBy('p.id')
       .orderBy('wish_count', 'DESC')
       .limit(4)
@@ -225,12 +255,20 @@ export class ProductService {
   }
 
   async getProductByViews() {
-    return await this.productRepository.find({
-      order: {
-        views: 'DESC',
-      },
-      take: 4,
-    });
+    return await this.dataSource
+      .createQueryBuilder()
+      .select('p.*')
+      .addSelect('COUNT(w.product_id)', 'wish_count')
+      .from(Product, 'p')
+      .leftJoin(Wish, 'w', 'w.product_id = p.id')
+      .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
+      .addSelect('COUNT(r.id) as review_count')
+      .leftJoin(Order, 'o', 'o.product_id = p.id')
+      .leftJoin(Review, 'r', 'r.order_id = o.id')
+      .groupBy('p.id')
+      .orderBy('p.views', 'DESC')
+      .limit(4)
+      .getRawMany();
   }
 
   async update(productId: number, updateProductDto: UpdateProductDto) {
@@ -302,11 +340,19 @@ export class ProductService {
   // ---- 기타 함수
   // 매장의 상품 목록 조회
   async findProductAllByStore(storeId: number, page: number) {
-    const products = await this.productRepository.find({
-      where: { store_id: storeId },
-      skip: (page - 1) * pageLimit,
-      take: pageLimit,
-    });
+    const products = this.dataSource
+      .createQueryBuilder(Product, 'p')
+      .select('p.*')
+      .addSelect('COUNT(w.product_id) as wish_count')
+      .leftJoin(Wish, 'w', 'w.product_id = p.id')
+      .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
+      .addSelect('COUNT(r.id) as review_count')
+      .leftJoin(Order, 'o', 'o.product_id = p.id')
+      .leftJoin(Review, 'r', 'r.order_id = o.id')
+      .where(`p.store_id = :storeId`, { storeId })
+      .limit(pageLimit)
+      .offset((page - 1) * pageLimit)
+      .getRawMany();
 
     return products;
   }
@@ -319,15 +365,22 @@ export class ProductService {
     page: number,
   ) {
     // 매장명으로 검색 가능
-    const products = this.productRepository
-      .createQueryBuilder('product')
-      .where(`product.${category} LIKE :keyword`, {
+    const products = this.dataSource
+      .createQueryBuilder(Product, 'p')
+      .select('p.*')
+      .addSelect('COUNT(w.product_id) as wish_count')
+      .leftJoin(Wish, 'w', 'w.product_id = p.id')
+      .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
+      .addSelect('COUNT(r.id) as review_count')
+      .leftJoin(Order, 'o', 'o.product_id = p.id')
+      .leftJoin(Review, 'r', 'r.order_id = o.id')
+      .where(`p.${category} LIKE :keyword`, {
         keyword: `%${keyword}%`,
       })
-      .andWhere(`product.store_id = :storeId`, { storeId })
+      .andWhere(`p.store_id = :storeId`, { storeId })
       .limit(pageLimit)
       .offset((page - 1) * pageLimit)
-      .getMany();
+      .getRawMany();
 
     return products;
   }
