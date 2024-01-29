@@ -23,20 +23,21 @@ services:
     # database data between container restarts. The `db-password` secret is used
     # to set the database password. You must create `db/password.txt` and add
     # a password of your choosing to it before running `docker-compose up`.
-    depends_on:
-      db:
-        condition: service_healthy
   db:
     image: mysql
     restart: always
     ports:
-      - 3306:3306
+      - 3307:3307
     volumes:
-      - db-data:/var/lib/mysql/data
+      - ./:/var/lib/mysql/data
     environment:
       DB_HOST: express-database.cxx0p0l5tmi8.ap-northeast-2.rds.amazonaws.com
       DB_USERNAME: smy1308
       DB_PASSWORD: alsdud12
       DB_NAME: gosagi
-volumes:
-  db-data:
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    volumes:
+      - ./:/var/lib/redis
