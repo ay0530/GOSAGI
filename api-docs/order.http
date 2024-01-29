@@ -1,66 +1,133 @@
-@domain = http://localhost:3000
+@domain = http://localhost:3000/order
 
 ### 
-# 구매 등록
-POST {{domain}}/order
+# 구매 등록 : 결제 완료 후 해당 api 불러오도록 한다. PURCHASE_COMPLETED: 0
+POST {{domain}}
 Content-Type: application/JSON
 
 {
-  "product_id" : 8,
+  "product_id" : 6,
+  "status": 0,
   "quantity" : 4,
-  "receiver" : "배고파",
+  "receiver" : "교환할래",
   "receiver_phone_number" : "010-1111-1111",
-  "delivery_name" : "집",
   "delivery_address" : "서울시 강남구",
-  "post_code" : "03045"
+  "delivery_address_detail": "101동 1021호",
+  "post_code" : "03225",
+  "toss_order_id" : "aagsfbbs",
+  "delivery_request": "강아지가 짖어요"
+}
+
+###
+# 반품 등록 : RETURN_REQUEST: 5
+POST {{domain}}/return/13
+Content-Type: application/JSON
+
+{
+  "status": 5,
+  "receiver" : "취소할래",
+  "receiver_phone_number" : "010-1111-1111",
+  "delivery_address" : "서울시 강남구",
+  "delivery_address_detail": "101동 1021호",
+  "post_code" : "03225",
+  "toss_order_id" : "aagsfbbs",
+  "delivery_request": "강아지가 짖어요",
+  "after_service_request": "유통기한이 지났어요"
+}
+
+###
+# 교환 등록 : EXCHANGE_REQUEST: 7
+POST {{domain}}/exchange/19
+Content-Type: application/JSON
+
+{
+  "product_id" : 6,
+  "status": 7,
+  "quantity" : 4,
+  "receiver" : "배고파22",
+  "receiver_phone_number" : "010-1111-1111",
+  "delivery_address" : "서울시 강남구",
+  "delivery_address_detail": "101동 1021호",
+  "post_code" : "03225",
+  "toss_order_id" : "aagsfbbs",
+  "delivery_request": "강아지가 짖어요",
+  "after_service_request": "유통기한이 지났어요"
+}
+
+### 배송지 변경
+PATCH  {{domain}}/address/5
+Content-Type: application/JSON
+
+{ 
+  "receiver" : "배고파22",
+  "receiver_phone_number" : "010-1111-1111",
+  "delivery_address" : "서울시 강남구",
+  "delivery_address_detail": "101동 1021호",
+  "post_code" : "03225",
+  "delivery_request": "강아지가 짖어요"
 }
 
 ###
 # 내가 구매한 상품들 조회
-GET {{domain}}/order
+GET {{domain}}
 
 ###
-# 기간 별 조회 day, month 조회 가능
-GET {{domain}}/order/period?period=7days
+# 내가 구매한 상품 기간 조회 (day month 가능)
+GET {{domain}}?period=7days
 
 ###
-# 상세 구매 내역 조회
-GET {{domain}}/order/8
+# 내가 구매한 상품 상태 별 조회
+GET {{domain}}?status=0
+
+###
+# 내가 구매한 상품 상태 별 기간 별 조회
+GET {{domain}}?status=2&period=7days
+
+###
+# 내가 취소나 반품한 상품들 조회 (기간 별 상태 별 가능) status period
+GET {{domain}}/return
+
+###
+# 상세 구매(교환,반품) 내역 조회
+GET {{domain}}/19
 
 
 ###
-# 배송 완료
-PATCH  {{domain}}/order/manage/8
+# 구매확정 PURCHASE_CONFIRM: 3
+PATCH  {{domain}}/confirm/12
 Content-Type: application/JSON
 
 {
-  "status": "배송완료"
+  "status": 3
 }
 
 ###
-# 구매확정
-PATCH  {{domain}}/order/confirm/8
+# 결제취소완료 : 결제취소 완료 후 해당 api 불러오도록 한다. REFUND_COMPLETED: 4
+PATCH  {{domain}}/refund/14
 Content-Type: application/JSON
 
 {
-  "status": "구매확정"
+  "status": 4
+}
+
+### (판매자, admin용) 상품 별 order 전부 확인하기 /product/productId
+GET {{domain}}/product/6
+
+###
+# (판매자, admin용) 배송 중(1), 배송 완료(2)로 상태 변경
+PATCH  {{domain}}/manage/19
+Content-Type: application/JSON
+
+{
+  "status": 2
 }
 
 ###
-# 환불신청
-PATCH  {{domain}}/order/refund/7
+# (판매자, admin용) 반품 완료로 상태 변경 RETURN_COMPLETED: 6
+PATCH  {{domain}}/manage/return/13
 Content-Type: application/JSON
 
 {
-  "status": "환불신청"
+  "status": 6
 }
 
-
-###
-# 환불완료
-PATCH  {{domain}}/order/manage/refund/7
-Content-Type: application/JSON
-
-{
-  "status": "환불완료"
-}
