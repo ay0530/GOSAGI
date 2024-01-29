@@ -78,13 +78,28 @@ export class WishService {
     };
   }
 
-  async findByProduct(id: number) {
+  async findByProduct(id: number, user: User) {
     const wishes = await this.wishRepository.find({
       where: { product_id: id },
     });
 
+    let isMyWish = false;
+    const myWish = await this.wishRepository.findOne({
+      where: { product_id: id, user_id: user.id },
+    });
+
+    if (myWish !== null) {
+      isMyWish = true;
+      return {
+        wishes_count: wishes.length,
+        isMyWish,
+        myWishId: myWish.id,
+      };
+    }
+
     return {
       wishes_count: wishes.length,
+      isMyWish,
     };
   }
 
