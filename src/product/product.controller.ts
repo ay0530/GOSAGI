@@ -96,6 +96,7 @@ export class ProductController {
       productId,
       req.user.id,
     );
+    await this.productService.increaseView(productId);
 
     const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
 
