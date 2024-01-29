@@ -28,7 +28,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     response.status(status).json({
       statusCode: status, // 상태코드
       timestamp: new Date().toISOString(), // 시간
-      path: request.url, 
+      path: request.url,
     });
   }
 }
