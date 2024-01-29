@@ -66,7 +66,8 @@ export class WishService {
         productName: wish.product.name,
         productPoint: wish.product.point,
         productPrice: wish.product.price,
-        productThumbnail: wish.product.productThumbnail,
+        productThumbnail: wish.product.thumbnail_image,
+        productStoreId: wish.product.store_id,
         //추가 필요한 매핑 작업 수행
       };
       data.push(mappedItem);
