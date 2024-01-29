@@ -57,6 +57,7 @@ export class CartService {
         productName: product.name,
         productPrice: product.price,
         productStore: product.store_id,
+        productThumbnail: product.thumbnail_image,
         quantity: cart.quantity,
         // 추가 필요한 매핑 작업 수행
       };
