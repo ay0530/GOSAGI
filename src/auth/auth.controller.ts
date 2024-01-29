@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  Redirect,
   Req,
   Res,
   UseGuards,
@@ -45,23 +46,62 @@ export class AuthController {
   // 네이버 로그인
   @Get('login/naver')
   @UseGuards(AuthGuard('naver'))
-  async loginNaver(@Req() req: Request & IOAuthUser, @Res() res: Response) {
+  async loginNaver(
+    @Req() req: Request & IOAuthUser,
+    @Res({ passthrough: true }) res: any,
+  ) {
     //Passport가 NaverStrategy로 리다이렉션합니다.
-    return await this.authService.OAuthLogin({ req, res });
+    const accessToken = await this.authService.OAuthLogin({ req, res });
+    res.cookie('authorization', `Bearer ${accessToken}`, {
+      httpOnly: false,
+    }); // 쿠키에 토큰 저장
+
+    const response = new ResponseDto(true, '로그인이 완료되었습니다', null);
+
+    // 로그인 성공 후 리다이렉트
+    res.redirect('http://localhost:5500/html/index.html');
+
+    return response;
   }
 
   // 구글 로그인
   @Get('login/google')
   @UseGuards(AuthGuard('google'))
-  async loginGoogle(@Req() req: Request & IOAuthUser, @Res() res: Response) {
-    return await this.authService.OAuthLogin({ req, res });
+  async loginGoogle(
+    @Req() req: Request & IOAuthUser,
+    @Res({ passthrough: true }) res: any,
+  ) {
+    const accessToken = await this.authService.OAuthLogin({ req, res });
+    res.cookie('authorization', `Bearer ${accessToken}`, {
+      httpOnly: false,
+    }); // 쿠키에 토큰 저장
+
+    const response = new ResponseDto(true, '로그인이 완료되었습니다', null);
+
+    // 로그인 성공 후 리다이렉트
+    res.redirect('http://localhost:5500/html/index.html');
+
+    return response;
   }
 
   // 카카오 로그인
   @Get('login/kakao')
   @UseGuards(AuthGuard('kakao'))
-  async loginKakao(@Req() req: Request & IOAuthUser, @Res() res: Response) {
-    return await this.authService.OAuthLogin({ req, res });
+  async loginKakao(
+    @Req() req: Request & IOAuthUser,
+    @Res({ passthrough: true }) res: any,
+  ) {
+    const accessToken = await this.authService.OAuthLogin({ req, res });
+    res.cookie('authorization', `Bearer ${accessToken}`, {
+      httpOnly: false,
+    }); // 쿠키에 토큰 저장
+
+    const response = new ResponseDto(true, '로그인이 완료되었습니다', null);
+
+    // 로그인 성공 후 리다이렉트
+    res.redirect('http://localhost:5500/html/index.html');
+
+    return response;
   }
 
   // 일반 로그아웃
