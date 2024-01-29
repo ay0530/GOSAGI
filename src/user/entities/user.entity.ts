@@ -30,6 +30,7 @@ export class User {
   @Column({ type: 'varchar', select: false, nullable: false })
   password: string;
 
+
   @Column({ type: 'varchar', unique: false, nullable: false })
   nickname: string;
 
