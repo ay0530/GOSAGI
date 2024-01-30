@@ -133,5 +133,6 @@ dist
 # HTTPS
 cert.pem
 key.pem
+nbc_keypair.pem
 
 views/a-backup.html
