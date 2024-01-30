@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 
 // entity
+import { OrderStatusType } from 'src/order/types/order-status.type';
 import { User } from 'src/user/entities/user.entity';
 import { Product } from 'src/product/entities/product.entity';
 import { Review } from 'src/review/entities/review.entity';
@@ -21,14 +22,16 @@ export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
+  //토스의 결제 id
+  @Column({ type: 'varchar', nullable: true })
+  toss_order_id: string;
+
   // 수량
   @Column({ type: 'int', nullable: false })
   quantity: number;
 
-  //상태 : 구매 완료, 배송 중, 배송 완료, 구매 확정, 환불 신청, 환불 완료
-  //추후 enum으로 교체
-  @Column({ type: 'varchar', nullable: false })
-  status: string;
+  @Column({ type: 'int', nullable: false })
+  status: OrderStatusType;
 
   @Column({ type: 'varchar', nullable: false })
   product_name: string;
@@ -36,6 +39,10 @@ export class Order {
   //현재의 제품 한 개당 가격
   @Column({ type: 'int', nullable: false })
   product_price: number;
+
+  //현재의 제품 썸네일
+  @Column({ type: 'varchar', nullable: false })
+  product_thumbnail: string;
 
   //받는 사람
   @Column({ type: 'varchar', nullable: false })
@@ -45,13 +52,13 @@ export class Order {
   @Column({ type: 'varchar', nullable: false })
   receiver_phone_number: string;
 
-  //배송지명
-  @Column({ type: 'varchar', nullable: true })
-  delivery_name: string;
-
   //배송지 주소
   @Column({ type: 'varchar', nullable: false })
   delivery_address: string;
+
+  //배송지 주소 (detail)
+  @Column({ type: 'varchar', nullable: true })
+  delivery_address_detail: string;
 
   //우편 번호
   @Column({ type: 'varchar', nullable: false })
@@ -61,7 +68,7 @@ export class Order {
   @Column({ type: 'varchar', nullable: true })
   delivery_request: string;
 
-  //특수 상황 : 교환신청, 반품신청 (enum or string)
+  //특수 상황 : 교환신청, 반품신청 사유를 적는다.
   @Column({ type: 'varchar', nullable: true })
   after_service_request: string;
 
