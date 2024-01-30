@@ -15,6 +15,7 @@ import { User } from 'src/user/entities/user.entity';
 import { ProductService } from 'src/product/product.service';
 import _ from 'lodash';
 import { UpdateOrderDeliveryDto } from './dto/update-order-delivery.dto';
+import { SearchOrderPeriodDto } from './dto/search-order-period.dto';
 @Injectable()
 export class OrderService {
   constructor(
@@ -161,8 +162,6 @@ export class OrderService {
     //기존 order는 반품으로 처리가 되고 새로 주문하게 되는 인스턴스를 만들어준다.
     order.status = OrderStatus.RETURN_REQUEST;
 
-    console.log(status);
-
     //입력 받은 내용 배송지도 업데이트
     order.receiver = receiver;
     order.receiver_phone_number = receiver_phone_number;
@@ -174,8 +173,6 @@ export class OrderService {
 
     //update
     await this.orderRepository.save(order);
-    console.log(order);
-
     //새로 재구매를 제작
     const product = await this.productService.getProductInfo(product_id);
 
@@ -196,8 +193,6 @@ export class OrderService {
       after_service_request,
       user_id: user.id,
     });
-
-    console.log(createExchange);
 
     return createExchange;
   }
@@ -244,6 +239,50 @@ export class OrderService {
         user_id: user.id,
         status: In(findStatus),
         createdAt: Between(startDate, new Date()),
+      },
+      order: {
+        createdAt: 'DESC', // createdAt을 기준으로 내림차순 정렬
+      },
+      select: [
+        'id',
+        'status',
+        'product_name',
+        'product_price',
+        'product_thumbnail',
+        'quantity',
+        'createdAt',
+      ],
+    });
+
+    return {
+      order_count: orders.length,
+      data: orders,
+    };
+  }
+
+  async findAllOrderByUserSearchPeriod(
+    user: User,
+    searchOrderPeriodDto: SearchOrderPeriodDto,
+    status: number,
+  ) {
+    const { start_period, end_period } = searchOrderPeriodDto;
+    //status default는 결제 완료부터 구매 확정까지 보여준다.
+    //입력이 있을 시 해당 status만 보여준다.
+    const findStatus =
+      status !== undefined
+        ? [status as OrderStatusType]
+        : [
+            OrderStatus.PURCHASE_COMPLETED,
+            OrderStatus.SHIPPING,
+            OrderStatus.DELIVERY_COMPLETED,
+            OrderStatus.PURCHASE_CONFIRM,
+          ];
+
+    const orders = await this.orderRepository.find({
+      where: {
+        user_id: user.id,
+        status: In(findStatus),
+        createdAt: Between(start_period, end_period),
       },
       order: {
         createdAt: 'DESC', // createdAt을 기준으로 내림차순 정렬

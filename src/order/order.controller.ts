@@ -14,6 +14,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { CreateReturnDto } from './dto/create-return-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { UpdateOrderDeliveryDto } from './dto/update-order-delivery.dto';
+import { SearchOrderPeriodDto } from './dto/search-order-period.dto';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { Roles } from 'src/guards/roles.decorator';
@@ -76,6 +77,25 @@ export class OrderController {
       req.user,
       status,
       period,
+    );
+    const response = new ResponseDto(
+      true,
+      '구매 내역을 정상적으로 불러왔습니다.',
+      data,
+    );
+    return response;
+  }
+
+  @Get('/period')
+  async findAllOrderByUserSearchPeriod(
+    @Req() req: any,
+    @Body() searchOrderPeriodDto: SearchOrderPeriodDto,
+    @Query('status') status?: number,
+  ) {
+    const data = await this.orderService.findAllOrderByUserSearchPeriod(
+      req.user,
+      searchOrderPeriodDto,
+      status,
     );
     const response = new ResponseDto(
       true,
