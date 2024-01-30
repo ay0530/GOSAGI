@@ -42,15 +42,14 @@ export class ProductService {
       thumbnail_image,
       productThumbnails,
       productContents,
+      business_code,
     } = createProductDto;
-
     const store = await this.storeService.findOne(storeId);
 
     //store가 존재하고, 그 주인만이 상품을 올릴 수 있다.
     if (!store || store.aproval_status !== 1) {
       throw new NotFoundException('해당 상점을 확인할 수 없습니다.');
     }
-
     if (store.user_id !== userId) {
       throw new ForbiddenException(
         '해당 상점에 상품을 등록할 수 있는 권한이 없습니다.',
@@ -71,6 +70,7 @@ export class ProductService {
         (productThumbnail) => productThumbnail,
       ),
       productContent: productContents.map((productContent) => productContent),
+      business_code,
     });
   }
 
