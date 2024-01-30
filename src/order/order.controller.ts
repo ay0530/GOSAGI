@@ -35,7 +35,7 @@ export class OrderController {
   }
 
   //반품
-  @Post('/return/:id')
+  @Patch('/return/:id')
   async createReturn(
     @Param('id') id: number,
     @Body() createReturnDto: CreateReturnDto,
@@ -180,7 +180,6 @@ export class OrderController {
   }
 
   //구매 확정 -> user
-  @Roles(UserRole.USER)
   @Patch('/confirm/:id')
   async updateConfirm(
     @Param('id') id: number,
