@@ -84,6 +84,7 @@ export class ProductService {
       .addSelect('COUNT(r.id) as review_count')
       .leftJoin(Order, 'o', 'o.product_id = p.id')
       .leftJoin(Review, 'r', 'r.order_id = o.id')
+      .where('p.id != :id', { id: 1 }) // product_id가 1인 항목을 제외
       .groupBy('p.id')
       .limit(pageLimit)
       .offset((page - 1) * pageLimit)
