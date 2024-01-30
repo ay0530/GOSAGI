@@ -27,15 +27,23 @@ export class AddressService {
   }
 
   // 배송지 조회
-  async getAddress() {
-    const getAddress = await this.addressRepository.find();
+  async getAddress(userId: number) {
+    const getAddress = await this.addressRepository.find({
+      where: { user_id: userId },
+    });
     return getAddress;
   }
 
   // 배송지 상세조회
   async getOneAddress(id: number, userId: number) {
+    const existAddress = await this.addressRepository.findOne({
+      where: { user_id: userId, id },
+    });
+    if (!existAddress) {
+      throw new NotFoundException('배송지가 존재하지 않습니다.');
+    }
     const getOneAddress = await this.addressRepository.findOne({
-      where: { id },
+      where: { user_id: userId, id },
     });
     return getOneAddress;
   }
@@ -47,14 +55,14 @@ export class AddressService {
     userId: number,
   ) {
     const existAddress = await this.addressRepository.findOne({
-      where: { id },
+      where: { user_id: userId, id },
     });
     if (!existAddress) {
       throw new NotFoundException('배송지가 존재하지 않습니다.');
     }
 
     await this.addressRepository.update(
-      { id, user_id: userId },
+      { user_id: userId, id },
       updateAddressDto,
     );
     return updateAddressDto;
@@ -63,7 +71,7 @@ export class AddressService {
   // 배송지 삭제
   async deleteAddress(id: number, userId: number) {
     const existAddress = await this.addressRepository.findOne({
-      where: { id },
+      where: { user_id: userId, id },
     });
     if (!existAddress) {
       throw new NotFoundException('배송지가 존재하지 않습니다.');

@@ -1,32 +1,42 @@
 @domain = http://localhost:3000
 
+### 
+# 로그인 -> 만료 기간이 지나고 새로 해주지 않으면 토큰이 만료되어서 user의 id만 남은 refresh 토큰만 남게 되니 role guard를 사용할 수 없음 주의
+POST {{domain}}/auth/login
+Content-Type: application/JSON
+
+{
+  "email": "test2@test.com",
+  "password": "1234"
+}
+
 ###
 # 배송지 등록
 POST {{domain}}/address
 Content-Type: application/json
 
 {
-    "address_name": "집",
-    "name": "테스트용",
+    "address_name": "새해명소",
+    "name": "상생의 손",
     "phone": "010-1234-5678",
-    "address": "서울시 종로구",
-    "detail_address": "사직로 161",
-    "post_code": "03045"
+    "address": "경상북도 포항시 남구",
+    "detail_address": "호미곶면 해맞이로 136",
+    "post_code": "37928"
 }
 
 ###
 # 배송지 조회
-GET {{domain}}/address
+GET {{domain}}/address/myAddress
 Content-Type: application/json
 
 
 ###
 # 배송지 상세 조회
-GET {{domain}}/address/1
+GET {{domain}}/address/myAddress/1
 
 ###
 # 배송지 수정
-PATCH {{domain}}/address/2
+PATCH {{domain}}/address/myAddress/5
 Content-Type: application/json
 
 {
@@ -40,5 +50,5 @@ Content-Type: application/json
 
 ###
 # 배송지 삭제
-DELETE {{domain}}/address/1
+DELETE {{domain}}/address/myAddress/4
 Content-Type: application/json
