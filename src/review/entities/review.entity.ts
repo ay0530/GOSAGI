@@ -5,6 +5,8 @@ import {
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 // entity
@@ -26,6 +28,14 @@ export class Review {
   // 작성일
   @Column({ type: 'int' })
   rate: number;
+
+  // 작성일
+  @CreateDateColumn()
+  created_at: Date;
+
+  // 수정일
+  @UpdateDateColumn()
+  updated_at: Date;
 
   // 일대일 관계 설정(order)
   @OneToOne(() => Order, (order) => order.review)

@@ -52,8 +52,7 @@ export class QuestionController {
     return response;
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SELLER, UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard)
   @Get('detail/:id')
   async findOne(@Param('id') id: string, @Req() req: any) {
     const data = await this.questionService.findOne(+id);

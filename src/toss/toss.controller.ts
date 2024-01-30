@@ -7,7 +7,7 @@ import { CreateTossDto } from './dto/create-toss.dto';
 export class TossController {
   constructor(private readonly tossService: TossService) {}
 
-  @Post('/confirm') 
+  @Post('/confirm')
   async successPayment(
     @Body() createTossDto: CreateTossDto,
     @Res() res: Response,

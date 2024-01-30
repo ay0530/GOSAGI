@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class CreateWishDto {
+export class UpdateOrderDto {
   @IsNotEmpty({ message: '상품을 입력해 주세요' })
-  product_id: number;
+  status: string;
 }
