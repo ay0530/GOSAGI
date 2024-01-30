@@ -1,15 +1,9 @@
 import { IsNotEmpty } from 'class-validator';
 import { OrderStatusType } from 'src/order/types/order-status.type';
 
-export class CreateOrderDto {
-  @IsNotEmpty({ message: '상품을 입력해 주세요.' })
-  product_id: number;
-
+export class CreateReturnDto {
   @IsNotEmpty({ message: '주문 상태를 입력해 주세요.' })
   status: OrderStatusType;
-
-  @IsNotEmpty({ message: '수량을 입력해 주세요.' })
-  quantity: number;
 
   @IsNotEmpty({ message: '수령인을 입력해 주세요.' })
   receiver: string;
@@ -28,8 +22,8 @@ export class CreateOrderDto {
 
   delivery_request?: string;
 
-  toss_order_id: string;
-
-  //교환 시 입력 가능
   after_service_request: string;
+
+  //기존의 것을 가져오면 될 것 같다.
+  toss_order_id: string;
 }

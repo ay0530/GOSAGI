@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { Review } from './entities/review.entity';
 import _ from 'lodash';
 import { OrderService } from 'src/order/order.service';
+import { OrderStatus } from 'src/order/types/order-status.type';
 @Injectable()
 export class ReviewService {
   constructor(
@@ -28,7 +29,7 @@ export class ReviewService {
     //order의 status가 구매확정인 경우에만 리뷰 작성 가능
     const status = await this.orderService.getOrderStatus(order_id);
 
-    if (status !== '구매확정') {
+    if (status !== OrderStatus.PURCHASE_CONFIRM) {
       throw new BadRequestException(
         '구매확정이 된 상품만 리뷰를 작성할 수 있습니다.',
       );
