@@ -180,7 +180,6 @@ export class OrderController {
   }
 
   //구매 확정 -> user
-  @Roles(UserRole.USER)
   @Patch('/confirm/:id')
   async updateConfirm(
     @Param('id') id: number,
