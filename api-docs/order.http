@@ -20,7 +20,7 @@ Content-Type: application/JSON
 
 ###
 # 반품 등록 : RETURN_REQUEST: 5
-POST {{domain}}/return/13
+PATCH {{domain}}/return/13
 Content-Type: application/JSON
 
 {

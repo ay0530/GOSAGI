@@ -35,7 +35,7 @@ export class OrderController {
   }
 
   //반품
-  @Post('/return/:id')
+  @Patch('/return/:id')
   async createReturn(
     @Param('id') id: number,
     @Body() createReturnDto: CreateReturnDto,
