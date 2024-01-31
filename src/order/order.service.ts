@@ -336,6 +336,7 @@ export class OrderService {
         'quantity',
         'createdAt',
       ],
+      relations: ['product'],
     });
 
     return {

@@ -77,6 +77,11 @@ export class Product {
   @Column({ type: 'varchar' })
   thumbnail_image: string;
 
+  @IsNotEmpty({ message: '사업자등록번호를 넣으세요' })
+  @IsString({ message: '문자형으로 입력해주세요' })
+  @Column({ type: 'varchar' })
+  business_code: string;
+
   // 다대일 관계 설정(stores)
   @ManyToOne(() => Store, (store) => store.product)
   @JoinColumn({ name: 'store_id' }) // 외래키

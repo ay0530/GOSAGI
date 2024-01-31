@@ -98,6 +98,7 @@ export class QuestionService {
         is_deleted: updateQuestionDto.isDeleted,
         title: updateQuestionDto.title,
         content: updateQuestionDto.content,
+        is_private: updateQuestionDto.isPrivate,
       },
     );
 
