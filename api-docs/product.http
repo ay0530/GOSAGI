@@ -21,7 +21,7 @@ Content-Type: application/JSON
 
 ###
 # 상품 등록 (일반) / 뒤에는 스토어 아이디(스토어가 필요함)
-POST {{domain}}/2
+POST {{domain}}/business/3
 Content-Type: application/JSON
 
 {
@@ -83,8 +83,6 @@ Content-Type: application/JSON
   ],
 "business_code": "185-87-00831"
 }
-
-
 
 ### 상품 상세 조회
 GET {{domain}}/detail/4
