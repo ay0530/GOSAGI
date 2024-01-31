@@ -20,3 +20,16 @@ GET {{domain}}/wish/5
 ###
 # 찜 삭제 
 DELETE {{domain}}/wish/6
+
+###디코
+POST https://discord.com/api/webhooks/1201904733498114058/cmcDp6O6t3AP_t3Lr3mH-3HYbHquc9NB1eiHtS-D2I-n1dj-FxBUoCKCTL-YoWwF8dAE
+Content-Type: application/JSON
+
+{
+  "content": "이제 오류생길때마다 디코 메시지 가능",
+  "tts": false,
+  "embeds": [{
+    "title": "이제 오류생길때마다 디코 메시지 가능",
+    "description": "홀홀"
+  }]
+}

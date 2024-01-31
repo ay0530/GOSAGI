@@ -29,7 +29,7 @@ export class ProductController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.SELLER, UserRole.ADMIN)
-  @Post(':storeId')
+  @Post('business/:storeId')
   async create(
     @Body() createProductDto: CreateProductDto,
     @Param('storeId') storeId: number,
@@ -41,6 +41,20 @@ export class ProductController {
       req.user.id,
     );
 
+    const response = new ResponseDto(true, '상품이 등록완료되었습니다', data);
+
+    return response;
+  }
+
+  @Post('/crawling')
+  async createCrawlingData(@Body() createProductDto: CreateProductDto) {
+    const storeId = +1;
+    const userId = +1;
+    const data = await this.productService.create(
+      createProductDto,
+      storeId,
+      userId,
+    );
     const response = new ResponseDto(true, '상품이 등록완료되었습니다', data);
 
     return response;
