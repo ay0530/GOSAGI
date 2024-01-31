@@ -103,7 +103,12 @@ Content-Type: application/JSON
 
 ###
 # 상품 검색
-GET {{domain}}/keyword?keyword=불닭&page=1
+GET {{domain}}/keyword?keyword=누룽지&page=1
+Content-Type: application/JSON
+
+###
+#카테고리 가져오기
+GET {{domain}}/category?category=농축산물&page=1
 Content-Type: application/JSON
 
 ###

@@ -74,6 +74,7 @@ export class ProductService {
     });
   }
 
+  // 전체상품 가져오기
   async findAll(page: number) {
     return await this.dataSource
       .createQueryBuilder(Product, 'p')
@@ -102,6 +103,7 @@ export class ProductService {
     });
   }
 
+  // 지역별 검색
   async findByRegion(location: string, page: number) {
     return await this.dataSource
       .createQueryBuilder(Product, 'p')
@@ -119,7 +121,8 @@ export class ProductService {
       .getRawMany();
   }
 
-  async findByCategory(categoryId: string, page: number) {
+  // 카테고리별 검색
+  async findByCategory(category: string, page: number) {
     return await this.dataSource
       .createQueryBuilder(Product, 'p')
       .select('p.*')
@@ -129,7 +132,7 @@ export class ProductService {
       .addSelect('COUNT(r.id) as review_count')
       .leftJoin(Order, 'o', 'o.product_id = p.id')
       .leftJoin(Review, 'r', 'r.order_id = o.id')
-      .where('p.category = :categoryId', { categoryId })
+      .where('p.category LIKE :category', { category: `%${category}%` })
       .groupBy('p.id')
       .limit(pageLimit)
       .offset((page - 1) * pageLimit)

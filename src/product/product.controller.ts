@@ -93,12 +93,12 @@ export class ProductController {
   }
 
   //카테고리 별로 가져오기
-  @Get('/category/:categoryId')
+  @Get('/category')
   async findByCategoty(
-    @Param('categoryId') categoryId: string,
+    @Query('category') category: string,
     @Query('page') page: number,
   ) {
-    const data = await this.productService.findByCategory(categoryId, page);
+    const data = await this.productService.findByCategory(category, page);
 
     const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
 
