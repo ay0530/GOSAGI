@@ -179,7 +179,7 @@ export class OrderService {
     const createExchange = await this.orderRepository.save({
       product_id,
       receiver,
-      status: OrderStatus.PURCHASE_CONFIRM, //새로 구매하는 것으로 제작
+      status: OrderStatus.PURCHASE_COMPLETED, //새로 구매하는 것으로 제작
       receiver_phone_number,
       delivery_address,
       delivery_address_detail,
@@ -237,7 +237,7 @@ export class OrderService {
     const orders = await this.orderRepository.find({
       where: {
         user_id: user.id,
-        status: In(findStatus),
+        // status: In(findStatus),
         createdAt: Between(startDate, new Date()),
       },
       order: {
@@ -454,7 +454,8 @@ export class OrderService {
     // 결제 완료, 반품 신청일 때 자신의 배송지를 바꿀 수 있다.
     if (
       order.status !== OrderStatus.PURCHASE_CONFIRM &&
-      order.status !== OrderStatus.RETURN_REQUEST
+      order.status !== OrderStatus.RETURN_REQUEST &&
+      order.status !== OrderStatus.PURCHASE_COMPLETED
     ) {
       throw new BadRequestException('해당 상품은 배송지 변경이 불가능합니다.');
     }

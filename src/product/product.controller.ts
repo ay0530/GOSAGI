@@ -25,8 +25,7 @@ import { UserRole } from 'src/user/types/userRole.type';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  //상품 등록하기
-
+  // 상품 등록 (일반)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.SELLER, UserRole.ADMIN)
   @Post('business/:storeId')
@@ -46,6 +45,7 @@ export class ProductController {
     return response;
   }
 
+  // 상품 등록 (크롤링)
   @Post('/crawling')
   async createCrawlingData(@Body() createProductDto: CreateProductDto) {
     const storeId = +1;
@@ -60,52 +60,7 @@ export class ProductController {
     return response;
   }
 
-  //상품 전체 가져오기
-  @Get()
-  async findAll(@Query('page') page: number) {
-    const data = await this.productService.findAll(page);
-
-    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
-
-    return response;
-  }
-
-  //상품 코드 가져오기
-  @Get('/code/:productId')
-  async findProductCode(@Param('productId') productId: number) {
-    const data = await this.productService.findProductCode(productId);
-
-    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
-
-    return response;
-  }
-
-  //지역으로 검색하기
-  @Get('/location')
-  async findByRegion(
-    @Query('location') location: string,
-    @Query('page') page: number,
-  ) {
-    const data = await this.productService.findByRegion(location, page);
-    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
-
-    return response;
-  }
-
-  //카테고리 별로 가져오기
-  @Get('/category')
-  async findByCategoty(
-    @Query('category') category: string,
-    @Query('page') page: number,
-  ) {
-    const data = await this.productService.findByCategory(category, page);
-
-    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
-
-    return response;
-  }
-
-  //상품 상세조회하기 (content도 가져오기)
+  // 상품 상세 조회 (content도 가져오기)
   @UseGuards(JwtAuthGuard)
   @Get('/detail/:productId')
   async getProductDetail(
@@ -123,65 +78,18 @@ export class ProductController {
     return response;
   }
 
-  //상품 키워드 검색기능
-  @Get('keyword')
-  async findByProductKeyword(
-    @Query('keyword') keyword: string,
-    @Query('page') page: number,
-  ) {
-    console.log(keyword);
-    const data = await this.productService.findByProductKeyword(keyword, page);
+  // 상품 코드 조회
+  @Get('/code/:productId')
+  async findProductCode(@Param('productId') productId: number) {
+    const data = await this.productService.findProductCode(productId);
+
     const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
 
     return response;
   }
 
-  //리뷰 평점 순으로 4개 가져오기(오더 테이블이 있어야됨) 리뷰평점이랑 관계가 없음!!
-  @Get('reviewRate')
-  async getProductsByReviewRate() {
-    const data = await this.productService.getProductsByReviewRate();
-    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
-
-    return response;
-  }
-
-  //구매 완료 개수 순으로 4개(오더 테이블이 있어야됨)
-  @Get('bestOrders')
-  async getProdcutByOrders() {
-    const data = await this.productService.getProdcutByOrders();
-    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
-
-    return response;
-  }
-
-  //조회수 찜수 평균 점수
-  @Get('bestProducts')
-  async getProductByViewsAndLike() {
-    const data = await this.productService.getProductByViewsAndLike();
-    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
-
-    return response;
-  }
-
-  //찜순 4개 조회
-  @Get('wishes')
-  async getProductByLike() {
-    const data = await this.productService.getProductByLike();
-    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
-
-    return response;
-  }
-
-  //조회수순 4개 조회
-  @Get('views')
-  async getProductByViews() {
-    const data = await this.productService.getProductByViews();
-    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
-
-    return response;
-  }
-
-  //상품 수정(미사용)
+  
+  // 상품 수정(미사용)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.SELLER, UserRole.ADMIN)
   @Patch(':productId')
@@ -196,17 +104,7 @@ export class ProductController {
     return response;
   }
 
-  //상품 조회수 올리기 (필요할것 같아서 만들었습니당)
-  @Patch('incrementView/:productId')
-  async increaseView(@Param('productId') productId: number) {
-    const data = await this.productService.increaseView(productId);
-
-    const response = new ResponseDto(true, '조회수 증가', null);
-
-    return response;
-  }
-
-  //상품 삭제(미사용)
+  // 상품 삭제(미사용)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.SELLER, UserRole.ADMIN)
   @Delete(':productId')
@@ -218,20 +116,115 @@ export class ProductController {
     return response;
   }
 
-  // 최근 본 상품 조회
-  @UseGuards(JwtAuthGuard)
-  @Get('recentView')
-  async getRecentViews(@Req() req: any) {
-    const data = await this.productService.getRecentViews(req.user.id);
+  // 상품 조회수 올리기 (필요할것 같아서 만들었습니당)
+  @Patch('incrementView/:productId')
+  async increaseView(@Param('productId') productId: number) {
+    const data = await this.productService.increaseView(productId);
+
+    const response = new ResponseDto(true, '조회수 증가', null);
+
+    return response;
+  }
+
+  // ---------- 상품 목록 조회 ----------
+
+  // 전체 상품 개수 조회
+  @Get('/count/all')
+  async findAllCount() {
+    const data = await this.productService.findAllCount();
 
     const response = new ResponseDto(
       true,
-      '최근 본 상품 조회가 완료되었습니다.',
+      '상품 개수 조회가 완료되었습니다',
       data,
     );
 
     return response;
   }
+
+  // 전체 상품 목록 조회
+  @Get()
+  async findAll(@Query('page') page: number) {
+    const data = await this.productService.findAll(page);
+
+    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
+
+    return response;
+  }
+
+  // 지역 별 상품 개수 조회
+  @Get('/count/location')
+  async findByRegionCount(@Query('location') location: string) {
+    const data = await this.productService.findByRegionCount(location);
+
+    const response = new ResponseDto(
+      true,
+      '지역 별 상품 개수 조회가 완료되었습니다',
+      data,
+    );
+
+    return response;
+  }
+
+  // 지역 별 상품 목록 조회
+  @Get('/location')
+  async findByRegion(
+    @Query('location') location: string,
+    @Query('page') page: number,
+  ) {
+    const data = await this.productService.findByRegion(location, page);
+    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
+
+    return response;
+  }
+
+  // 카테고리 별 상품 개수 조회
+  @Get('/count/category/:categoryId')
+  async findByCategoryCount(@Param('categoryId') categoryId: string) {
+    const data = await this.productService.findByCategoryCount(categoryId);
+
+    const response = new ResponseDto(true, '카테고리 별 상품 개수 조회가 완료되었습니다', data);
+
+    return response;
+  }
+
+  // 카테고리 별 상품 목록 조회
+  @Get('/category/:categoryId')
+  async findByCategory(
+    @Param('categoryId') categoryId: string,
+    @Query('page') page: number,
+  ) {
+    const data = await this.productService.findByCategory(categoryId, page);
+
+    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
+
+    return response;
+  }
+
+  // 상품 검색 개수 조회
+  @Get('/count/keyword/')
+  async findByKeywordCount(@Query('keyword') keyword: string) {
+    const data = await this.productService.findByKeywordCount(keyword);
+
+    const response = new ResponseDto(true, '검색 상품 개수 조회가 완료되었습니다', data);
+
+    return response;
+  }
+
+  // 상품 검색 조회
+  @Get('keyword')
+  async findByProductKeyword(
+    @Query('keyword') keyword: string,
+    @Query('page') page: number,
+  ) {
+    console.log(keyword);
+    const data = await this.productService.findByProductKeyword(keyword, page);
+    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
+
+    return response;
+  }
+
+  // 매장 별 상품 개수 조회
 
   // 매장 별 상품 조회
   @UseGuards(JwtAuthGuard)
@@ -245,6 +238,8 @@ export class ProductController {
     const response = new ResponseDto(true, '검색이 완료되었습니다', data);
     return response;
   }
+
+  // 매장 별 상품 검색 개수 조회
 
   // 매장 별 상품 조회 검색
   @UseGuards(JwtAuthGuard)
@@ -263,6 +258,68 @@ export class ProductController {
     );
 
     const response = new ResponseDto(true, '검색이 완료되었습니다', data);
+    return response;
+  }
+
+  // ---------- 4개씩 조회 ----------
+  
+  // 리뷰 평점 순으로 4개 가져오기(오더 테이블이 있어야됨) 리뷰평점이랑 관계가 없음!!
+  @Get('reviewRate')
+  async getProductsByReviewRate() {
+    const data = await this.productService.getProductsByReviewRate();
+    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
+
+    return response;
+  }
+
+  // 구매 완료 개수 순으로 4개(오더 테이블이 있어야됨)
+  @Get('bestOrders')
+  async getProdcutByOrders() {
+    const data = await this.productService.getProdcutByOrders();
+    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
+
+    return response;
+  }
+
+  // 조회수 찜수 평균 점수
+  @Get('bestProducts')
+  async getProductByViewsAndLike() {
+    const data = await this.productService.getProductByViewsAndLike();
+    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
+
+    return response;
+  }
+
+  // 찜순 4개 조회
+  @Get('wishes')
+  async getProductByLike() {
+    const data = await this.productService.getProductByLike();
+    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
+
+    return response;
+  }
+
+  // 조회수순 4개 조회
+  @Get('views')
+  async getProductByViews() {
+    const data = await this.productService.getProductByViews();
+    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
+
+    return response;
+  }
+
+  // 최근 본 상품 조회
+  @UseGuards(JwtAuthGuard)
+  @Get('recentView')
+  async getRecentViews(@Req() req: any) {
+    const data = await this.productService.getRecentViews(req.user.id);
+
+    const response = new ResponseDto(
+      true,
+      '최근 본 상품 조회가 완료되었습니다.',
+      data,
+    );
+
     return response;
   }
 }

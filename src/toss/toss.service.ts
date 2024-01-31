@@ -4,7 +4,7 @@ import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class TossService {
-  private readonly secretKey = 'test_sk_d46qopOB89OZXWzD1a6dVZmM75y0';
+  private readonly secretKey = 'test_sk_eqRGgYO1r5jn6oQJyaRO8QnN2Eya';
   private readonly encryptedSecretKey = `Basic ${Buffer.from(
     this.secretKey + ':',
   ).toString('base64')}`;

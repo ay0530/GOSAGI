@@ -1,11 +1,10 @@
 import {
   ForbiddenException,
-  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Like, Not, Repository } from 'typeorm';
+import { Brackets, DataSource, Like, Repository } from 'typeorm';
 
 import { RedisViewsService } from 'src/redis/redis-views.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -26,6 +25,7 @@ export class ProductService {
     @InjectRepository(Product) private productRepository: Repository<Product>,
   ) {}
 
+  // 일반 상품 등록
   async create(
     createProductDto: CreateProductDto,
     storeId: number,
@@ -74,24 +74,7 @@ export class ProductService {
     });
   }
 
-  // 전체상품 가져오기
-  async findAll(page: number) {
-    return await this.dataSource
-      .createQueryBuilder(Product, 'p')
-      .select('p.*')
-      .addSelect('COUNT(w.product_id) as wish_count')
-      .leftJoin(Wish, 'w', 'w.product_id = p.id')
-      .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
-      .addSelect('COUNT(r.id) as review_count')
-      .leftJoin(Order, 'o', 'o.product_id = p.id')
-      .leftJoin(Review, 'r', 'r.order_id = o.id')
-      .where('p.id != :id', { id: 1 }) // product_id가 1인 항목을 제외
-      .groupBy('p.id')
-      .limit(pageLimit)
-      .offset((page - 1) * pageLimit)
-      .getRawMany();
-  }
-
+  // 상품 코드 조회
   async findProductCode(productId: number) {
     return await this.productRepository.find({
       select: {
@@ -101,42 +84,6 @@ export class ProductService {
         id: productId,
       },
     });
-  }
-
-  // 지역별 검색
-  async findByRegion(location: string, page: number) {
-    return await this.dataSource
-      .createQueryBuilder(Product, 'p')
-      .select('p.*')
-      .addSelect('COUNT(w.product_id) as wish_count')
-      .leftJoin(Wish, 'w', 'w.product_id = p.id')
-      .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
-      .addSelect('COUNT(r.id) as review_count')
-      .leftJoin(Order, 'o', 'o.product_id = p.id')
-      .leftJoin(Review, 'r', 'r.order_id = o.id')
-      .where('p.location LIKE :location', { location: `%${location}%` })
-      .groupBy('p.id')
-      .limit(pageLimit)
-      .offset((page - 1) * pageLimit)
-      .getRawMany();
-  }
-
-  // 카테고리별 검색
-  async findByCategory(category: string, page: number) {
-    return await this.dataSource
-      .createQueryBuilder(Product, 'p')
-      .select('p.*')
-      .addSelect('COUNT(w.product_id) as wish_count')
-      .leftJoin(Wish, 'w', 'w.product_id = p.id')
-      .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
-      .addSelect('COUNT(r.id) as review_count')
-      .leftJoin(Order, 'o', 'o.product_id = p.id')
-      .leftJoin(Review, 'r', 'r.order_id = o.id')
-      .where('p.category LIKE :category', { category: `%${category}%` })
-      .groupBy('p.id')
-      .limit(pageLimit)
-      .offset((page - 1) * pageLimit)
-      .getRawMany();
   }
 
   // 상품 정보 상세 조회
@@ -166,6 +113,111 @@ export class ProductService {
     return product;
   }
 
+  // 전체 상품 개수 조회
+  async findAllCount() {
+    const count = await this.dataSource
+      .createQueryBuilder(Product, 'p')
+      .where('p.id>1')
+      .getCount();
+
+    return count;
+  }
+
+  // 전체 상품 목록 조회
+  async findAll(page: number) {
+    return await this.dataSource
+      .createQueryBuilder(Product, 'p')
+      .select('p.*')
+      .addSelect('COUNT(w.product_id) as wish_count')
+      .leftJoin(Wish, 'w', 'w.product_id = p.id')
+      .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
+      .addSelect('COUNT(r.id) as review_count')
+      .leftJoin(Order, 'o', 'o.product_id = p.id')
+      .leftJoin(Review, 'r', 'r.order_id = o.id')
+      .where('p.id != :id', { id: 1 }) // product_id가 1인 항목을 제외
+      .groupBy('p.id')
+      .limit(pageLimit)
+      .offset((page - 1) * pageLimit)
+      .getRawMany();
+  }
+
+  // 지역 별 상품 개수 조회
+  async findByRegionCount(location: string) {
+    const count = await this.dataSource
+      .createQueryBuilder(Product, 'p')
+      .where('p.location LIKE :location', { location: `%${location}%` })
+      .andWhere('p.id>1')
+      .getCount();
+
+    return count;
+  }
+
+  // 지역 별 상품 목록 조회
+  async findByRegion(location: string, page: number) {
+    return await this.dataSource
+      .createQueryBuilder(Product, 'p')
+      .select('p.*')
+      .addSelect('COUNT(w.product_id) as wish_count')
+      .leftJoin(Wish, 'w', 'w.product_id = p.id')
+      .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
+      .addSelect('COUNT(r.id) as review_count')
+      .leftJoin(Order, 'o', 'o.product_id = p.id')
+      .leftJoin(Review, 'r', 'r.order_id = o.id')
+      .where('p.location LIKE :location', { location: `%${location}%` })
+      .groupBy('p.id')
+      .limit(pageLimit)
+      .offset((page - 1) * pageLimit)
+      .getRawMany();
+  }
+
+  // 카테고리 별 상품 개수 조회
+  async findByCategoryCount(categoryId: string) {
+    const count = await this.dataSource
+      .createQueryBuilder(Product, 'p')
+      .where('p.category = :categoryId', { categoryId })
+      .andWhere('p.id>1')
+      .getCount();
+
+    return count;
+  }
+
+  // 카테고리 별 상품 목록 조회
+  async findByCategory(categoryId: string, page: number) {
+    console.log('categoryId: ', categoryId);
+    return await this.dataSource
+      .createQueryBuilder(Product, 'p')
+      .select('p.*')
+      .addSelect('COUNT(w.product_id) as wish_count')
+      .leftJoin(Wish, 'w', 'w.product_id = p.id')
+      .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
+      .addSelect('COUNT(r.id) as review_count')
+      .leftJoin(Order, 'o', 'o.product_id = p.id')
+      .leftJoin(Review, 'r', 'r.order_id = o.id')
+      .where('p.category = :categoryId', { categoryId })
+      .groupBy('p.id')
+      .limit(pageLimit)
+      .offset((page - 1) * pageLimit)
+      .getRawMany();
+  }
+
+  // 상품 검색 개수 조회
+  async findByKeywordCount(keyword: string) {
+    const count = await this.dataSource
+      .createQueryBuilder(Product, 'p')
+      .where(
+        new Brackets((qb) => {
+          qb.where('p.name like :keyword', {
+            keyword: `%${keyword}%`,
+          }).orWhere('p.name like :keyword', { keyword: `%${keyword}%` });
+        }),
+      )
+      .andWhere('p.id>1')
+      .getCount();
+
+    return count;
+  }
+
+  // 상품 검색 조회
   async findByProductKeyword(keyword: string, page: number) {
     return await this.productRepository.find({
       where: [
