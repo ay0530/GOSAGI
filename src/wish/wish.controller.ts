@@ -3,40 +3,65 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { WishService } from './wish.service';
 import { CreateWishDto } from './dto/create-wish.dto';
-import { UpdateWishDto } from './dto/update-wish.dto';
+import { JwtAuthGuard } from 'src/guards/jwt.guard';
+import { ResponseDto } from 'src/ResponseDTO/response-dto';
 
 @Controller('wish')
 export class WishController {
   constructor(private readonly wishService: WishService) {}
 
+  //찜하기
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createWishDto: CreateWishDto) {
-    return this.wishService.create(createWishDto);
+  async create(@Body() createWishDto: CreateWishDto, @Req() req) {
+    const data = await this.wishService.create(createWishDto, req.user);
+    const response = new ResponseDto(true, '찜이 완료되었습니다.', data);
+    return response;
   }
 
+  //내가 찜한 상품 전체 보기
+  @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.wishService.findAll();
+  async findAll(@Req() req) {
+    const data = await this.wishService.findAll(req.user);
+    const response = new ResponseDto(
+      true,
+      '찜을 정상적으로 불러왔습니다.',
+      data,
+    );
+    return response;
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.wishService.findOne(+id);
+  //상품별 찜 보기
+  @UseGuards(JwtAuthGuard)
+  @Get(':productId')
+  async findByProduct(@Param('productId') id: number, @Req() req) {
+    const data = await this.wishService.findByProduct(id, req.user);
+    const response = new ResponseDto(
+      true,
+      '찜을 정상적으로 불러왔습니다.',
+      data,
+    );
+    return response;
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
-    return this.wishService.update(+id, updateWishDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wishService.remove(+id);
+  //찜 취소
+  @UseGuards(JwtAuthGuard)
+  @Delete(':wishId')
+  async remove(@Param('wishId') id: number, @Req() req) {
+    const data = await this.wishService.remove(id, req.user);
+    const response = new ResponseDto(
+      true,
+      '찜을 정상적으로 삭제했습니다.',
+      data,
+    );
+    return response;
   }
 }

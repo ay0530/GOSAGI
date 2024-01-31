@@ -1,5 +1,5 @@
 import Joi from 'joi'; // 유효성 검증 라이브러리
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies'; // DB 필드명 snake_case로 설정
@@ -7,35 +7,39 @@ import { ServeStaticModule } from '@nestjs/serve-static'; // 정적 파일 제�
 import { join } from 'path'; // 파일 경로 설정
 import { WinstonModule } from 'nest-winston'; // 로깅
 import winstonOptions from './config/winston.config'; // 로깅
+import cookieParser from 'cookie-parser';
 import { JwtModule } from '@nestjs/jwt';
 
 // Moudle
+import { AuthModule } from './auth/auth.module';
+import { RedisModule } from './redis/redis.module';
+
+import { JwtCommonModule } from './common/jwt.common.module';
 import { UserModule } from './user/user.module';
-import { LocationModule } from './location/location.module';
 import { StoreModule } from './store/store.module';
 import { ProductModule } from './product/product.module';
-import { ProductThumbnailModule } from './product-thumbnail/product-thumbnail.module';
-import { ProductContentModule } from './product-content/product-content.module';
 import { WishModule } from './wish/wish.module';
 import { CartModule } from './cart/cart.module';
 import { ReviewModule } from './review/review.module';
 import { QuestionModule } from './question/question.module';
 import { AnswerModule } from './answer/answer.module';
 import { FaqModule } from './faq/faq.module';
+import { AddressModule } from './address/address.module';
 
 // Entity
 import { User } from './user/entities/user.entity';
-import { Location } from './location/entities/locaion.entity';
 import { Store } from './store/entities/store.entity';
 import { Product } from './product/entities/product.entity';
-import { ProductThumbnail } from './product-thumbnail/entities/product-thumbnail.entity';
-import { ProductContent } from './product-content/entities/product-content.entity';
+import { ProductThumbnail } from './product/entities/product-thumbnail.entity';
+import { ProductContent } from './product/entities/product-content.entity';
 import { Wish } from './wish/entities/wish.entity';
 import { Cart } from './cart/entities/cart.entity';
+import { Order } from './order/entities/order.entity';
 import { Review } from './review/entities/review.entity';
 import { Question } from './question/entities/question.entity';
 import { Answer } from './answer/entities/answer.entity';
 import { Faq } from './faq/entities/faq.entity';
+import { Address } from './address/entities/address.entity';
 
 const typeOrmModuleOptions = {
   useFactory: async (
@@ -50,17 +54,18 @@ const typeOrmModuleOptions = {
     database: configService.get('DB_NAME'),
     entities: [
       User,
-      Location,
       Store,
       Product,
       ProductThumbnail,
       ProductContent,
       Wish,
       Cart,
+      Order,
       Review,
       Question,
       Answer,
       Faq,
+      Address,
     ],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
@@ -86,12 +91,7 @@ const typeOrmModuleOptions = {
     // TypeORM
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
     // JWT
-    JwtModule.registerAsync({
-      useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET_KEY'),
-      }),
-      inject: [ConfigService],
-    }),
+    JwtCommonModule,
     // ServeStaticModule
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'views'), // 정적 파일을 제공하는 폴더(views)
@@ -99,21 +99,27 @@ const typeOrmModuleOptions = {
     }),
     // Winston
     WinstonModule.forRoot(winstonOptions),
+    // Auth
+    AuthModule,
+    RedisModule,
     // Module
     UserModule,
-    LocationModule,
     StoreModule,
     ProductModule,
-    ProductThumbnailModule,
-    ProductContentModule,
     WishModule,
     CartModule,
     ReviewModule,
     QuestionModule,
     AnswerModule,
     FaqModule,
+    AddressModule,
+    // KakaoModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(cookieParser()).forRoutes('*'); // 모든 라우터에 쿠키파서 적용
+  }
+}

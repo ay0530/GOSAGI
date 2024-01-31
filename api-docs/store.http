@@ -1,0 +1,61 @@
+@domain = http://localhost:3000
+
+###
+# Admin 매장 정보 등록 (더미 데이터)
+# DB 포맷 후 진행하시기 바랍니다 (id를 1으로 만들기)
+POST {{domain}}/store
+Content-Type: application/JSON
+
+{
+  "name": "관리자 매장",
+  "phoneNumber": "010-1234-1234",
+  "bussinessNumber": "관리자 번호",
+  "address": "관리자 주소"
+}
+
+###
+# 일반 사업자 매장 정보 등록
+POST {{domain}}/store
+Content-Type: application/JSON
+
+{
+  "name": "매장1",
+  "phoneNumber": "010-1111-1111",
+  "bussinessNumber": "사업자 번호1",
+  "address": "주소1"
+}
+
+###
+# 매장 정보 조회
+GET {{domain}}/store/detail/1
+
+###
+# 매장 정보 수정
+# approvalStatut : 0(대기) / 1(승인) / 2(반려)
+# 승인 시 reasonsRejection ""로 수정
+# 반려 시 reasonsRejection 작성
+PATCH {{domain}}/store/2
+Content-Type: application/JSON
+
+{
+  "name": "매장11",
+  "phoneNumber": "010-1111-11111",
+  "bussinessNumber": "사업자 번호111",
+  "address": "주소111",
+  "approvalStatus": 1,
+  "reasonsRejection": ""
+}
+
+###
+# 매장 정보 삭제
+DELETE {{domain}}/store
+
+### ----- 매장 목록
+###
+# 매장 목록 조회
+GET {{domain}}/store/list
+
+###
+# 매장 목록 검색
+# 검색 조건 : name, phone_number, address
+GET {{domain}}/store/list/name/3

@@ -1,0 +1,68 @@
+@domain = http://localhost:3000
+
+###
+# 문의 글 등록
+# productId가 더미데이터의 id 이면 서비스에 대한 문의 / 그 외에는 상품에 대한 문의
+POST {{domain}}/question
+Content-Type: application/JSON
+
+{
+  "isPrivate": true,
+  "password": "1234",
+  "productId": 1,
+  "title": "title6",
+  "content": "content6"
+}
+
+###
+# 문의 글 조회
+GET {{domain}}/question/detail/user/3
+
+###
+# 문의 글 수정
+# 문의 글 삭제는 isDeleted 값을 true로 설정
+PATCH {{domain}}/question/3
+Content-Type: application/JSON
+
+{
+  "isDeleted": false,
+  "title": "title3",
+  "content": "content3"
+}
+
+### ----- 문의 목록
+###
+# 문의 목록 조회
+GET {{domain}}/question/list
+
+###
+# 문의 목록 검색
+# 검색 조건 : title, content
+GET {{domain}}/question/list/title/사이트
+
+###
+# 내 문의 목록 조회
+GET {{domain}}/question/myList
+
+###
+# 내 문의 목록 검색
+# 검색 조건 : title, content
+GET {{domain}}/question/myList/title/사이트
+
+###
+# 내 매장의 문의 목록 조회
+GET {{domain}}/question/storeList/1
+
+###
+# 내 매장의 문의 목록 검색
+# 검색 조건 : title, content
+GET {{domain}}/question/storeList/1/title/사이트
+
+###
+# 내 매장의 특정 상품 문의 목록 조회
+GET {{domain}}/question/productList/1
+
+###
+# 내 매장의 특정 상품 문의 목록 검색
+# 검색 조건 : title, content
+GET {{domain}}/question/productList/1/title/사이트

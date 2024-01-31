@@ -1,0 +1,40 @@
+@domain = http://localhost:3000
+
+# FAQ 작성
+POST {{domain}}/faq
+Content-Type: application/json
+
+{
+  "title": "고향사랑 기부금제도는 왜 만들어진 것인가요?",
+  "content": "건전한 기부문화를 조성하고 지역경제를 활성화하려는 취지로 제정된 것입니다."
+}
+
+###
+# FAQ 조회
+GET {{domain}}/faq
+Content-Type: application/json
+
+###
+# 특정 FAQ 조회
+GET {{domain}}/faq/detail/6
+Content-Type: application/json
+
+###
+# FAQ 검색
+GET {{domain}}/faq/keyword?keyword=배송
+Content-Type: application/json
+
+###
+# FAQ 수정
+PATCH {{domain}}/faq/6
+Content-Type: application/json
+
+{
+  "title": "배송은 얼마나 걸리나요?",
+  "content": "배송은 평균 2~3일 정도 소요되는 점 참고 부탁드립니다."
+}
+
+###
+# FAQ 삭제
+DELETE {{domain}}/faq/5
+Content-Type: application/json

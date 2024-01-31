@@ -27,7 +27,9 @@ export class Answer {
   created_at: Date;
 
   // 일대일 관계 설정(answer)
-  @OneToOne(() => Question)
+  @OneToOne(() => Question, (question) => question.answer)
   @JoinColumn({ name: 'question_id' })
-  question: Question[];
+  question: Question;
+  @Column({ type: 'int', nullable: false })
+  question_id: number;
 }

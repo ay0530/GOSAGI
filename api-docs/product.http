@@ -1,0 +1,204 @@
+@domain = http://localhost:3000/goods
+
+###
+# Admin 상품 정보 등록 (더미 데이터)
+# DB 포맷 후 진행하시기 바랍니다 (id를 1으로 만들기)
+POST {{domain}}/1
+Content-Type: application/JSON
+
+{
+  "code": 1, 
+  "name": "임시 상품",
+  "description" : "임시 상품",
+  "location": "임시 상품",
+  "category": "0",
+  "point": 0,
+  "price": 0,
+  "thumbnail_image": "임시 상품",
+  "productThumbnails": [{"image_url": "임시 상품"}],
+  "productContents": [{"content": "임시 상품"}]
+}
+
+###
+# 상품 등록 (일반) / 뒤에는 스토어 아이디(스토어가 필요함)
+POST {{domain}}/business/3 
+Content-Type: application/JSON
+
+{
+"code": 2962612, 
+"name": "인천 불닭 한라봉5",
+"description" : "맛도좋고 몸도좋은 불닭 한라봉5",
+"location": "인천시 애월동1",
+"category": "0",
+"point": "30000",
+"price": "150000",
+"thumbnail_image": "https://naver.com/123asidjai123sd",
+"productThumbnails": [
+  {
+    "image_url": "https://cdn.poomang.com/auto-generated/talking-potato/images/cover.png?ts=1611781881"
+  },
+  {
+     "image_url": "https://cdn.poomang.com/auto-generated/talking-potato/images/cover.png?ts=118823121442312"
+  }
+  ],
+"productContents": [
+    {
+      "content": "인천 불닭한라봉4"
+    },
+    {
+      "content": "자매품 크림 마라 인천 한라봉4"
+    }
+  ]
+}
+
+###
+# 상품 등록 (크롤링)
+POST {{domain}}/crawling
+Content-Type: application/JSON
+
+{
+"code": 2962612, 
+"name": "인천 불닭 한라봉5",
+"description" : "맛도좋고 몸도좋은 불닭 한라봉5",
+"location": "인천시 애월동1",
+"category": "0",
+"point": "30000",
+"price": "150000",
+"thumbnail_image": "https://naver.com/123asidjai123sd",
+"productThumbnails": [
+  {
+    "image_url": "https://cdn.poomang.com/auto-generated/talking-potato/images/cover.png?ts=1611781881"
+  },
+  {
+     "image_url": "https://cdn.poomang.com/auto-generated/talking-potato/images/cover.png?ts=118823121442312"
+  }
+  ],
+"productContents": [
+    {
+      "content": "인천 불닭한라봉4"
+    },
+    {
+      "content": "자매품 크림 마라 인천 한라봉4"
+    }
+  ],
+"business_code": "185-87-00831"
+}
+
+### 상품 상세 조회
+GET {{domain}}/detail/4
+
+###
+#컨텐츠 내용 가져오기
+GET {{domain}}/detail/6
+Content-Type: application/JSON
+
+###
+#상품 코드 가져오기
+GET {{domain}}/code/6
+Content-Type: application/JSON
+
+###
+#상품 수정
+PATCH {{domain}}/6
+Content-Type: application/JSON
+
+{
+  "name": "제주",
+  "description": "인천 삼다수"
+}
+
+###
+#상품 삭제
+DELETE {{domain}}/7
+Content-Type: application/JSON
+
+###
+#상품 조회수 증가
+PATCH {{domain}}/incrementView/8
+Content-Type: application/JSON
+
+########## 상품 목록 조회 API ##########
+
+### 상품 전체 개수 조회
+GET {{domain}}/count/all
+
+###
+# 상품 전체 가져오기
+GET {{domain}}?page=1
+Content-Type: application/JSON
+
+### 지역 별 상품 개수 조회
+GET {{domain}}/count/location?location=전라남도
+
+###
+# 지역별 별 상품 목록 조회
+GET {{domain}}/location?location=전라남도&page=1
+Content-Type: application/JSON
+
+###
+#카테고리 별 상품 개수 조회
+GET {{domain}}/count/category/농축산물
+Content-Type: application/JSON
+
+###
+#카테고리 별 상품 목록 조회
+GET {{domain}}/category/농축산물?&page=1
+Content-Type: application/JSON
+
+### 
+# 상품 검색 개수 조회
+GET {{domain}}/count/keyword?keyword=우
+Content-Type: application/JSON
+
+###
+# 상품 검색 조회
+GET {{domain}}/keyword?keyword=우&page=1
+Content-Type: application/JSON
+
+### 
+# 매장 별 상품 개수 조회
+
+###
+# 매장 별 상품 조회
+GET {{domain}}/store/1?&page=1
+Content-Type: application/JSON
+
+### 
+# 매장 별 상품 검색 개수 조회
+
+###
+# 매장 별 상품 검색
+# 검색 조건 name
+GET {{domain}}/store/1/name/임시?&page=1
+Content-Type: application/JSON
+
+########## 4개씩 조회 API ##########
+
+###
+#리뷰 평점순
+GET {{domain}}/reviewRate
+Content-Type: application/JSON
+
+###
+# 주문 많은 수 가져오기
+GET {{domain}}/bestOrders
+Content-Type: application/JSON
+
+###
+#최고 상품 가져오기
+GET {{domain}}/bestProducts
+Content-Type: application/JSON
+
+###
+# 찜순 가져오기
+GET {{domain}}/wishes
+Content-Type: application/JSON
+
+###
+# 조회수 순 가져오기
+GET {{domain}}/views
+Content-Type: application/JSON
+
+###
+# 최근 본 상품 목록 조회
+GET {{domain}}/recentView
