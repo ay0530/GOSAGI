@@ -93,10 +93,10 @@ const typeOrmModuleOptions = {
     // JWT
     JwtCommonModule,
     // ServeStaticModule
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'views'), // 정적 파일을 제공하는 폴더(views)
-      exclude: ['/api*'], // 특정 URL 패턴을 정적 파일에서 제외
-    }),
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname, '..', 'views'), // 정적 파일을 제공하는 폴더(views)
+    //   exclude: ['/api*'], // 특정 URL 패턴을 정적 파일에서 제외
+    // }),
     // Winston
     WinstonModule.forRoot(winstonOptions),
     // Auth
