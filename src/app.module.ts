@@ -1,19 +1,26 @@
 import Joi from 'joi'; // 유효성 검증 라이브러리
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import {
+  Module,
+  NestModule,
+  MiddlewareConsumer,
+  RequestMethod,
+} from '@nestjs/common';
+import { APP_FILTER } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies'; // DB 필드명 snake_case로 설정
 import { ServeStaticModule } from '@nestjs/serve-static'; // 정적 파일 제공 모듈 (정적 파일 : 서버측 변경잆이 클라이언트에 전달되는 파일)
 import { join } from 'path'; // 파일 경로 설정
-import { WinstonModule } from 'nest-winston'; // 로깅
-import winstonOptions from './config/winston.config'; // 로깅
+import { winstonOptions } from './winston/winston.config'; // 로깅
 import cookieParser from 'cookie-parser';
-import { JwtModule } from '@nestjs/jwt';
+import { WinstonModule } from 'nest-winston'; // 로깅
 
 // Moudle
 import { AuthModule } from './auth/auth.module';
 import { RedisModule } from './redis/redis.module';
-
+import { WinstonService } from './winston/winston.service';
+import { WinstonFilter } from './winston/winston.filter';
+import { WinstonMiddleware } from './winston/winston.middleware';
 import { JwtCommonModule } from './common/jwt.common.module';
 import { UserModule } from './user/user.module';
 import { StoreModule } from './store/store.module';
@@ -116,10 +123,20 @@ const typeOrmModuleOptions = {
     // KakaoModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    WinstonService,
+    {
+      provide: APP_FILTER,
+      useClass: WinstonFilter,
+    },
+  ],
+  exports: [],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(cookieParser()).forRoutes('*'); // 모든 라우터에 쿠키파서 적용
+    consumer
+      .apply(WinstonMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }
