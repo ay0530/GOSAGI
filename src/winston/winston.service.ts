@@ -10,7 +10,7 @@ export class WinstonService implements LoggerService {
   // logger.@@() : winston을 이용하여 메시지를 기록
   error(message: string, context?: string) {
     // console.log('에러');
-    this.logger.error(message, { context });
+    // this.logger.error(message, { context });
   }
 
   log(message: string, context?: string) {
