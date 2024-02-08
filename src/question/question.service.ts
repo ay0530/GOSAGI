@@ -242,7 +242,7 @@ export class QuestionService {
     const questions = await this.questionRepository.find({
       where: { product_id: In(productIds), is_deleted: false },
       order: { created_at: 'DESC' },
-      relations: ['answer'],
+      relations: ['answer', 'user'],
     });
 
     const result = questions.map((question) => {
@@ -288,7 +288,7 @@ export class QuestionService {
     const questions = await this.questionRepository.find({
       where: { product_id: productId, is_deleted: false },
       order: { created_at: 'DESC' },
-      relations: ['answer'],
+      relations: ['answer', 'user'],
     });
 
     const result = questions.map((question) => {
