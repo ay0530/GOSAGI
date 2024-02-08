@@ -28,7 +28,7 @@ jobs:
           context: .
           push: true
           target: prod
-          tags: ${{ secrets.DOCKER_USERNAME }}/${{ env.REPO_NAME_LOWER }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
