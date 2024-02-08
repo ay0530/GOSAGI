@@ -50,7 +50,7 @@ async function putProductDetail(page, productCode) {
 
   // 상품 저장하기
   await axios
-    .post('https://https.visitor.run/goods/crawling', {
+    .post('https://back.gosagi.com/goods/crawling', {
       code: Number(productCode),
       name,
       description,
