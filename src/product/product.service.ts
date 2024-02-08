@@ -164,6 +164,7 @@ export class ProductService {
       .leftJoin(Order, 'o', 'o.product_id = p.id')
       .leftJoin(Review, 'r', 'r.order_id = o.id')
       .where('p.location LIKE :location', { location: `%${location}%` })
+      .andWhere('p.id>1')
       .groupBy('p.id')
       .limit(pageLimit)
       .offset((page - 1) * pageLimit)
@@ -194,6 +195,7 @@ export class ProductService {
       .leftJoin(Order, 'o', 'o.product_id = p.id')
       .leftJoin(Review, 'r', 'r.order_id = o.id')
       .where('p.category = :categoryId', { categoryId })
+      .andWhere('p.id>1')
       .groupBy('p.id')
       .limit(pageLimit)
       .offset((page - 1) * pageLimit)
@@ -219,14 +221,27 @@ export class ProductService {
 
   // 상품 검색 조회
   async findByProductKeyword(keyword: string, page: number) {
-    return await this.productRepository.find({
-      where: [
-        { name: Like(`%${keyword}%`) },
-        { description: Like(`%${keyword}%`) },
-      ],
-      skip: (page - 1) * pageLimit,
-      take: pageLimit,
-    });
+    return await this.dataSource
+      .createQueryBuilder(Product, 'p')
+      .select('p.*')
+      .addSelect('COUNT(w.product_id) as wish_count')
+      .leftJoin(Wish, 'w', 'w.product_id = p.id')
+      .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
+      .addSelect('COUNT(r.id) as review_count')
+      .leftJoin(Order, 'o', 'o.product_id = p.id')
+      .leftJoin(Review, 'r', 'r.order_id = o.id')
+      .where(
+        new Brackets((qb) => {
+          qb.where('p.name like :keyword', {
+            keyword: `%${keyword}%`,
+          }).orWhere('p.name like :keyword', { keyword: `%${keyword}%` });
+        }),
+      )
+      .andWhere('p.id>1')
+      .groupBy('p.id')
+      .limit(pageLimit)
+      .offset((page - 1) * pageLimit)
+      .getRawMany();
   }
 
   //orders테이블 까지 보류 (테이블 관의 관계가 없음)
