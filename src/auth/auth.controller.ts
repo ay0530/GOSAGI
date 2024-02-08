@@ -59,7 +59,7 @@ export class AuthController {
     const response = new ResponseDto(true, '로그인이 완료되었습니다', null);
 
     // 로그인 성공 후 리다이렉트
-    res.redirect('http://localhost:5500/html/index.html');
+    res.redirect('https://front.gosagi.com/');
 
     return response;
   }
@@ -79,7 +79,7 @@ export class AuthController {
     const response = new ResponseDto(true, '로그인이 완료되었습니다', null);
 
     // 로그인 성공 후 리다이렉트
-    res.redirect('http://localhost:5500/html/index.html');
+    res.redirect('https://front.gosagi.com/');
 
     return response;
   }
@@ -99,7 +99,7 @@ export class AuthController {
     const response = new ResponseDto(true, '로그인이 완료되었습니다', null);
 
     // 로그인 성공 후 리다이렉트
-    res.redirect('http://localhost:5500/html/index.html');
+    res.redirect('https://front.gosagi.com/');
 
     return response;
   }

@@ -24,7 +24,7 @@ async function scrapeProductCode(url) {
   await login(page);
 
   // 상품 목록에서 상품 코드 추출
-  for (let e = 1; e <= 100; e++) {
+  for (let e = 1; e <= 30; e++) {
     const productCodeList = await getProductCodes(page);
     let jsonData = JSON.stringify(productCodeList);
     if (e === 1) {
@@ -33,7 +33,7 @@ async function scrapeProductCode(url) {
         if (err) throw err;
         console.log('Data written to file');
       });
-    } else if (e === 100) {
+    } else if (e === 30) {
       console.log('마지막');
       fs.appendFile('data.json', `, ${jsonData}]`, (err) => {
         if (err) throw err;
