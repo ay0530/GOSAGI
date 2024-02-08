@@ -39,6 +39,12 @@ export class UserController {
     return response;
   }
 
+  @Get('/health-check')
+  healthCheck(): string {
+    console.log('health-check');
+    return 'OK';
+  }
+
   // 회원 정보 조회
   @UseGuards(JwtAuthGuard)
   @Get()
