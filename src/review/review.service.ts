@@ -51,7 +51,6 @@ export class ReviewService {
       where: { user_id: user.id },
       relations: ['order', 'order.product'],
     });
-    console.log(reviews);
     const totalRate = reviews.reduce((sum, review) => sum + review.rate, 0);
 
     return {
