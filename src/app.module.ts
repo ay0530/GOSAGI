@@ -25,6 +25,7 @@ import { QuestionModule } from './question/question.module';
 import { AnswerModule } from './answer/answer.module';
 import { FaqModule } from './faq/faq.module';
 import { AddressModule } from './address/address.module';
+import { OrderModule } from './order/order.module';
 
 // Entity
 import { User } from './user/entities/user.entity';
@@ -106,6 +107,7 @@ const typeOrmModuleOptions = {
     UserModule,
     StoreModule,
     ProductModule,
+    OrderModule,
     WishModule,
     CartModule,
     ReviewModule,
