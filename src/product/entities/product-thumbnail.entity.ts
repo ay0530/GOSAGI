@@ -19,7 +19,7 @@ export class ProductThumbnail {
 
   @IsNotEmpty({ message: '이미지를 넣어주세요' })
   @IsString({ message: '문자형으로 입력해주세요' })
-  @Column({ type: 'varchar', unique: true, nullable: false })
+  @Column({ type: 'varchar', nullable: false })
   image_url: string;
 
   // 다대일 관계 설정(products)

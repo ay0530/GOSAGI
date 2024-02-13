@@ -46,6 +46,8 @@ export class JwtAuthGuard implements CanActivate {
             'id' in expiredToken
           ) {
             const userId = expiredToken.id;
+            const userEmail = expiredToken.email;
+            const userRole = expiredToken.role;
             // 리프레시 토큰 조회
             const refreshToken =
               await this.redisJwtService.getRefreshToken(userId);
@@ -53,7 +55,7 @@ export class JwtAuthGuard implements CanActivate {
             // 리프레시 토큰이 존재할 경우
             if (refreshToken) {
               // 액세스 토큰 재발급
-              const payload = { id: userId };
+              const payload = { id: userId, email: userEmail, role: userRole };
               const accessToken = this.jwtService.sign(payload, {
                 expiresIn: '10m',
               });

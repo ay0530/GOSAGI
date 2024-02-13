@@ -95,7 +95,7 @@ Content-Type: application/JSON
 
 ###
 # 내가 취소나 반품한 상품들 조회 (기간 별 상태 별 가능) status period
-GET {{domain}}/return
+GET {{domain}}/return?period=7days
 
 ###
 # 상세 구매(교환,반품) 내역 조회
@@ -120,8 +120,8 @@ Content-Type: application/JSON
   "status": 4
 }
 
-### (판매자, admin용) 상품 별 order 전부 확인하기 /product/productId
-GET {{domain}}/product/6
+### (판매자, admin용) 상품 별 order 전부 확인하기 /product/storeId
+GET {{domain}}/store/1
 
 ###
 # (판매자, admin용) 배송 중(1), 배송 완료(2)로 상태 변경

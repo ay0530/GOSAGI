@@ -32,6 +32,7 @@ import { QuestionModule } from './question/question.module';
 import { AnswerModule } from './answer/answer.module';
 import { FaqModule } from './faq/faq.module';
 import { AddressModule } from './address/address.module';
+import { OrderModule } from './order/order.module';
 
 // Entity
 import { User } from './user/entities/user.entity';
@@ -100,10 +101,10 @@ const typeOrmModuleOptions = {
     // JWT
     JwtCommonModule,
     // ServeStaticModule
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'views'), // 정적 파일을 제공하는 폴더(views)
-      exclude: ['/api*'], // 특정 URL 패턴을 정적 파일에서 제외
-    }),
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname, '..', 'views'), // 정적 파일을 제공하는 폴더(views)
+    //   exclude: ['/api*'], // 특정 URL 패턴을 정적 파일에서 제외
+    // }),
     // Winston
     WinstonModule.forRoot(winstonOptions),
     // Auth
@@ -113,6 +114,7 @@ const typeOrmModuleOptions = {
     UserModule,
     StoreModule,
     ProductModule,
+    OrderModule,
     WishModule,
     CartModule,
     ReviewModule,

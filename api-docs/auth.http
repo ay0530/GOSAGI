@@ -6,8 +6,18 @@ POST {{domain}}/auth/login
 Content-Type: application/JSON
 
 {
-  "email": "test@test.com",
-  "password": "12345"
+  "email": "admin@admin.com",
+  "password": "1234"
+}
+
+### 
+# 로그인 -> 만료 기간이 지나고 새로 해주지 않으면 토큰이 만료되어서 user의 id만 남은 refresh 토큰만 남게 되니 role guard를 사용할 수 없음 주의
+POST {{domain}}/auth/login
+Content-Type: application/JSON
+
+{
+  "email": "jci17564@hanmail.net",
+  "password": "1q2w3e!@#"
 }
 
 ###
