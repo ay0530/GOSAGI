@@ -120,8 +120,8 @@ Content-Type: application/JSON
   "status": 4
 }
 
-### (판매자, admin용) 상품 별 order 전부 확인하기 /product/productId
-GET {{domain}}/product/6
+### (판매자, admin용) 상품 별 order 전부 확인하기 /product/storeId
+GET {{domain}}/store/1
 
 ###
 # (판매자, admin용) 배송 중(1), 배송 완료(2)로 상태 변경

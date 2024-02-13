@@ -50,6 +50,18 @@ export class ProductController {
   async createCrawlingData(@Body() createProductDto: CreateProductDto) {
     const storeId = +1;
     const userId = +1;
+    const product = await this.productService.findProductByCode(
+      +createProductDto.code,
+    );
+    if (product.length) {
+      const productId = product[0].id;
+      const data = await this.productService.update(
+        productId,
+        createProductDto,
+      );
+      const response = new ResponseDto(true, '상품이 등록완료되었습니다', data);
+      return response;
+    }
     const data = await this.productService.create(
       createProductDto,
       storeId,
@@ -61,16 +73,12 @@ export class ProductController {
   }
 
   // 상품 상세 조회 (content도 가져오기)
-  @UseGuards(JwtAuthGuard)
   @Get('/detail/:productId')
   async getProductDetail(
     @Param('productId') productId: number,
     @Req() req: any,
   ) {
-    const data = await this.productService.getProductDetail(
-      productId,
-      req.user.id,
-    );
+    const data = await this.productService.getProductDetail(productId);
     await this.productService.increaseView(productId);
 
     const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
@@ -78,17 +86,6 @@ export class ProductController {
     return response;
   }
 
-  // 상품 코드 조회
-  @Get('/code/:productId')
-  async findProductCode(@Param('productId') productId: number) {
-    const data = await this.productService.findProductCode(productId);
-
-    const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
-
-    return response;
-  }
-
-  
   // 상품 수정(미사용)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.SELLER, UserRole.ADMIN)
@@ -183,7 +180,11 @@ export class ProductController {
   async findByCategoryCount(@Param('categoryId') categoryId: string) {
     const data = await this.productService.findByCategoryCount(categoryId);
 
-    const response = new ResponseDto(true, '카테고리 별 상품 개수 조회가 완료되었습니다', data);
+    const response = new ResponseDto(
+      true,
+      '카테고리 별 상품 개수 조회가 완료되었습니다',
+      data,
+    );
 
     return response;
   }
@@ -206,7 +207,11 @@ export class ProductController {
   async findByKeywordCount(@Query('keyword') keyword: string) {
     const data = await this.productService.findByKeywordCount(keyword);
 
-    const response = new ResponseDto(true, '검색 상품 개수 조회가 완료되었습니다', data);
+    const response = new ResponseDto(
+      true,
+      '검색 상품 개수 조회가 완료되었습니다',
+      data,
+    );
 
     return response;
   }
@@ -224,8 +229,6 @@ export class ProductController {
     return response;
   }
 
-  // 매장 별 상품 개수 조회
-
   // 매장 별 상품 조회
   @UseGuards(JwtAuthGuard)
   @Get('/store/:storeId')
@@ -236,6 +239,20 @@ export class ProductController {
     const data = await this.productService.findProductAllByStore(storeId, page);
 
     const response = new ResponseDto(true, '검색이 완료되었습니다', data);
+    return response;
+  }
+
+  // 매장 별 상품 개수 조회
+  @Get('/count/:storeId')
+  async findProductCountByStore(@Param('storeId') storeId: number) {
+    const data = await this.productService.findProductCountByStore(storeId);
+
+    const response = new ResponseDto(
+      true,
+      '상품 개수 조회가 완료되었습니다',
+      data,
+    );
+
     return response;
   }
 
@@ -262,7 +279,7 @@ export class ProductController {
   }
 
   // ---------- 4개씩 조회 ----------
-  
+
   // 리뷰 평점 순으로 4개 가져오기(오더 테이블이 있어야됨) 리뷰평점이랑 관계가 없음!!
   @Get('reviewRate')
   async getProductsByReviewRate() {
@@ -275,7 +292,7 @@ export class ProductController {
   // 구매 완료 개수 순으로 4개(오더 테이블이 있어야됨)
   @Get('bestOrders')
   async getProdcutByOrders() {
-    const data = await this.productService.getProdcutByOrders();
+    const data = await this.productService.getProductByOrders();
     const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
 
     return response;

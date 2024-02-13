@@ -89,9 +89,7 @@ async function getProductDetail() {
   fs.readFile('data.json', 'utf8', async (err, data) => {
     if (err) throw err;
     let productList = JSON.parse(data);
-    // for (let a = 0; a < productList.length; a++) {
-    //   for(let b = 1; b<=12; b++){
-    for (let a = 1; a <= productList.length; a++) {
+    for (let a = 1; a <= 1; a++) {
       for (let b = 1; b <= 12; b++) {
         try {
           await putProductDetail(page, productList[a][b]);

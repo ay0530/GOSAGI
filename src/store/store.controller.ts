@@ -31,7 +31,7 @@ export class StoreController {
 
     const response = new ResponseDto(
       true,
-      '매장 정보 등록이 완료되었습니다',
+      '매장 정보 등록 신청이 완료되었습니다',
       data,
     );
     return response;
@@ -101,7 +101,17 @@ export class StoreController {
     return response;
   }
 
-  // 매장 목록 검색 조회
+  // 신청중인 셀러 조회
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Get('approve')
+  async findAppliedSeller() {
+    const data = await this.storeService.findAppliedSeller();
+
+    const response = new ResponseDto(true, '신청한 사업자 조회 성공', data);
+    return response;
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('list/:category/:keyword')
   async searchAll(

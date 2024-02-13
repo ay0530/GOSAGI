@@ -74,20 +74,17 @@ export class ProductService {
     });
   }
 
-  // 상품 코드 조회
-  async findProductCode(productId: number) {
+  // 상품 코드로 조회
+  async findProductByCode(code: number) {
     return await this.productRepository.find({
-      select: {
-        code: true,
-      },
       where: {
-        id: productId,
+        code,
       },
     });
   }
 
   // 상품 정보 상세 조회
-  async getProductDetail(productId: number, userId: number) {
+  async getProductDetail(productId: number) {
     const product = await this.productRepository.findOne({
       where: {
         id: productId,
@@ -97,8 +94,6 @@ export class ProductService {
         productContent: true,
       },
     });
-
-    this.recentProduct(productId, userId, product.thumbnail_image);
     return product;
   }
 
@@ -263,7 +258,7 @@ export class ProductService {
   }
 
   //orders테이블 까지 보류
-  async getProdcutByOrders() {
+  async getProductByOrders() {
     return await this.dataSource
       .createQueryBuilder()
       .select('p.*')
@@ -329,11 +324,11 @@ export class ProductService {
     return await this.dataSource
       .createQueryBuilder()
       .select('p.*')
-      .addSelect('COUNT(w.product_id)', 'wish_count')
+      .addSelect('COUNT(DISTINCT w.id)', 'wish_count')
       .from(Product, 'p')
       .leftJoin(Wish, 'w', 'w.product_id = p.id')
       .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
-      .addSelect('COUNT(r.id) as review_count')
+      .addSelect('COUNT(DISTINCT r.id) as review_count')
       .leftJoin(Order, 'o', 'o.product_id = p.id')
       .leftJoin(Review, 'r', 'r.order_id = o.id')
       .groupBy('p.id')
@@ -346,17 +341,34 @@ export class ProductService {
     const product = await this.productRepository.findOne({
       where: { id: productId },
     });
+    const {
+      code,
+      name,
+      description,
+      location,
+      category,
+      point,
+      price,
+      thumbnail_image,
+      productThumbnails,
+      productContents,
+      business_code,
+    } = updateProductDto;
 
     if (!product) {
       throw new NotFoundException('수정하려는 상품이 존재하지 않습니다.');
     }
 
-    return await this.dataSource
-      .createQueryBuilder()
-      .update(Product)
-      .set({ ...updateProductDto })
-      .where(`id = ${productId}`)
-      .execute();
+    product.code = code;
+    product.name = name;
+    product.description = description;
+    product.location = location;
+    product.category = category;
+    product.point = point;
+    product.price = price;
+    product.thumbnail_image = thumbnail_image;
+    product.business_code = business_code;
+    return await this.productRepository.save(product);
   }
 
   async increaseView(productId: number) {
@@ -391,16 +403,16 @@ export class ProductService {
     return '정상적으로 삭제되었습니다';
   }
 
-  // 최근 본 상품 저장
-  async recentProduct(
-    productId: any,
-    userId: any,
-    ProductThumbnail: string,
-  ): Promise<void> {
-    const key = `user:${userId}:recentViews`;
-    await this.redisViewsService.lpush(key, `${productId};${ProductThumbnail}`); // lPush : 리스트 시작 부분에 값을 추가
-    await this.redisViewsService.ltrim(key, 0, 4); // lTrim : 리스트의 크기 조정
-  }
+  // // 최근 본 상품 저장
+  // async recentProduct(
+  //   productId: any,
+  //   userId: any,
+  //   ProductThumbnail: string,
+  // ): Promise<void> {
+  //   const key = `user:${userId}:recentViews`;
+  //   await this.redisViewsService.lpush(key, `${productId};${ProductThumbnail}`); // lPush : 리스트 시작 부분에 값을 추가
+  //   await this.redisViewsService.ltrim(key, 0, 4); // lTrim : 리스트의 크기 조정
+  // }
 
   // 최근 본 상품 조회
   async getRecentViews(userId: string): Promise<string[]> {
@@ -414,18 +426,29 @@ export class ProductService {
     const products = this.dataSource
       .createQueryBuilder(Product, 'p')
       .select('p.*')
-      .addSelect('COUNT(w.product_id) as wish_count')
+      .addSelect('COUNT(DISTINCT w.id) as wish_count')
       .leftJoin(Wish, 'w', 'w.product_id = p.id')
       .addSelect('ROUND(AVG(r.rate), 2) as average_rate')
-      .addSelect('COUNT(r.id) as review_count')
+      .addSelect('COUNT(DISTINCT r.id) as review_count')
       .leftJoin(Order, 'o', 'o.product_id = p.id')
       .leftJoin(Review, 'r', 'r.order_id = o.id')
+      .groupBy('p.id')
       .where(`p.store_id = :storeId`, { storeId })
+      .andWhere('p.id != :id', { id: 1 })
       .limit(pageLimit)
       .offset((page - 1) * pageLimit)
       .getRawMany();
 
     return products;
+  }
+
+  async findProductCountByStore(storeId: number) {
+    const count = this.dataSource
+      .createQueryBuilder(Product, 'p')
+      .where(`p.store_id = :storeId`, { storeId })
+      .getCount();
+
+    return count;
   }
 
   // 매장 상품 목록 검색 조회
