@@ -39,7 +39,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.REPO_NAME_LOWER }}:latest
-            sudo docker stop ${{ secrets.DOCKER_USERNAME }}/${{ env.REPO_NAME_LOWER }}:latest
+            sudo docker stop gosagi_backend
             sudo docker container prune -f
-            sudo docker run -d -p 3000:3000 --env-file .env --name ${{ secrets.DOCKER_USERNAME }}/${{ env.REPO_NAME_LOWER }} ${{ secrets.DOCKER_USERNAME }}/${{ env.REPO_NAME_LOWER }}:latest
+            sudo docker run -d -p 3000:3000 --env-file .env --name gosagi_backend ${{ secrets.DOCKER_USERNAME }}/${{ env.REPO_NAME_LOWER }}:latest
             sudo docker image prune -f
