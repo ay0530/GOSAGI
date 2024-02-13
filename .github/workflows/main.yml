@@ -47,5 +47,6 @@ jobs:
             sudo docker ps
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.REPO_NAME_LOWER }}:latest
             sudo docker stop ${{ secrets.DOCKER_USERNAME }}/${{ env.REPO_NAME_LOWER }}:latest
+            sudo docker container prune -f
             sudo docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/${{ env.REPO_NAME_LOWER }}:latest
             sudo docker image prune -f
