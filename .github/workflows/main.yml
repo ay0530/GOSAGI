@@ -41,7 +41,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             sudo docker ps
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/latest
-            sudo docker stop
-            sudo docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/latest
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.REPO_NAME_LOWER }}:latest
+            sudo docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/${{ env.REPO_NAME_LOWER }}:latest
             sudo docker image prune -f
