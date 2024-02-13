@@ -23,6 +23,12 @@ jobs:
           REPO_NAME_LOWER=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
           echo "REPO_NAME_LOWER=${REPO_NAME_LOWER}" >> $GITHUB_ENV
 
+      - name: Generate ENV
+        run: |
+          echo "ENV=${{secrets.ENV}}" >> ./dir/.env
+        env:
+          ENV: ${{secrets.ENV}}
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
