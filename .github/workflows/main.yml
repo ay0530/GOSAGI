@@ -25,7 +25,7 @@ jobs:
 
       - name: Generate ENV
         run: |
-          echo "ENV=${{secrets.ENV}}" >> ./dir/.env
+          echo "ENV=${{secrets.ENV}}" >> $GITHUB_ENV
         env:
           ENV: ${{secrets.ENV}}
 
