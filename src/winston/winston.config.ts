@@ -10,8 +10,8 @@ const dailyOptions = (level: string) => {
     datePattern: 'YYYY-MM-DD',
     dirname: path.join(logDir, level), // 로그 레벨별로 디렉토리 분리
     filename: `%DATE%.${level}.log`,
+    maxSize: '1m', //최대 로그 파일 용량
     maxFiles: '30d', // 최대 30일치 로그 파일 저장
-    zippedArchive: true, // 로그 파일 압축
   };
 };
 
