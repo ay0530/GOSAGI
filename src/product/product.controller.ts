@@ -73,16 +73,12 @@ export class ProductController {
   }
 
   // 상품 상세 조회 (content도 가져오기)
-  @UseGuards(JwtAuthGuard)
   @Get('/detail/:productId')
   async getProductDetail(
     @Param('productId') productId: number,
     @Req() req: any,
   ) {
-    const data = await this.productService.getProductDetail(
-      productId,
-      req.user.id,
-    );
+    const data = await this.productService.getProductDetail(productId);
     await this.productService.increaseView(productId);
 
     const response = new ResponseDto(true, '상품조회가 완료되었습니다', data);
