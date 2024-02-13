@@ -135,10 +135,11 @@ const typeOrmModuleOptions = {
   exports: [],
 })
 export class AppModule implements NestModule {
+  // 모든 라우터에 미들웨어 적용
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(cookieParser()).forRoutes('*'); // 모든 라우터에 쿠키파서 적용
+    consumer.apply(cookieParser()).forRoutes('*'); 
     consumer
       .apply(WinstonMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
+      .forRoutes({ path: '*', method: RequestMethod.ALL }); // 모든 라우터 경로에 설정
   }
 }
