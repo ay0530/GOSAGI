@@ -30,7 +30,7 @@ export class WinstonFilter implements ExceptionFilter {
         ? exception.message // 에러 메시지 조회
         : 'Internal Server Error'; // Internal Server Error 메시지 출력
 
-    const logMessage = `${request.method} ${request.url} - ${status} - ${message}`; // 로그 메시지 생성
+    const logMessage = `${request.method} - ${request.url} - ${status} - ${message}`; // 로그 메시지 생성
     if (status >= 400) this.logger.error(logMessage); // 에러가 존재할 경우 error 레벨로 로깅
 
     // res 반환

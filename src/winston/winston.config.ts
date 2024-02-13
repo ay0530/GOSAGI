@@ -36,9 +36,9 @@ const transports = [
 const logFormat = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), // 시간
   winston.format.errors({ stack: true }), //
-  winston.format.colorize(), // 로그 레벨에 따라 색상 추가
   winston.format.printf(
-    (info) => `${info.timestamp} [${info.level}]: ${info.message}`,
+    (info) =>
+      `${info.timestamp} [${info.level.toUpperCase()}]: ${info.message}`,
   ),
 );
 
