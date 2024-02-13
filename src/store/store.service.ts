@@ -156,4 +156,12 @@ export class StoreService {
       throw new ConflictException('이미 등록된 매장입니다.');
     }
   }
+
+  async findAppliedSeller() {
+    const stores = await this.storeRepository.find({
+      where: { approval_status: 0 },
+    });
+
+    return stores;
+  }
 }

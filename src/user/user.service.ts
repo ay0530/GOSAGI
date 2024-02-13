@@ -76,8 +76,11 @@ export class UserService {
   // 회원 정보 조회
   async findOne(id: number) {
     // 회원 정보 조회
-    const user = await this.userRepository.findOne({ where: { id } });
-    return { email: user.email, nickname: user.nickname };
+    const user = await this.userRepository.find({
+      where: { id },
+      relations: ['store'],
+    });
+    return user;
   }
 
   // 회원 정보 수정

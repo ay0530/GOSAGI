@@ -85,7 +85,7 @@ Content-Type: application/JSON
 }
 
 ### 상품 상세 조회
-GET {{domain}}/detail/4
+GET {{domain}}/detail/250
 
 ###
 #컨텐츠 내용 가져오기
@@ -162,6 +162,9 @@ Content-Type: application/JSON
 # 매장 별 상품 조회
 GET {{domain}}/store/1?&page=1
 Content-Type: application/JSON
+
+### 상품 전체 개수 조회
+GET {{domain}}/count/1
 
 ### 
 # 매장 별 상품 검색 개수 조회

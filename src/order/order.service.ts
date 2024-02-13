@@ -8,17 +8,20 @@ import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { CreateReturnDto } from './dto/create-return-order.dto';
 import { OrderStatus } from 'src/order/types/order-status.type';
 import { OrderStatusType } from 'src/order/types/order-status.type';
-import { Between, In, Repository } from 'typeorm';
+import { Between, In, Repository, DataSource } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
 import { User } from 'src/user/entities/user.entity';
 import { ProductService } from 'src/product/product.service';
+import { UserService } from 'src/user/user.service';
 import _ from 'lodash';
 import { UpdateOrderDeliveryDto } from './dto/update-order-delivery.dto';
 import { SearchOrderPeriodDto } from './dto/search-order-period.dto';
+import { Product } from 'src/product/entities/product.entity';
 @Injectable()
 export class OrderService {
   constructor(
+    private readonly dataSource: DataSource,
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
     private readonly productService: ProductService,
@@ -344,25 +347,18 @@ export class OrderService {
     };
   }
 
-  async findAllByProduct(productId: number) {
-    const orders = await this.orderRepository.find({
-      where: { product_id: productId },
-      order: {
-        createdAt: 'DESC', // createdAt을 기준으로 내림차순 정렬
-      },
-      select: [
-        'id',
-        'status',
-        'product_name',
-        'product_price',
-        'product_thumbnail',
-        'quantity',
-        'createdAt',
-      ],
-    });
+  async findAllByStoreId(storeId: number) {
+    const orders = await this.dataSource
+      .createQueryBuilder(Order, 'o')
+      .select('o.*')
+      .addSelect('u.nickname', 'user_nickname')
+      .where('p.store_id = :storeId', { storeId })
+      .leftJoin(User, 'u', 'u.id = o.user_id')
+      .leftJoin(Product, 'p', 'p.id = o.product_id')
+      .getRawMany();
 
     return {
-      order_count: orders.length,
+      // order_count: orders.length,
       data: orders,
     };
   }
