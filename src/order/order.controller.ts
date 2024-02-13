@@ -127,9 +127,9 @@ export class OrderController {
 
   //상품 별 order 전부 불러오기
   @Roles(UserRole.SELLER, UserRole.ADMIN)
-  @Get('/product/:productId')
-  async findAllByProduct(@Param('productId') productId: number) {
-    const data = await this.orderService.findAllByProduct(productId);
+  @Get('/store/:storeId')
+  async findAllByStoreId(@Param('storeId') storeId: number) {
+    const data = await this.orderService.findAllByStoreId(storeId);
     const response = new ResponseDto(
       true,
       '구매 내역을 정상적으로 불러왔습니다.',

@@ -1,4 +1,4 @@
-@domain = http://52.79.88.29:3000/goods
+@domain = http://localhost:3000/goods
 
 ###
 # Admin 상품 정보 등록 (더미 데이터)
@@ -162,6 +162,9 @@ Content-Type: application/JSON
 # 매장 별 상품 조회
 GET {{domain}}/store/1?&page=1
 Content-Type: application/JSON
+
+### 상품 전체 개수 조회
+GET {{domain}}/count/1
 
 ### 
 # 매장 별 상품 검색 개수 조회
