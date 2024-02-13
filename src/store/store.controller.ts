@@ -31,7 +31,7 @@ export class StoreController {
 
     const response = new ResponseDto(
       true,
-      '매장 정보 등록이 완료되었습니다',
+      '매장 정보 등록 신청이 완료되었습니다',
       data,
     );
     return response;
