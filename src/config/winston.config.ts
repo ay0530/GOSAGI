@@ -41,7 +41,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 // 로거 옵션 내보내기
 const loggerOptions: winston.LoggerOptions = {
-  level: 'error',
+  level: 'debug',
   format: logFormat,
   transports,
 };

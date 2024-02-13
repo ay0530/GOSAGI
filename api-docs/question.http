@@ -60,7 +60,7 @@ GET {{domain}}/question/storeList/1/title/사이트
 
 ###
 # 내 매장의 특정 상품 문의 목록 조회
-GET {{domain}}/question/productList/1
+GET {{domain}}/question/productList/153
 
 ###
 # 내 매장의 특정 상품 문의 목록 검색

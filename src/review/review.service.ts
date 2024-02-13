@@ -76,13 +76,14 @@ export class ReviewService {
   async findAllByProductId(productId: number) {
     const reviews = await this.reviewRepository.find({
       where: { order: { product_id: productId } },
+      relations: ['user'],
     });
 
     const totalRate = reviews.reduce((sum, review) => sum + review.rate, 0);
 
     return {
       review_length: reviews.length,
-      review_average_rate: totalRate / reviews.length,
+      review_average_rate: Math.round((totalRate / reviews.length) * 10) / 10,
       data: reviews,
     };
   }
