@@ -22,17 +22,17 @@ jobs:
         run: |
           REPO_NAME_LOWER=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
           echo "REPO_NAME_LOWER=${REPO_NAME_LOWER}" >> $GITHUB_ENV
+
       - name: Generate Environment Variables File for Production
         run: |
-          echo "VARIABLE=$VARIABLE" >> ./dir/.env
+          echo "VARIABLE=$VARIABLE" >> .env
         env:
           VARIABLE: ${{ secrets.VARIABLE }}
 
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ./dir
-          file: ./dir/Dockerfile
+          context: .
           push: true
           target: final
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ env.REPO_NAME_LOWER }}:latest
