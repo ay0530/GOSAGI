@@ -12,7 +12,8 @@ const dailyOptions = (level: string) => {
     dirname: path.join(logDir, level), // 로그 레벨별로 디렉토리 분리
     filename: `%DATE%.${level}.csv`,
     maxFiles: '30d', // 로그 파일 저장 일 수
-    zippedArchive: true, // 오래된 로그파일 압축
+    maxSize: '1m', //최대 로그 파일 용량
+    // zippedArchive: true, // 오래된 로그파일 압축
   };
 };
 
