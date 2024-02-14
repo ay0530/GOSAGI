@@ -121,4 +121,4 @@ export class AuthController {
     const response = new ResponseDto(true, '로그아웃 되었습니다', null);
     return response;
   }
-}
+} 
