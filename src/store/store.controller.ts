@@ -8,7 +8,16 @@ import {
   Delete,
   UseGuards,
   Req,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import {
+  FileInterceptor,
+  AnyFilesInterceptor,
+  FilesInterceptor,
+} from '@nestjs/platform-express';
+import { Express } from 'express';
+import * as AWS from 'aws-sdk';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 
 import { StoreService } from './store.service';
@@ -23,18 +32,34 @@ export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
   // 매장 정보 저장
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SELLER, UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() createStoreDto: CreateStoreDto, @Req() req: any) {
-    const data = await this.storeService.create(createStoreDto, req.user.id);
+  @UseInterceptors(FileInterceptor('file'))
+  async create(
+    @Req() req: any,
+    @Body() createStoreDto: CreateStoreDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const fileName = file.originalname;
+    const ext = file.originalname.split('.').pop();
+
+    const data = await this.storeService.create(
+      createStoreDto,
+      req.user.id,
+      fileName,
+      file,
+      ext,
+    );
 
     const response = new ResponseDto(
       true,
-      '매장 정보 등록이 완료되었습니다',
+      '매장 정보 등록 신청이 완료되었습니다',
       data,
     );
     return response;
+  }
+  catch(error) {
+    console.log(error);
   }
 
   // 매장 정보 상세 조회
@@ -73,9 +98,8 @@ export class StoreController {
     return response;
   }
 
-  // 매장 정보 삭제
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SELLER, UserRole.ADMIN)
+  // 신청취소
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async remove(@Param('id') id: string, @Req() req: any) {
     await this.storeService.remove(+id, req.user.id);

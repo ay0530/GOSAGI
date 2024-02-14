@@ -84,7 +84,7 @@ export class ProductService {
   }
 
   // 상품 정보 상세 조회
-  async getProductDetail(productId: number, userId: number) {
+  async getProductDetail(productId: number) {
     const product = await this.productRepository.findOne({
       where: {
         id: productId,
@@ -94,8 +94,6 @@ export class ProductService {
         productContent: true,
       },
     });
-
-    this.recentProduct(productId, userId, product.thumbnail_image);
     return product;
   }
 
@@ -405,16 +403,16 @@ export class ProductService {
     return '정상적으로 삭제되었습니다';
   }
 
-  // 최근 본 상품 저장
-  async recentProduct(
-    productId: any,
-    userId: any,
-    ProductThumbnail: string,
-  ): Promise<void> {
-    const key = `user:${userId}:recentViews`;
-    await this.redisViewsService.lpush(key, `${productId};${ProductThumbnail}`); // lPush : 리스트 시작 부분에 값을 추가
-    await this.redisViewsService.ltrim(key, 0, 4); // lTrim : 리스트의 크기 조정
-  }
+  // // 최근 본 상품 저장
+  // async recentProduct(
+  //   productId: any,
+  //   userId: any,
+  //   ProductThumbnail: string,
+  // ): Promise<void> {
+  //   const key = `user:${userId}:recentViews`;
+  //   await this.redisViewsService.lpush(key, `${productId};${ProductThumbnail}`); // lPush : 리스트 시작 부분에 값을 추가
+  //   await this.redisViewsService.ltrim(key, 0, 4); // lTrim : 리스트의 크기 조정
+  // }
 
   // 최근 본 상품 조회
   async getRecentViews(userId: string): Promise<string[]> {

@@ -5,10 +5,10 @@ export class CreateStoreDto {
   name: string;
 
   @IsNotEmpty({ message: '매장 연락처를 입력해주세요.' })
-  phoneNumber: string;
+  phone_number: string;
 
   @IsNotEmpty({ message: '사업자 번호를 입력해주세요.' })
-  bussinessNumber: string;
+  business_number: string;
 
   @IsNotEmpty({ message: '매장 주소를 입력해주세요.' })
   address: string;
@@ -17,5 +17,5 @@ export class CreateStoreDto {
   @IsNotEmpty({
     message: '승인 여부를 입력해주세요. [ 0(대기) / 1(승인) / 2(반려) ]',
   })
-  approvalStatus: number;
+  approval_status: number;
 }
