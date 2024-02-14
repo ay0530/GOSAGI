@@ -11,26 +11,58 @@ import { ApprovalStatusType } from './types/approval-status.type';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
 import { Store } from './entities/store.entity';
+import { ConfigService } from '@nestjs/config';
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 @Injectable()
 export class StoreService {
+  s3Client: S3Client;
   constructor(
     @InjectRepository(Store)
     private storeRepository: Repository<Store>,
-  ) {}
+    private configService: ConfigService,
+  ) {
+    this.s3Client = new S3Client({
+      region: this.configService.get('AWS_REGION'), // AWS Region
+      credentials: {
+        accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'), // Access Key
+        secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'), // Secret Key
+      },
+    });
+  }
 
   // 매장 정보 저장
-  async create(createStoreDto: CreateStoreDto, userId: number) {
+  async create(
+    createStoreDto: CreateStoreDto,
+    userId: number,
+    fileName: string, // 업로드될 파일의 이름
+    file: Express.Multer.File, // 업로드할 파일
+    ext: string, // 파일 확장자
+  ) {
     // 매장 정보 예외 처리
     await this.existingStore(createStoreDto);
+
+    const command = new PutObjectCommand({
+      Bucket: this.configService.get('AWS_BUCKET_NAME'), // S3 버킷 이름
+      Key: fileName, // 업로드될 파일의 이름
+      Body: file.buffer, // 업로드할 파일
+      ACL: 'public-read', // 파일 접근 권한
+      ContentType: `image/${ext}`, // 파일 타입
+    });
+
+    // 생성된 명령을 S3 클라이언트에 전달하여 이미지 업로드를 수행합니다.
+    await this.s3Client.send(command);
+
+    const licenseUrl = `https://s3.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_BUCKET_NAME}/${fileName}`;
 
     // 매장 정보 저장
     const store = await this.storeRepository.save({
       user_id: userId,
       name: createStoreDto.name,
-      phone_number: createStoreDto.phoneNumber,
-      business_number: createStoreDto.bussinessNumber,
+      phone_number: createStoreDto.phone_number,
+      business_number: createStoreDto.business_number,
       address: createStoreDto.address,
+      license_url: licenseUrl,
     });
 
     return store;
@@ -114,7 +146,7 @@ export class StoreService {
     };
   }
 
-  // 매장 정보 삭제
+  // 신청취소
   async remove(id: number, userId: number) {
     const store = await this.storeRepository.delete({ id, user_id: userId });
 
@@ -123,6 +155,7 @@ export class StoreService {
       // 가드로 나중에 빼야할듯
       throw new ForbiddenException('권한이 존재하지 않습니다');
     }
+    return store; // 삭제 성공 시 삭제된 매장 정보 반환
   }
 
   // 매장 목록 조회
