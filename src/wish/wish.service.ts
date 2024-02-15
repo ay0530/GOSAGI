@@ -79,11 +79,7 @@ export class WishService {
     };
   }
 
-  async findByProduct(id: number, user: User) {
-    const wishes = await this.wishRepository.find({
-      where: { product_id: id },
-    });
-
+  async findIsMyWish(id: number, user: User) {
     let isMyWish = false;
     const myWish = await this.wishRepository.findOne({
       where: { product_id: id, user_id: user.id },
@@ -92,15 +88,23 @@ export class WishService {
     if (myWish !== null) {
       isMyWish = true;
       return {
-        wishes_count: wishes.length,
         isMyWish,
         myWishId: myWish.id,
       };
     }
 
     return {
-      wishes_count: wishes.length,
       isMyWish,
+    };
+  }
+
+  async findWishCountByProduct(id: number) {
+    const wishes = await this.wishRepository.find({
+      where: { product_id: id },
+    });
+
+    return {
+      wishes_count: wishes.length,
     };
   }
 

@@ -163,7 +163,6 @@ export class OrderController {
   }
 
   //배송지 변경
-  @Roles(UserRole.USER)
   @Patch('/address/:id')
   async updateAddress(
     @Param('id') id: number,
@@ -191,16 +190,11 @@ export class OrderController {
       updateOrderStatusDto,
       req.user,
     );
-    const response = new ResponseDto(
-      true,
-      '구매 확정이 완료되었습니다. 리뷰를 작성할 수 있습니다.',
-      data,
-    );
+    const response = new ResponseDto(true, '구매 확정이 완료되었습니다.', data);
     return response;
   }
 
   //환불
-  @Roles(UserRole.USER)
   @Patch('/refund/:id')
   async refundComplete(
     @Param('id') id: number,
