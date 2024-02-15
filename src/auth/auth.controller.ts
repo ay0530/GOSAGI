@@ -58,10 +58,6 @@ export class AuthController {
 
     const response = new ResponseDto(true, '로그인이 완료되었습니다', null);
 
-    // 로그인 성공 후 리다이렉트
-
-    res.redirect('https://front.gosagi.com');
-
     return response;
   }
 
@@ -79,10 +75,6 @@ export class AuthController {
 
     const response = new ResponseDto(true, '로그인이 완료되었습니다', null);
 
-    // 로그인 성공 후 리다이렉트
-
-    res.redirect('https://front.gosagi.com');
-
     return response;
   }
 
@@ -99,11 +91,6 @@ export class AuthController {
     }); // 쿠키에 토큰 저장
 
     const response = new ResponseDto(true, '로그인이 완료되었습니다', null);
-
-    // 로그인 성공 후 리다이렉트
-
-    res.redirect('https://front.gosagi.com');
-
     return response;
   }
 
@@ -121,4 +108,4 @@ export class AuthController {
     const response = new ResponseDto(true, '로그아웃 되었습니다', null);
     return response;
   }
-} 
+}
