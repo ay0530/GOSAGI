@@ -55,6 +55,7 @@ export class AuthService {
     // 회원이 존재하지 않을 경우
     if (!user) {
       const user = await this.userService.authSignup(email, password, name);
+      return await this.generateJwtToken(user);
     }
 
     // JWT 토큰 생성

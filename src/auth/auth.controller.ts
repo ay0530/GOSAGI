@@ -60,8 +60,6 @@ export class AuthController {
 
     // 로그인 성공 후 리다이렉트
     res.redirect('https://front.gosagi.com');
-
-    return response;
   }
 
   // 구글 로그인
@@ -80,8 +78,6 @@ export class AuthController {
 
     // 로그인 성공 후 리다이렉트
     res.redirect('https://front.gosagi.com');
-
-    return response;
   }
 
   // 카카오 로그인
@@ -100,8 +96,6 @@ export class AuthController {
 
     // 로그인 성공 후 리다이렉트
     res.redirect('https://front.gosagi.com');
-
-    return response;
   }
 
   // 일반 로그아웃
