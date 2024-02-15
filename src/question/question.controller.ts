@@ -52,7 +52,6 @@ export class QuestionController {
     return response;
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('detail/:id')
   async findOne(@Param('id') id: string, @Req() req: any) {
     const data = await this.questionService.findOne(+id);
@@ -188,7 +187,6 @@ export class QuestionController {
   }
 
   // 내 매장의 특정 상품 문의 목록 조회
-  @UseGuards(JwtAuthGuard)
   @Get('productList/:productId')
   async findProductAll(@Param('productId') productId: number) {
     const data = await this.questionService.findProductAll(productId);
@@ -202,7 +200,6 @@ export class QuestionController {
   }
 
   // 내 매장의 특정 상품 문의 목록 검색
-  @UseGuards(JwtAuthGuard)
   @Get('productList/:productId/:category/:keyword')
   async searchProductAll(
     @Param('category') category: string,
