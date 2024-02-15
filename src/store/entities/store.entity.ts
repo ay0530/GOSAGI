@@ -44,6 +44,9 @@ export class Store {
   @Column({ type: 'varchar' })
   reasons_rejection: string;
 
+  @Column({ type: 'varchar' })
+  license_url: string;
+
   // 다대일 관계 설정(users)
   @ManyToOne(() => User, (user) => user.store)
   @JoinColumn({ name: 'user_id' }) // 외래키
