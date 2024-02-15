@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.511.0",
+    "@elastic/elasticsearch": "^8.12.1",
     "@nestjs/axios": "^3.0.1",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/common": "^10.0.0",
@@ -46,6 +47,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "cookie-parser": "^1.4.6",
+    "discord-webhook-node": "^1.1.8",
     "ioredis": "^5.3.2",
     "joi": "^17.11.0",
     "lodash": "^4.17.21",
@@ -66,7 +68,8 @@
     "typeorm": "^0.3.19",
     "typeorm-naming-strategies": "^4.1.0",
     "winston": "^3.11.0",
-    "winston-daily-rotate-file": "^4.7.1"
+    "winston-daily-rotate-file": "^4.7.1",
+    "winston-elasticsearch": "^0.17.4"
   },
   "devDependencies": {
     "@nestjs/schematics": "^10.0.0",

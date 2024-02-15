@@ -59,7 +59,6 @@ export class AuthController {
     const response = new ResponseDto(true, '로그인이 완료되었습니다', null);
 
     // 로그인 성공 후 리다이렉트
-
     res.redirect('https://front.gosagi.com');
   }
 
@@ -78,7 +77,6 @@ export class AuthController {
     const response = new ResponseDto(true, '로그인이 완료되었습니다', null);
 
     // 로그인 성공 후 리다이렉트
-
     res.redirect('https://front.gosagi.com');
   }
 
@@ -97,7 +95,6 @@ export class AuthController {
     const response = new ResponseDto(true, '로그인이 완료되었습니다', null);
 
     // 로그인 성공 후 리다이렉트
-
     res.redirect('https://front.gosagi.com');
   }
 
