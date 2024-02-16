@@ -48,6 +48,8 @@ import { Question } from './question/entities/question.entity';
 import { Answer } from './answer/entities/answer.entity';
 import { Faq } from './faq/entities/faq.entity';
 import { Address } from './address/entities/address.entity';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 const typeOrmModuleOptions = {
   useFactory: async (
@@ -124,13 +126,14 @@ const typeOrmModuleOptions = {
     AddressModule,
     // KakaoModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [
     WinstonService,
     {
       provide: APP_FILTER,
       useClass: WinstonFilter,
     },
+    AppService,
   ],
   exports: [],
 })
