@@ -3,6 +3,9 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+
+import { Webhook } from 'discord-webhook-node';
+
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { CreateReturnDto } from './dto/create-return-order.dto';
@@ -18,6 +21,8 @@ import _ from 'lodash';
 import { UpdateOrderDeliveryDto } from './dto/update-order-delivery.dto';
 import { SearchOrderPeriodDto } from './dto/search-order-period.dto';
 import { Product } from 'src/product/entities/product.entity';
+import { Store } from 'src/store/entities/store.entity';
+
 @Injectable()
 export class OrderService {
   constructor(
@@ -31,7 +36,6 @@ export class OrderService {
     //결제는 다른 api에서 진행하기 때문에 그 후에 결제 완료 상태로 order에 저장한다.
 
     //해당하는 product의 정보를 가져와 현재 값을 같이 저장한다.
-
     const {
       product_id,
       receiver,
@@ -65,9 +69,14 @@ export class OrderService {
       user_id: user.id,
     });
 
+    sendingMsg(
+      `[ 주문 완료 ] 상품명 : ${product.name} | 개수 : ${quantity} | 금액 : ${product.price}원 | 수령인 : ${receiver}}`,
+    );
+
     return createOrder;
   }
 
+  // 반품 신청
   async createReturn(id: number, createReturnDto: CreateReturnDto, user: User) {
     //배송지가 바뀔 수 있으니 새로 입력받는다.
     const {
@@ -117,9 +126,12 @@ export class OrderService {
 
     await this.orderRepository.save(order);
 
+    sendingMsg(`[ 반품 신청 ]`);
+
     return order;
   }
 
+  // 교환 신청
   async createExchange(
     id: number,
     createExchangeDto: CreateOrderDto,
@@ -196,6 +208,10 @@ export class OrderService {
       after_service_request,
       user_id: user.id,
     });
+
+    sendingMsg(
+      `[ 교환 신청 ] 상품명 : ${product.name} | 개수 : ${quantity} | 금액 : ${product.price}원}`,
+    );
 
     return createExchange;
   }
@@ -537,6 +553,8 @@ export class OrderService {
     order.status = status;
     const refundOrder = await this.orderRepository.save(order);
 
+    sendingMsg(`[ 환불 신청 ]`);
+
     return refundOrder;
   }
 
@@ -572,5 +590,18 @@ export class OrderService {
     const returnOrder = await this.orderRepository.save(order);
 
     return returnOrder;
+  }
+}
+
+//디스코드 메세지 보내는 함수
+async function sendingMsg(logMessage: string) {
+  const hook = new Webhook(
+    'https://discord.com/api/webhooks/1207861587264667678/OSts9FHqb5pTWhNY_LS7CjefG6v7Et8-aJSWxOQrBazf_ms77mDexPgdoxBIfcKsMT5J',
+  );
+  const message = logMessage;
+  try {
+    await hook.send(message);
+  } catch (error) {
+    console.error(`메시지 전송 실패. 에러: ${error.message}`);
   }
 }
