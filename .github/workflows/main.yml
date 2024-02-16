@@ -38,6 +38,7 @@ jobs:
           username: ${{ secrets.EC2_SSH_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.REPO_NAME_LOWER }}:latest
             sudo docker stop gosagi_backend
             sudo docker container prune -f

@@ -9,4 +9,9 @@ export class AppController {
   healthCheck(): string {
     return 'OK';
   }
+
+  @Get('/')
+  healthCheck2(): string {
+    return 'OK';
+  }
 }
