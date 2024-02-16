@@ -343,4 +343,17 @@ export class ProductController {
 
     return response;
   }
+
+  @Get('image/:imagename')
+  async getImage(@Param('imagename') imagename: string) {
+    console.log(imagename);
+    const imagePath = `/src/image/${imagename}.png`;
+    console.log(imagePath);
+
+    const data = await this.productService.getImage(imagePath);
+
+    const response = new ResponseDto(true, '이미지 반환 성공.', data);
+
+    return response;
+  }
 }

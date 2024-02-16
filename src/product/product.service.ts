@@ -7,6 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, DataSource, Like, Repository } from 'typeorm';
 
 import { RedisViewsService } from 'src/redis/redis-views.service';
+import { RedisImageService } from 'src/redis/redis-logo.service';
+
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
@@ -21,6 +23,7 @@ export class ProductService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly redisViewsService: RedisViewsService,
+    private readonly redisImageService: RedisImageService,
     private readonly storeService: StoreService,
     @InjectRepository(Product) private productRepository: Repository<Product>,
   ) {}
@@ -420,6 +423,19 @@ export class ProductService {
   async getRecentViews(userId: string): Promise<string[]> {
     const key = `user:${userId}:recentViews`;
     return await this.redisViewsService.lrange(key, 0, 4); // lTrim : 리스트의 크기 조정
+  }
+
+  //로고 불러오기
+  async getImage(imagePath) {
+    //
+    try {
+      //로고 저장 (처음 한 번만 하면 된다)
+      this.redisImageService.saveImage(imagePath);
+      return await this.redisImageService.getImage(imagePath);
+    } catch (error) {
+      console.error('Failed to get image:', error);
+      return null;
+    }
   }
 
   // ---- 기타 함수
