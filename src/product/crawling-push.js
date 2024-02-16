@@ -1,6 +1,15 @@
 const puppeteer = require('puppeteer');
 const axios = require('axios');
-const fs = require('fs');
+const fs = require('fs').promises;
+const sharp = require('sharp');
+const fetch = require('node-fetch');
+const https = require('https');
+const path = require('path');
+
+const agent = new https.Agent({
+  rejectUnauthorized: false, // SSL 인증서 검증 무시
+});
+
 // import "reflect-metadata";
 // import { createConnection } from 'typeorm';
 // import { Product } from './entity/Product';
@@ -21,7 +30,36 @@ async function putProductDetail(page, productCode) {
   // 태그(id, class, a 등) 값으로 textContent, innerHTML 등 값 추출
   const thumbnailImages = await page.$$eval('.swiper_img img', (imgs) =>
     imgs.map((img) => img.src),
-  ); // 썸네일 이미지
+  ); // 썸네일 이미지 url을 가져온다.
+  //이미지 예시 : 'https://ilovegohyang.go.kr/upload/item/G2000016556/202306022231310309_L.jpg',
+  console.log(thumbnailImages);
+
+  try {
+    // 이미지 다운로드
+    const response = await fetch(thumbnailImages[0], { agent });
+    const buffer = await response.buffer();
+
+    // 이미지 변환
+    const webpData = await sharp(buffer).toFormat('webp').toBuffer();
+
+    // 변환된 이미지를 파일로 저장하지 않고 메모리에 유지한 채로
+    // Base64로 인코딩하여 data URL로 반환
+    //const base64Data = webpData.toString('base64');
+    //const webpUrl = `data:image/webp;base64,${base64Data}`;
+
+    // 파일로 저장
+    const saveDirectory = './images';
+    const fileName = path.basename(`${productCode}.webp`);
+    const filePath = path.join(saveDirectory, fileName);
+    await fs.writeFile(filePath, webpData);
+
+    // 파일의 URL 생성
+    const fileUrl = `https://back.gosagi.com/images/${fileName}`; // 적절한 서버 URL로 변경 아직 get method를 만들지 못함
+    console.log(fileUrl);
+  } catch (error) {
+    console.error(error);
+  }
+
   const name = await page.$eval('.info_title h2 span', (name) =>
     name.textContent.trim(),
   ); // 상품명
@@ -49,28 +87,28 @@ async function putProductDetail(page, productCode) {
   ]); // 본문 HTML
 
   // 상품 저장하기
-  await axios
-    .post('https://back.gosagi.com/goods/crawling', {
-      code: Number(productCode),
-      name,
-      description,
-      location: origin,
-      category,
-      point: Number(price.replace(',', '')),
-      price: 0,
-      business_code,
-      thumbnail_image: thumbnailImages[0],
-      productThumbnails: thumbnailImages.map((imageUrl) => ({
-        image_url: imageUrl,
-      })),
-      productContents: content.map((content) => ({ content })),
-    })
-    .then((res) => {
-      console.log('상품 저장 성공');
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  // await axios
+  //   .post('https://back.gosagi.com/goods/crawling', {
+  //     code: Number(productCode),
+  //     name,
+  //     description,
+  //     location: origin,
+  //     category,
+  //     point: Number(price.replace(',', '')),
+  //     price: 0,
+  //     business_code,
+  //     thumbnail_image: thumbnailImages[0],
+  //     productThumbnails: thumbnailImages.map((imageUrl) => ({
+  //       image_url: imageUrl,
+  //     })),
+  //     productContents: content.map((content) => ({ content })),
+  //   })
+  //   .then((res) => {
+  //     console.log('상품 저장 성공');
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //   });
 }
 
 async function getProductDetail() {
@@ -90,8 +128,9 @@ async function getProductDetail() {
     if (err) throw err;
     let productList = JSON.parse(data);
     for (let a = 1; a <= 1; a++) {
-      for (let b = 1; b <= 12; b++) {
+      for (let b = 1; b <= 2; b++) {
         try {
+          console.log(b);
           await putProductDetail(page, productList[a][b]);
           await delay(1000);
         } catch (err) {
