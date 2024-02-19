@@ -26,11 +26,6 @@
   <img src="https://img.shields.io/badge/Route%2053-FF9900?style=flat-square&logo=amazon-aws&logoColor=white">
   <img src="https://img.shields.io/badge/AWS_S3-569A31?style=flat-square&logo=Amazon-S3&logoColor=white">
 </p>
-<br>
-
-# 📜 목차
-
-[👀 프로젝트 간단 소개](#👀-프로젝트-간단-소개)
 
 <br>
 
